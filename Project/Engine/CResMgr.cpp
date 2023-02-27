@@ -1,0 +1,96 @@
+#include "pch.h"
+#include "CResMgr.h"
+#include "CSound.h"
+
+CResMgr::CResMgr()
+	:m_vecLayoutInfo{}
+	, m_iLayoutOffset{0}
+{
+	for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
+	{
+		m_arrRes[i] = {};
+	}
+}
+
+CResMgr::~CResMgr()
+{
+	for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
+	{
+		Safe_Del_Map(m_arrRes[i]);
+	}
+	//CSound::g_pFMOD->release();
+}
+
+bool CResMgr::DeleteRes(RES_TYPE _Type, const wstring& _strKey)
+{
+	map<wstring, Ptr<CRes>>::iterator iter = m_arrRes[(UINT)_Type].find(_strKey);
+
+	if (m_arrRes[(UINT)_Type].end() != iter)
+	{
+		m_arrRes[(UINT)_Type].erase(iter);
+		m_bChanged = true;
+		return true;
+	}
+
+	return false;
+}
+
+void CResMgr::tick()
+{
+	m_bChanged = false;
+}
+
+
+Vec3 CResMgr::GetCircleVector(size_t i, size_t tessellation) 
+{
+    const float angle = float(i) * XM_2PI / float(tessellation);
+    float       sin;
+    float       cos;
+
+    XMScalarSinCos(&sin, &cos, angle);
+    return { cos, 0, sin };
+}
+
+
+void CResMgr::CreateConeMesh(float radius, float height, size_t tessellation) noexcept
+{
+    if (tessellation < 3)
+    {
+        throw std::invalid_argument("tessellation parameter must be at least 3");
+    }
+
+    vector<Vtx>  vertices;
+    vector<UINT> indices;
+
+    vertices.reserve(tessellation + 1); // 1 + x
+    indices.reserve(tessellation * 6 - 6);  // 3x + 3(x-2)
+
+    const Vec3   topPosition = Vec3::Zero;
+    vertices.push_back(Vtx{ topPosition, {}, {}, {}, {}, {} });
+
+    for (size_t i = 0; i < tessellation; i++)
+    {
+        const Vec3 circleVec = GetCircleVector(i, tessellation);
+        const Vec3 position = circleVec * radius + Vec3(0, -height, 0);
+        vertices.push_back(Vtx{ position, {}, {}, {}, {}, {} });
+
+        indices.push_back(0);
+        indices.push_back(i + 2);
+        indices.push_back(i + 1);
+    }
+
+    indices[indices.size() - 2] = 1;
+
+    for (size_t i = 0; i < tessellation - 2; i++)
+    {
+        indices.push_back(1);
+        indices.push_back(1 + i + 1);
+        indices.push_back(1 + i + 2);
+    }
+
+
+    // Ãß°¡
+    CMesh* pMesh = new CMesh(true);
+    pMesh->Create(vertices.data(), vertices.size(), indices.data(), indices.size());
+    AddRes<CMesh>(L"ConeMesh", pMesh);
+}

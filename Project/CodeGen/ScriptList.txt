@@ -1,0 +1,11 @@
+CDragScript
+CLightScript
+CMissileScript
+CMissileScript2
+CMonsterScript
+CMouseScript
+CPlayerScript
+CRefAniScript
+CSelectUnitScript
+CShadowScript
+CTileScript

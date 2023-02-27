@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Default">
+      <UniqueIdentifier>{ea8efbf2-42d5-45ec-9dec-0b66da89792d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default\리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{3dafcd8a-e5bc-46ab-a9c5-364b7636c182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScriptMgr">
+      <UniqueIdentifier>{cd659ce7-f559-4c6c-bebb-52d0eb176308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\01. CameraScript">
+      <UniqueIdentifier>{afe33cda-d080-42e2-a59e-8ed4f052dc7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\04. MouseScript">
+      <UniqueIdentifier>{c582bc89-28e5-408f-8959-641c3df294d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\05. FrustumScript">
+      <UniqueIdentifier>{ce344b23-5000-450b-bd53-5aacfe6da053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\01. CameraScript\02. SecondCamera">
+      <UniqueIdentifier>{44becbde-06a1-44d8-acc2-f093e914803f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CPlayerScript.h">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="CLevelCameraScript.h">
+      <Filter>Scripts\01. CameraScript</Filter>
+    </ClInclude>
+    <ClInclude Include="CScriptMgr.h">
+      <Filter>ScriptMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="CFrustumScript.h">
+      <Filter>Scripts\05. FrustumScript</Filter>
+    </ClInclude>
+    <ClInclude Include="CSecondCameraScript.h">
+      <Filter>Scripts\01. CameraScript\02. SecondCamera</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CPlayerScript.cpp">
+      <Filter>Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="CLevelCameraScript.cpp">
+      <Filter>Scripts\01. CameraScript</Filter>
+    </ClCompile>
+    <ClCompile Include="CScriptMgr.cpp">
+      <Filter>ScriptMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="CFrustumScript.cpp">
+      <Filter>Scripts\05. FrustumScript</Filter>
+    </ClCompile>
+    <ClCompile Include="CSecondCameraScript.cpp">
+      <Filter>Scripts\01. CameraScript\02. SecondCamera</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
