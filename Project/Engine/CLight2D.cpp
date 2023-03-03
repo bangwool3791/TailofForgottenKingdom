@@ -31,7 +31,7 @@ void CLight2D::finaltick()
 	m_Info.vWorldPos = vLightPos;
 	m_Info.vWorldDir = Transform()->GetWorldDir(DIR::RIGHT);
 
-	/*ㄴ
+	/*
 	* [-800, +800] [-450, +450] 해상도에 들어온 조명만 입력 받는다.
 	*/
 	CCamera* pMainCam = CRenderMgr::GetInst()->GetMainCam();

@@ -226,6 +226,9 @@
     <Filter Include="Engine\11. Math">
       <UniqueIdentifier>{b42a5d0e-9864-44f7-a1c7-49fbb4830ecf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\06. Component\02. RenderComponent\FogRender">
+      <UniqueIdentifier>{da90f849-8cab-49e8-a321-7436210d9053}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -779,6 +782,12 @@
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
     <FxCompile Include="skybox.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="fog.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="hdr.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
   </ItemGroup>

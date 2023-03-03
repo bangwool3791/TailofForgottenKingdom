@@ -59,6 +59,8 @@ void CDecal::render()
 
 	// ·»´õ¸µ
 	GetMesh()->render();
+
+	CMaterial::Clear();
 }
 
 void CDecal::render_Instancing()

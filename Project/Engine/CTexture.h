@@ -44,7 +44,7 @@ public:
     ComPtr<ID3D11UnorderedAccessView> GetUAV() { return  m_UAV; }
 
     static void Clear(UINT _iRegisterNum);
-    static void Clear_CS(UINT _iRegisterNum);
+    static void Clear_CS(UINT _iRegisterNum, bool _bShaderRes);
 private:
     // 파일로 부터 로딩
     virtual void Save(const wstring& _strRelativePath) {}

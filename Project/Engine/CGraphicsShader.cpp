@@ -20,11 +20,16 @@ CGraphicsShader::~CGraphicsShader()
 
 void CGraphicsShader::CreateVertexShader(const wstring& _strRelativePath, const string& _strFuncName)
 {
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 	strFilePath += _strRelativePath;
 
 	HRESULT hr = D3DCompileFromFile(strFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
-		, _strFuncName.c_str(), "vs_5_0", 0, 0, m_VSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
+		, _strFuncName.c_str(), "vs_5_0", dwShaderFlags, 0, m_VSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
 
 	if (FAILED(hr))
 	{
@@ -52,11 +57,17 @@ void CGraphicsShader::CreateVertexShader(const wstring& _strRelativePath, const 
 
 void CGraphicsShader::CreateGeometryShader(const wstring& _strRelativePath, const string& _strFuncName)
 {
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 	strFilePath += _strRelativePath;
 
 	HRESULT hr = D3DCompileFromFile(strFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
-		, _strFuncName.c_str(), "gs_5_0", 0, 0, m_GSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
+		, _strFuncName.c_str(), "gs_5_0", dwShaderFlags, 0, m_GSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
 
 	if (FAILED(hr))
 	{
@@ -72,11 +83,17 @@ void CGraphicsShader::CreateGeometryShader(const wstring& _strRelativePath, cons
 
 void CGraphicsShader::CreatePixelShader(const wstring& _strRelativePath, const string& _strFuncName)
 {
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 	strFilePath += _strRelativePath;
 
 	HRESULT hr = D3DCompileFromFile(strFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
-		, _strFuncName.c_str(), "ps_5_0", 0, 0, m_PSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
+		, _strFuncName.c_str(), "ps_5_0", dwShaderFlags, 0, m_PSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
 
 	if (FAILED(hr))
 	{

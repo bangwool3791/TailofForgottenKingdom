@@ -32,7 +32,8 @@ void ParamUI::Param_Float(const string& _ParamName, float* _pInOut)
 
 	ImGui::Text(_ParamName.c_str());
 	ImGui::SameLine();
-	if (ImGui::DragFloat(szName, _pInOut, 0.01f, 0.f, 1.f, "%6.3f"))
+	//if (ImGui::DragFloat(szName, _pInOut, 0.01f, 0.f, 5.f, "%6.3f"))
+	if (ImGui::InputFloat(szName, _pInOut, 0.01f, 0.f, "%6.3f"))
 	{
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_::ImGuiMouseButton_Left))
 		{

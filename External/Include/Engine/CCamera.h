@@ -3,6 +3,8 @@
 
 #include "CFrustum.h"
 
+class CSLight;
+
 class CStructuredBuffer;
 enum PROJ_TYPE
 {
@@ -15,6 +17,7 @@ class CCamera :
 
 {
 private:
+    CSLight*                m_LightCS;
     CFrustum                m_Frustum;
     Ray                     m_ray;
 
@@ -49,6 +52,8 @@ private:
     vector<CGameObject* >                    m_vecPostProcess;
 
     CStructuredBuffer*                       m_pObjectRenderBuffer;
+private:
+    void begin();
 private :
     void SortObject();
     void render_deferred();

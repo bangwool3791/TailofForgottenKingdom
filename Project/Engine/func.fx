@@ -156,7 +156,9 @@ void CalcLight3D(float3 _vViewPos, float3 _vViewNormal, int _iLightIdx, inout tL
             lightinfo.color.vAmb = 0.f;
         }
         else
+        {
             fDiffPow = lightinfo.fRadius * 0.4 / fDistance;
+        }
     }
     else if (4 == lightinfo.iLightType)
     {
@@ -234,6 +236,25 @@ float4 GaussianSample(float2 _vUV)
 
     return vOutColor;
 }
+
+uint encode(float4 _value)
+{
+    uint rgba = (uint(_value.x * 255.f) << 24) + (uint(_value.y * 255.f) << 16) + (uint(_value.z * 255.f) << 8) + uint(_value.w * 255.f);
+    return rgba;
+}
+
+float4 decode(float _value)
+{
+    uint rgba = asint(_value);
+
+    float r = (float) (rgba >> 24) / 255.f;
+    float g = (float) ((rgba & 0x00ff0000) >> 16) / 255.f;
+    float b = (float) ((rgba & 0x0000ff00) >> 8) / 255.f;
+    float a = (float) (rgba & 0x000000ff) / 255.f;
+
+    return float4(r, g, b, a);
+}
+
 #endif
 
 

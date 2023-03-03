@@ -55,8 +55,6 @@ void CMRT::Clear()
 //Output merge RenderTargetView, Depth Stencil View
 void CMRT::OMSet()
 {
-	CMaterial::Clear(); 
-
 	ID3D11RenderTargetView* arrRTV[8] = {};
 
 	for (int i = 0; i < m_RTCount; ++i)
@@ -68,5 +66,14 @@ void CMRT::OMSet()
 		CONTEXT->OMSetRenderTargets(m_RTCount, arrRTV, m_DSTex->GetDSV().Get());
 	else
 		CONTEXT->OMSetRenderTargets(m_RTCount, arrRTV, nullptr);
+}
 
+void CMRT::OMClear()
+{
+	ID3D11RenderTargetView* arrRTV[8] = {};
+
+	if (nullptr != m_DSTex.Get())
+		CONTEXT->OMSetRenderTargets(m_RTCount, arrRTV, m_DSTex->GetDSV().Get());
+	else
+		CONTEXT->OMSetRenderTargets(m_RTCount, arrRTV, nullptr);
 }

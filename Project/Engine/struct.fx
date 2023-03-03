@@ -44,7 +44,10 @@ struct tParticleShare
 
 struct tLightShare
 {
-    uint  iMax;
+    dword R;
+    dword G;
+    dword B;
+    dword A;
 };
 
 struct tRenderInfo

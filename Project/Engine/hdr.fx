@@ -2,37 +2,15 @@
 #define _MERGE
 
 #include "register.fx"
+
 // ===================
 // Merge
 // MRT  : MRT_TYPE::SWAPCHAIN
 // mesh : Rect Mesh
 
 // Parameter
-// g_float_0 : avg lum
-// g_float_1 : middle grey
-// g_float_2 : white lum sqr??
-// g_tex_0 : ColorTargetTex
-// g_tex_1 : PositionTargetTex
-// g_tex_2 : DiffuseTargetTex
-// g_tex_3 : SpecularTargetTex
-// g_tex_4 : DecalTargetTex
+// g_float_0 : AvgLum
 // ===================
-
-//g_float_0 : avg lum
-//g_float_1 : middle grey
-//g_float_2 : g_fLumWhiteSqr
-
-#define LUM_FACTOR float3(5.f, 5.f, 5.f)
-float3 ToneMapping(float3 vHDRColor)
-{
-	// 현재 픽셀에 대한 휘도 스케일 계산
-	float fLScale = dot(vHDRColor, LUM_FACTOR);
-	fLScale *= g_float_1 / g_float_0;
-	fLScale = (fLScale + fLScale * fLScale / g_float_2) / (1.f + fLScale);
-
-	// 휘도 스케일을 픽셀 색상에 적용
-	return vHDRColor * fLScale;
-}
 
 struct VS_IN
 {
@@ -77,8 +55,6 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float4 vDiffuse = g_tex_2.Sample(g_sam_0, vUV);
 	float4 vSpecular = g_tex_3.Sample(g_sam_0, vUV);
 	vOutColor.rgb = (vOutColor.rgb * vDiffuse.rgb) + vSpecular.rgb;
-
-	vOutColor.rgb = ToneMapping(vOutColor.rgb);
 	return vOutColor;
 
 }

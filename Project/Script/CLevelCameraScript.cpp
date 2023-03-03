@@ -9,7 +9,8 @@ CLevelCameraScript::CLevelCameraScript()
 	, m_fSpeed(300.f)
 	, m_vPos{}
 {
-
+	AddScriptParam(SCRIPT_PARAM::FLOAT, "MoveSpeed", &m_fSpeed);
+	AddScriptParam(SCRIPT_PARAM::FLOAT, "FOV", &m_fFOV);
 }
 
 CLevelCameraScript::~CLevelCameraScript()
@@ -23,12 +24,17 @@ void CLevelCameraScript::begin()
 
 void CLevelCameraScript::tick()
 {
-	if(!m_pCamera)
+	if (!m_pCamera)
+	{
 		m_pCamera = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera();
+		assert(m_pCamera);
+	}
 	if (!m_pFrustum)
+	{
 		m_pFrustum = m_pCamera->GetFrustum();
-	if(!m_pObjFrustum)
-		m_pObjFrustum = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(1)->FindParent(L"Frustum");
+		m_fFar = m_pCamera->GetFar();
+		assert(m_pCamera);
+	}
 
 	Move();
 }
@@ -75,7 +81,7 @@ void CLevelCameraScript::Move()
 		}
 
 		Vec2 vMouseDir = CKeyMgr::GetInst()->GetMouseDir();
-
+		Transform()->SetRelativePos(vPos);
 
 		if (KEY_PRESSED(KEY::NUM_1))
 		{
@@ -109,7 +115,7 @@ void CLevelCameraScript::Move()
 			int iSize = 0;
 			size_t iVtxSize = 0;
 			Vec3* points = m_pFrustum->GetWorldArray(iSize);
-			Vtx* vtx = m_pObjFrustum->GetRenderComponent()->GetMesh()->GetVertices(iVtxSize);
+			Vtx* vtx = GetOwner()->GetRenderComponent()->GetMesh()->GetVertices(iVtxSize);
 			////À­¸é
 			vtx[0].vPos = points[4];
 			vtx[1].vPos = points[5];
@@ -141,10 +147,66 @@ void CLevelCameraScript::Move()
 			vtx[22].vPos = points[2];
 			vtx[23].vPos = points[3];
 
-			m_pObjFrustum->GetRenderComponent()->GetMesh()->UpdateVertex(vtx, iVtxSize);
+			GetOwner()->GetRenderComponent()->GetMesh()->UpdateVertex(vtx, iVtxSize);
 		}
 
-		Transform()->SetRelativePos(vPos);
+
+
+		if (1 == g_ScrollUp || 1 == g_ScrollDown)
+		{
+			m_fFOV = m_pCamera->GetFOV();
+
+			if (1 == g_ScrollUp)
+				m_fFOV += 0.01;
+			else if (1 == g_ScrollDown)
+				m_fFOV -= 0.01;
+
+			m_pCamera->SetFOV(m_fFOV);
+
+			m_pCamera->CalcViewMat();
+			m_pCamera->CalcProjMat();
+			m_pFrustum->finaltick();
+
+			g_ScrollDown = 0;
+			g_ScrollUp = 0;
+
+			int iSize = 0;
+			size_t iVtxSize = 0;
+			Vec3* points = m_pFrustum->GetWorldArray(iSize);
+			Vtx* vtx = GetOwner()->GetRenderComponent()->GetMesh()->GetVertices(iVtxSize);
+			////À­¸é
+			vtx[0].vPos = points[4];
+			vtx[1].vPos = points[5];
+			vtx[2].vPos = points[1];
+			vtx[3].vPos = points[0];
+			//¾Æ·§¸é
+			vtx[4].vPos = points[3];
+			vtx[5].vPos = points[2];
+			vtx[6].vPos = points[6];
+			vtx[7].vPos = points[7];
+
+			vtx[8].vPos = points[4];
+			vtx[9].vPos = points[0];
+			vtx[10].vPos = points[3];
+			vtx[11].vPos = points[7];
+
+			vtx[12].vPos = points[1];
+			vtx[13].vPos = points[5];
+			vtx[14].vPos = points[6];
+			vtx[15].vPos = points[2];
+
+			vtx[16].vPos = points[4];
+			vtx[17].vPos = points[5];
+			vtx[18].vPos = points[6];
+			vtx[19].vPos = points[7];
+
+			vtx[20].vPos = points[0];
+			vtx[21].vPos = points[1];
+			vtx[22].vPos = points[2];
+			vtx[23].vPos = points[3];
+
+			GetOwner()->GetRenderComponent()->GetMesh()->UpdateVertex(vtx, iVtxSize);
+		}
 
 		if (KEY_PRESSED(KEY::SPACE))
 		{
@@ -156,6 +218,9 @@ void CLevelCameraScript::Move()
 				fdt = 0.f;
 			}
 		}
+
+		
+		DebugDrawFrustum(Vec4(0.2f, 0.8f, 0.2f, 1.f), Transform()->GetWorldPos(), Transform()->GetRelativeRotation(), 0.f);
 	}
 
 	else

@@ -7,10 +7,17 @@ class CStructuredBuffer;
 class CSLight :
 	public CComputeShader
 {
+private:
+	float	m_fLumAverage;
+	Ptr<CTexture> m_pTargetTex;
 public:
 	CStructuredBuffer* m_LightShareBuffer;
 public:
-	void SetLightShareBuffer(CStructuredBuffer* _Buffer);
+	void SetTargetTex(Ptr<CTexture> _ptr) 
+	{ 
+		m_pTargetTex = _ptr; 
+		m_Param.v2Arr[0] = Vec2(m_pTargetTex->GetWidth(), m_pTargetTex->GetHeight());
+	}
 public:
 	virtual void UpdateData()override;
 	virtual void Clear() override;

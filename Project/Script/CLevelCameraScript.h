@@ -10,6 +10,8 @@ private:
 private:
     float   m_fSpeed;
     float   m_fScale;
+    float   m_fFOV;
+    float   m_fFar;
     Vec3    m_vPos;
 public:
     virtual void begin() override;

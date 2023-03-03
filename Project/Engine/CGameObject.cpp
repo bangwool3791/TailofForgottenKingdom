@@ -84,6 +84,10 @@ void CGameObject::begin()
 
 	for (UINT i = 0; i < (UINT)COMPONENT_TYPE::END; ++i)
 	{
+		if (i == (UINT)COMPONENT_TYPE::CAMERA)
+		{
+			int a = 0;
+		}
 		if (nullptr != m_arrCom[i])
 			m_arrCom[i]->begin();
 	}

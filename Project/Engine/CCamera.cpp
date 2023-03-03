@@ -18,6 +18,9 @@
 #include "CKeyMgr.h"
 
 #include "CScript.h"
+#include "CSLight.h"
+
+#include "frustum_culling.h"
 
 //스레드 A종류
 //스레드 B종류
@@ -33,7 +36,7 @@ CCamera::CCamera()
 	, m_matView{}
 	, m_matProj{}
 	, m_fAspectRatio{ 1.f }
-	, m_fFar{ 10000.f }
+	, m_fFar{ 100000.f }
 	, m_fScale{ 1.f }
 	, m_iLayerMask(0)
 	, m_iCamIdx(0)
@@ -43,6 +46,8 @@ CCamera::CCamera()
 {
 	Vec2 vRenderResolution = CDevice::GetInst()->GetRenderResolution();
 	m_fAspectRatio = vRenderResolution.x / vRenderResolution.y;
+
+	m_LightCS = dynamic_cast<CSLight*>(CResMgr::GetInst()->FindRes<CComputeShader>(L"CSLight").Get());
 
 	m_pObjectRenderBuffer = new CStructuredBuffer;
 	m_pObjectRenderBuffer->Create(sizeof(tObjectRender), 2, SB_TYPE::SRV_ONLY, nullptr, true);
@@ -67,6 +72,11 @@ CCamera::CCamera(const CCamera& rhs)
 CCamera::~CCamera()
 {
 	Safe_Delete(m_pObjectRenderBuffer);
+}
+
+void CCamera::begin()
+{
+	m_LightCS->SetTargetTex(CResMgr::GetInst()->FindRes<CTexture>(L"DiffuseTargetTex"));
 }
 
 void CCamera::finaltick()
@@ -158,6 +168,10 @@ void CCamera::render()
 	for (size_t i = 0; i < vecLight3D.size(); ++i)
 		vecLight3D[i]->render();
 
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
+	m_LightCS->Excute();
+ 	m_LightCS->Clear();
+
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
 
 	// Deferred -> SwapChain 병합
@@ -165,6 +179,10 @@ void CCamera::render()
 	static Ptr<CMesh> pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();
 	pRectMesh->render();
+
+	CMaterial::Clear();
+
+	// HDR
 
 	render_opaque();
 	render_mask();
@@ -378,6 +396,7 @@ void CCamera::SortObject()
 			for (size_t j{ 0 }; j < (size_t)vecGameObject.size(); ++j)
 			{
 				CRenderComponent* RenderCompoent = vecGameObject[j]->GetRenderComponent();
+				CTransform* pTransform = vecGameObject[j]->Transform();
 
 				if (RenderCompoent == nullptr ||
 					RenderCompoent->GetCurMaterial() == nullptr ||
@@ -387,10 +406,39 @@ void CCamera::SortObject()
 					continue;
 				}
 
-				CFrustum* pFrustum = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera()->GetFrustum();
-				if (!pFrustum->CheckFrustum(vecGameObject[j]->Transform()->GetWorldPos()))
-					continue;
+				//CFrustum* pFrustum = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera()->GetFrustum();
+				//
+				//Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
+				//
+				//float radius = vScale.x > vScale.y ? vScale.x : vScale.y > vScale.z ? vScale.y : vScale.z;
+				//radius *= 0.5f;
+				//if (!pFrustum->CheckFrustumRadius(vecGameObject[j]->Transform()->GetWorldPos(), radius))
+				//{
+				//	DebugDrawSphere(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
+				//	continue;
+				//}
 
+				//DebugDrawSphere(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
+				frustum_t frus;
+				Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
+				Vec3 vRot = vecGameObject[j]->Transform()->GetRelativeRotation();
+				aabb_t arrayAABB{ {-vScale.x, -vScale.y, -vScale.z},{vScale.x, vScale.y, vScale.z} };
+				// Calculate Frustum
+				CCamera* pCamera = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera();
+				Matrix matVP = pCamera->GetViewMat() * pCamera->GetProjMat();
+				Matrix matWorld = pCamera->GetOwner()->Transform()->GetWorldMat();
+				calculate_frustum(frus, matVP, matWorld);
+
+				//평면 뒤에 있으면 false
+				bool didHit = aabb_to_frustum(arrayAABB, frus);
+
+				if (!didHit)
+				{
+					DebugDrawCube(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
+					continue;
+				}
+
+				DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
 				Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial()->GetShader();
 
 				SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();

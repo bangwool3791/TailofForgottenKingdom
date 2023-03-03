@@ -202,8 +202,8 @@ PS_OUT PS_SpotLightShader(VS_OUT _in)
     output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
     output.vSpecular = lightcolor.vSpec * SpecCoef;
 
-    output.vDiffuse.a = 1.f;
-    output.vSpecular.a = 1.f;
+    //output.vDiffuse.a = 1.f;
+    //output.vSpecular.a = 1.f;
 
     return output;
 }

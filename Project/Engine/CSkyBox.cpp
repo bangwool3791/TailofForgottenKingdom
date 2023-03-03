@@ -42,6 +42,8 @@ void CSkyBox::render()
 	GetCurMaterial()->UpdateData();
 
 	GetMesh()->render();
+
+	CMaterial::Clear();
 }
 
 void CSkyBox::SetType(SKYBOX_TYPE _type)

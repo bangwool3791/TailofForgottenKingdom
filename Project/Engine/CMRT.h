@@ -20,6 +20,7 @@ public :
 	void Create(Ptr<CTexture>(&_arrTex)[8], Vec4(&arrClear)[8], Ptr<CTexture> _pDesTex);
 	void Clear();
 	void OMSet();
+	void OMClear();
 
 	CLONE_DUMMY(CMRT);
 

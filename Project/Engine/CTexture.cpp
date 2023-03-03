@@ -61,7 +61,7 @@ int CTexture::Load(const wstring& _strFilePath)
 void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag)
 {
     m_Desc.BindFlags = _iBindFlag;
-    
+ 
     m_Desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
     m_Desc.CPUAccessFlags = 0;
 
@@ -215,9 +215,18 @@ void CTexture::Clear(UINT _iRegisterNum)
     CONTEXT->PSSetShaderResources(_iRegisterNum, 1, &pSRV);
 }
 
-void CTexture::Clear_CS(UINT _iRegisterNum)
+
+void CTexture::Clear_CS(UINT _iRegisterNum, bool _bShaderRes)
 {
-    ID3D11UnorderedAccessView* pUAV = nullptr;
-    UINT i = -1;
-    CONTEXT->CSSetUnorderedAccessViews(_iRegisterNum, 1, &pUAV, &i);
+    if (_bShaderRes)
+    {
+        ID3D11ShaderResourceView* pSRV = nullptr;
+        CONTEXT->CSSetShaderResources(_iRegisterNum, 1, &pSRV);
+    }
+    else
+    {
+        ID3D11UnorderedAccessView* pUAV = nullptr;
+        UINT i = -1;
+        CONTEXT->CSSetUnorderedAccessViews(_iRegisterNum, 1, &pUAV, &i);
+    }
 }

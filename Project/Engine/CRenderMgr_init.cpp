@@ -25,6 +25,10 @@ void CRenderMgr::init()
 	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"SpecularTargetTex"));
 	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"DecalTargetTex"));
 
+	float a = 1.f;
+	pMtrl->SetScalarParam(FLOAT_1, &a);
+	pMtrl->SetScalarParam(FLOAT_2, &a);
+
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DirLightMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
 	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"NormalTargetTex"));
@@ -116,7 +120,7 @@ void CRenderMgr::CreateMRT()
 		{
 			CResMgr::GetInst()->CreateTexture(L"DiffuseTargetTex"
 											, vRenderResolution.x, vRenderResolution.y
-											, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+											, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS),
 			CResMgr::GetInst()->CreateTexture(L"SpecularTargetTex"
 											, vRenderResolution.x, vRenderResolution.y
 											, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),

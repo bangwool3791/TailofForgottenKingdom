@@ -24,6 +24,6 @@ void CPaintShader::UpdateData()
 
 void CPaintShader::Clear()
 {
-	CTexture::Clear_CS(0);
+	CTexture::Clear_CS(0, false);
 }
 

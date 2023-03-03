@@ -3,8 +3,7 @@
 #include "pch.h"
 #include "debug_renderer.h"
 
-namespace end
-{
+
 	struct sphere_t { Vec3 center; float radius; }; //Alterative: using sphere_t = float4;
 
 	struct aabb_t { Vec3 min; Vec3 max; }; //Alternative: aabb_t { Vec3 min; Vec3 max; };
@@ -203,5 +202,3 @@ namespace end
 
 		return true;
 	}
-
-}

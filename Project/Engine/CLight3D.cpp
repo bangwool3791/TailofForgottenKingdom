@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "CLight3D.h"
 
+#include "CDevice.h"
 #include "CRenderMgr.h"
 #include "CTransform.h"
-
+#include "CStructuredBuffer.h"
+#include "CSLight.h"
 
 CLight3D::CLight3D()
 	: CComponent(COMPONENT_TYPE::LIGHT3D)
@@ -43,12 +45,13 @@ void CLight3D::render()
 	Transform()->UpdateData();
 
 	m_pLightMtrl->SetScalarParam(INT_0, &m_iLightIdx);
-
 	// 재질 바인딩(쉐이더, 상수, 텍스쳐(타겟) 등등)
 	m_pLightMtrl->UpdateData();
 
 	// 렌더링
 	m_pVolumeMesh->render();
+
+	CMaterial::Clear();
 }
 
 void CLight3D::SetLightType(LIGHT_TYPE _eType)

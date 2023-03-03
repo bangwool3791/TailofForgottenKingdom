@@ -120,8 +120,7 @@ void CCollisionMgr::CollisionBtwCollider(CCollider3D* _pLeft, CCollider3D* _pRig
 		}
 	}
 }
-#include "CMesh.h"
-#include "CRenderComponent.h"
+
 bool CCollisionMgr::IsCollision(CCollider3D* _pLeft, CCollider3D* _pRight)
 {
 	// 0 --- 1
@@ -129,46 +128,27 @@ bool CCollisionMgr::IsCollision(CCollider3D* _pLeft, CCollider3D* _pRight)
 	// 3 --- 2	
 
 //#ifdef true
-	//정점을 읽어와서 해결
-	Ptr<CMesh> leftMesh = _pLeft->GetOwner()->GetRenderComponent()->GetMesh();
-	Ptr<CMesh> rightMesh = _pRight->GetOwner()->GetRenderComponent()->GetMesh();
-
-	size_t size{};
-
-	Vtx* leftVtx = leftMesh->GetVertices(size);
-	Vtx* rightVtx = rightMesh->GetVertices(size);
-
-	static const Vec3 arrLocalLeftPos[8]
+	static const Vec3 arrLocalPos[4]
+		=
 	{
-		leftVtx[20].vPos,
-		leftVtx[21].vPos,
-		leftVtx[22].vPos,
-		leftVtx[23].vPos,
-
-		leftVtx[16].vPos,
-		leftVtx[17].vPos,
-		leftVtx[18].vPos,
-		leftVtx[19].vPos,
+		Vec3(-0.5f, 0.5f, 0.f),
+		Vec3(0.5f, 0.5f, 0.f),
+		Vec3(0.5f, -0.5f, 0.f),
+		Vec3(-0.5f, -0.5f, 0.f)
 	};
 
-	static const Vec3 arrLocalRightPos[8]
-	{
-		rightVtx[20].vPos,
-		rightVtx[21].vPos,
-		rightVtx[22].vPos,
-		rightVtx[23].vPos,
 
-		rightVtx[16].vPos,
-		rightVtx[17].vPos,
-		rightVtx[18].vPos,
-		rightVtx[19].vPos,
-	};
+	// 분리축 구하기
+	Vec3 vAxis[4] = {};
 
-	Vec3 vAxis[6]{};
+	const Matrix& matLeft = _pLeft->GetWorldMat();
+	const Matrix& matRight = _pRight->GetWorldMat();
 
-	const Matrix& matLeft	= _pLeft->GetWorldMat();
-	const Matrix& matRight	= _pRight->GetWorldMat();
-
+	// 분리축 벡터 == 투영벡터
+	vAxis[0] = XMVector3TransformCoord(arrLocalPos[1], matLeft) - XMVector3TransformCoord(arrLocalPos[0], matLeft);
+	vAxis[1] = XMVector3TransformCoord(arrLocalPos[3], matLeft) - XMVector3TransformCoord(arrLocalPos[0], matLeft);
+	vAxis[2] = XMVector3TransformCoord(arrLocalPos[1], matRight) - XMVector3TransformCoord(arrLocalPos[0], matRight);
+	vAxis[3] = XMVector3TransformCoord(arrLocalPos[3], matRight) - XMVector3TransformCoord(arrLocalPos[0], matRight);
 	/*
 	* 마우스 드래그의 경우 월드 행렬 스케일이 없지만, 초기 위치가 플레이어 위치와 동일하여
 	* 충돌 판정이라고 코드가 판단 하므로 예외 처리 조건 추가
@@ -184,14 +164,6 @@ bool CCollisionMgr::IsCollision(CCollider3D* _pLeft, CCollider3D* _pRight)
 
 	if (!vecRight.Length() && !vecUp.Length())
 		return false;
-
-	vAxis[0] = XMVector3TransformCoord(arrLocalLeftPos[1], matLeft) - XMVector3TransformCoord(arrLocalLeftPos[0], matLeft);
-	vAxis[1] = XMVector3TransformCoord(arrLocalLeftPos[3], matLeft) - XMVector3TransformCoord(arrLocalLeftPos[0], matLeft);
-	vAxis[2] = XMVector3TransformCoord(arrLocalLeftPos[4], matLeft) - XMVector3TransformCoord(arrLocalLeftPos[0], matLeft);
-
-	vAxis[3] = XMVector3TransformCoord(arrLocalRightPos[1], matRight) - XMVector3TransformCoord(arrLocalRightPos[0], matRight);
-	vAxis[4] = XMVector3TransformCoord(arrLocalRightPos[3], matRight) - XMVector3TransformCoord(arrLocalRightPos[0], matRight);
-	vAxis[5] = XMVector3TransformCoord(arrLocalRightPos[4], matRight) - XMVector3TransformCoord(arrLocalRightPos[0], matRight);
 
 	Vec3 vC = _pLeft->GetFinalPos() - _pRight->GetFinalPos() ;
 	Vec3 vCenterDir = Vec3{ vC.x, vC.y, vC.z };

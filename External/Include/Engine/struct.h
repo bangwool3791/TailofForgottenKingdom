@@ -166,6 +166,14 @@ struct tParticleShare
 	UINT iPadding[3];
 };
 
+struct tLightShare
+{
+	UINT32 R;
+	UINT32 G;
+	UINT32 B;
+	UINT32 A;
+};
+
 struct tWoodWall
 {
 	bool bChecked = false;

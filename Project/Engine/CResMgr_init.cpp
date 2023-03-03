@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CResMgr.h"
-
+#include "CDevice.h"
 #include "CTransform.h"
 
 #include "CTexture.h"
@@ -712,6 +712,13 @@ void CResMgr::CreateDefaultTexture()
 
 	CreateTexture(L"UAVTex", 1024, 1024, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE |
 		D3D11_BIND_UNORDERED_ACCESS);
+
+	Vec2 vRenderResolution = CDevice::GetInst()->GetRenderResolution();
+
+
+	CResMgr::GetInst()->CreateTexture(L"DiffuseTargetTexCopy"
+		, vRenderResolution.x, vRenderResolution.y
+		, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_UNORDERED_ACCESS);
 }
 
 void CResMgr::CreateDefaultSound()
@@ -942,7 +949,8 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
 
 	pShader->SetDomain(SHADER_DOMAIN::NONE);
-
+	pShader->AddScalarParam(FLOAT_1, "Middle Grey");
+	pShader->AddScalarParam(FLOAT_2, "Lum white sqr");
 	AddRes<CGraphicsShader>(L"MergeShader", pShader);
 
 	// Decal Shader

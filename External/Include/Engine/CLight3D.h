@@ -3,6 +3,10 @@
 
 #include "Ptr.h"
 #include "CMesh.h"
+#include "CSLight.h"
+
+class CStructuredBuffer;
+
 
 class CLight3D :
     public CComponent
@@ -13,7 +17,6 @@ private:
     Ptr<CMaterial>  m_pLightMtrl;
 
     int             m_iLightIdx;    // 광원 버퍼에서의 인덱스
-
 public:
     const tLightInfo& GetLightInfo() { return m_Info; }
 
