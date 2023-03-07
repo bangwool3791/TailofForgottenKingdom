@@ -213,6 +213,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CFontMgr.h" />
     <ClInclude Include="CFrustum.h" />
     <ClInclude Include="CJpsMgr.h" />
+    <ClInclude Include="CLandScape.h" />
     <ClInclude Include="CLight3D.h" />
     <ClInclude Include="CMRT.h" />
     <ClInclude Include="CCollider.h" />
@@ -304,6 +305,8 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CFontMgr.cpp" />
     <ClCompile Include="CFrustum.cpp" />
     <ClCompile Include="CJpsMgr.cpp" />
+    <ClCompile Include="CLandScape.cpp" />
+    <ClCompile Include="CLandScape_init.cpp" />
     <ClCompile Include="CLight3D.cpp" />
     <ClCompile Include="CMRT.cpp" />
     <ClCompile Include="CParticleExplosion.cpp" />
@@ -381,6 +384,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="fog.fx" />
     <FxCompile Include="func.fx" />
     <FxCompile Include="blur.fx" />
+    <FxCompile Include="landscape.fx" />
     <FxCompile Include="light.fx" />
     <FxCompile Include="matrix.fx" />
     <FxCompile Include="merge.fx" />
@@ -401,6 +405,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="std3d.fx" />
     <FxCompile Include="std3d_deffered.fx" />
     <FxCompile Include="struct.fx" />
+    <FxCompile Include="tess.fx" />
     <FxCompile Include="test.fx" />
     <FxCompile Include="tile.fx" />
     <FxCompile Include="terrain.fx" />

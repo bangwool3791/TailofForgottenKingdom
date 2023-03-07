@@ -51,6 +51,15 @@ void CEventMgr::tick()
 			m_bLevelChanged = true;
 		}
 			break;
+		case EVENT_TYPE::ADD_RES:
+		{
+			// wParam : RES_TYPE, lParam : Resource Adress	
+			CRes* pRes = (CRes*)m_vecEvent[i].lParam;
+			wstring strKey = pRes->GetKey();
+			CResMgr::GetInst()->AddRes(strKey, (RES_TYPE)m_vecEvent[i].wParam, (CRes*)m_vecEvent[i].lParam);
+			pRes->Release();
+		}
+		break;
 		case EVENT_TYPE::DELETE_OBJECT:
 		{
 			static queue<CGameObject*> que;
@@ -124,10 +133,12 @@ void CEventMgr::tick()
 		case EVENT_TYPE::DELETE_RES:
 		{
 			// wParam : RES_TYPE, lParam : Resource Adress
+			CRes* pRes = (CRes*)m_vecEvent[i].lParam;
 			if (!CResMgr::GetInst()->DeleteRes((RES_TYPE)m_vecEvent[i].wParam, ((CRes*)m_vecEvent[i].lParam)->GetKey()))
 			{
 				MessageBox(nullptr, L"리소스 삭제 실패", L"에러", MB_OK);
 			}
+			pRes->Release();
 			break;
 		}
 		}

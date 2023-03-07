@@ -262,6 +262,7 @@ enum class EVENT_TYPE
 	CREATE_OBJECT,  // wParam : Object Adress, lParam : Layer Index
 	DELETE_OBJECT,	// wParam : Object Adress,
 	ADD_CHILD,		// wParam : Child Adress, lParam : Parent Adress
+	ADD_RES,
 	EDIT_RES,
 	DELETE_RES,		// wParam : RES_TYPE, lParam : Resource Adress
 	CHANGE_LEVEL,

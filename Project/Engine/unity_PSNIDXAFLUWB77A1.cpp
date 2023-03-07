@@ -65,3 +65,6 @@
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\JPSCollision.cpp"
 
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\JPSPath.cpp"
+

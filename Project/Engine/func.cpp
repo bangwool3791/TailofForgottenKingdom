@@ -1,8 +1,11 @@
 #include "pch.h"
+#include "func.h"
 
+#include "CRes.h"
 #include "CGameObject.h"
 #include "CTransform.h"
 #include "CEventMgr.h"
+#include "CRes.h"
 #include "CRenderMgr.h"
 #include "CKeyMgr.h"
 #include "CDevice.h"
@@ -10,6 +13,28 @@
 int g_ScrollUp;
 int g_ScrollDown;
 int g_ScrollClick;
+
+void AddRes(CRes* _Res, RES_TYPE _Type)
+{
+	_Res->AddRef();
+
+	tEvent evn = {};
+	evn.eType = EVENT_TYPE::ADD_RES;
+	evn.wParam = (DWORD_PTR)_Type;
+	evn.lParam = (DWORD_PTR)_Res;
+	CEventMgr::GetInst()->AddEvent(evn);
+}
+
+void DeleteRes(CRes* _Res, RES_TYPE _Type)
+{
+	_Res->AddRef();
+
+	tEvent evn = {};
+	evn.eType = EVENT_TYPE::DELETE_RES;
+	evn.wParam = (DWORD_PTR)_Type;
+	evn.lParam = (DWORD_PTR)_Res;
+	CEventMgr::GetInst()->AddEvent(evn);
+}
 
 wstring GetRelativePath(const wstring& _strBase, const wstring& _strPath)
 {
@@ -183,14 +208,3 @@ const Ray& GetRay()
 	ray.direction = raydirection;
 	return ray;
 }
-
-int g_iColony;
-int g_iWorker;
-int g_iFood;
-int g_iGold;
-int g_iWood;
-int g_iIron;
-
-int g_iGoldInc;
-int g_iWoodInc;
-int g_iIronInc;

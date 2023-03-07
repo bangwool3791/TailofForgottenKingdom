@@ -52,11 +52,11 @@ float4 PS_Blurx(VS_OUT _in) : SV_Target
 
 	float2 t = _in.vPosition.xy / g_vRenderResolution;
 
-	float4 vViewPos = g_tex_1.Sample(g_sam_0, t);
-
-	//위치 정보가 없는 픽셀 discard
-	if (1.f != vViewPos.a)
-		discard;
+	//float4 vViewPos = g_tex_1.Sample(g_sam_0, t);
+	//
+	////위치 정보가 없는 픽셀 discard
+	//if (1.f != vViewPos.a)
+	//	discard;
 
 	float2 uv = 0;
 	
@@ -77,11 +77,11 @@ float4 PS_Blury(VS_OUT _in) : SV_Target
 
 	float2 t = _in.vPosition.xy / g_vRenderResolution;
 
-	float4 vViewPos = g_tex_1.Sample(g_sam_0, t);
-
-	//위치 정보가 없는 픽셀 discard
-	if (1.f != vViewPos.a)
-		discard;
+	//float4 vViewPos = g_tex_1.Sample(g_sam_0, t);
+	//
+	////위치 정보가 없는 픽셀 discard
+	//if (1.f != vViewPos.a)
+	//	discard;
 
 	float2 uv = 0;
 

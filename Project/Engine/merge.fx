@@ -65,7 +65,7 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float2 vUV = _in.vPosition.xy / g_vRenderResolution;
 
 	//float4 vViewPos = g_tex_1.Sample(g_sam_0, vUV);
-
+	//
 	////위치 정보가 없는 픽셀 discard
 	//if (1.f != vViewPos.a)
 	//	discard;

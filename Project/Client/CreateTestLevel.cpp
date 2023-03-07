@@ -223,7 +223,7 @@ void CreateTestLelvel()
 
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
 	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DMtrl"));
-	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"BlurBloomTargetTex"));
+	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"BlurTargetTex"));
 	pLevel->AddGameObject(pObject, 1);
 
 	pObject = new CGameObject;
@@ -253,6 +253,20 @@ void CreateTestLelvel()
 	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
 	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
 	pLevel->AddGameObject(pSkyBox, 1);
+
+	// LandScape Ãß°¡
+	CGameObject* pLandScape = new CGameObject;
+	pLandScape->SetName(L"LandScape");
+
+	pLandScape->AddComponent(new CTransform);
+	pLandScape->AddComponent(new CLandScape);
+
+	pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
+	pLandScape->LandScape()->SetFaceCount(16, 16);
+	pLandScape->LandScape()->SetFrustumCulling(false);
+
+	pLevel->AddGameObject(pLandScape, 1);
+
 
 	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);
 	CCollisionMgr::GetInst()->CollisionLayerCheck(1, 1);

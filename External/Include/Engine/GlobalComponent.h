@@ -12,6 +12,7 @@
 #include "CTileMap.h"
 #include "CDecal.h"
 #include "CSkyBox.h"
+#include "CLandScape.h"
 /*
 * Particle
 */

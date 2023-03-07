@@ -23,7 +23,7 @@ private:
 	Ptr<CMaterial>			m_pSharedMtrl;
 	Ptr<CMaterial>			m_pDynamicMtrl;
 	Ptr<CMaterial>			m_pCurMtrl;
-
+	bool                    m_bUseFrustumCulling;
 public:
 	void SetMesh(Ptr<CMesh> _pMesh) { m_pMesh = _pMesh; }
 	Ptr<CMesh> GetMesh() { return m_pMesh; }
@@ -40,6 +40,9 @@ public:
  		return m_pCurMtrl; 
 	}
 	Ptr<CMaterial> GetDynamicMaterial();
+
+	void SetFrustumCulling(bool _Use) { m_bUseFrustumCulling = _Use; }
+	bool IsUseFrustumCulling() { return m_bUseFrustumCulling; }
 public:
 	virtual CRenderComponent* Clone() = 0;
 protected:

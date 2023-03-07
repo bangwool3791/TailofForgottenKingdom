@@ -94,3 +94,30 @@ void CResMgr::CreateConeMesh(float radius, float height, size_t tessellation) no
     pMesh->Create(vertices.data(), vertices.size(), indices.data(), indices.size());
     AddRes<CMesh>(L"ConeMesh", pMesh);
 }
+
+/*
+* 일반함수는 헤더가 아닌 cpp 정의.
+* LNK 2005 에러 발생
+*/
+void CResMgr::AddRes(const wstring& _strKey, RES_TYPE _type, CRes* _pRes)
+{
+    Ptr<CRes> pRes = FindRes(_strKey, _type);
+
+    assert(!pRes.Get());
+
+    _pRes->SetKey(_strKey);
+    m_arrRes[(UINT)_type].insert(make_pair(_strKey, _pRes));
+    m_bChanged = true;
+}
+
+Ptr<CRes> CResMgr::FindRes(const wstring& _strKey, RES_TYPE _type)
+{
+    map<wstring, Ptr<CRes>>::iterator iter = m_arrRes[(UINT)_type].find(_strKey);
+
+    if (iter == m_arrRes[(UINT)_type].end())
+    {
+        return nullptr;
+    }
+
+    return iter->second;
+}

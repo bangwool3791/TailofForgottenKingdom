@@ -285,6 +285,8 @@ void ContentUI::ReloadContent()
 					evn.eType = EVENT_TYPE::DELETE_RES;
 					evn.wParam = i;
 					evn.lParam = (DWORD_PTR)(iter->second.Get());
+					
+					iter->second->AddRef();
 
 					CEventMgr::GetInst()->AddEvent(evn);
 

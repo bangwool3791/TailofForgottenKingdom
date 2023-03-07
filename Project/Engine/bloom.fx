@@ -48,10 +48,10 @@ PS_OUT PS_Bloom(VS_OUT _in) : SV_Target
 
 	float2 vUV = _in.vPosition.xy / g_vRenderResolution;
 
-	float4 vViewPos = g_tex_1.Sample(g_sam_0, vUV);
-
-	if (1.f != vViewPos.a)
-		discard;
+	//float4 vViewPos = g_tex_1.Sample(g_sam_0, vUV);
+	//
+	//if (1.f != vViewPos.a)
+	//	discard;
 
 	float4 blurbloom = g_tex_0.Sample(g_sam_0, vUV);
 

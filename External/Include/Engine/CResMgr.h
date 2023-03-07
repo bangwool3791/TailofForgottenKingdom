@@ -21,14 +21,20 @@ private:
 public:
 	template<typename T>
 	inline void AddRes(const wstring& _strKey, T* _pRes);
+	void AddRes(const wstring& _strKey, RES_TYPE _type, CRes* _pRes);
+
 	bool DeleteRes(RES_TYPE _Type, const wstring& _strKey);
 	void SaveRes(RES_TYPE _Type, const wstring& _strKey);
+
 	template<typename T>
 	inline Ptr<T> Load(const wstring& _strRelativePath);
 	template<typename T>
 	Ptr<T> Load(const wstring& _strKey, const wstring& _strRelativePath);
+
 	template<typename T>
 	Ptr<T> FindRes(const wstring& _strKey);
+	Ptr<CRes> FindRes(const wstring& _strKey, RES_TYPE _type);
+
 	template<typename T>
 	wstring GetNewResName();
 public:

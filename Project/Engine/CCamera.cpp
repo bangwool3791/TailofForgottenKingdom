@@ -191,7 +191,6 @@ void CCamera::render()
 	pRectMesh->render();
 	CMaterial::Clear();
 
-	// HDR -> Blur-> SwapChain º´ÇÕ
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::BLUR)->OMSet();
 	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BlurMtrlX");
 	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
@@ -214,7 +213,7 @@ void CCamera::render()
 
 	render_opaque();
 	render_mask();
-
+	
 	render_transparent();
 	render_postprocess();
 	Sound();

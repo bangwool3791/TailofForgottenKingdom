@@ -202,7 +202,7 @@ void CRenderMgr::CreateMRT()
 				, Vec4(0.f, 0.f, 0.f, 0.f)
 			};
 
-			Ptr<CTexture> pDSTex = nullptr;
+			Ptr<CTexture> pDSTex = CResMgr::GetInst()->FindRes<CTexture>(L"DepthStencilTex");
 
 			m_arrMRT[(UINT)MRT_TYPE::BLUR] = new CMRT;
 			m_arrMRT[(UINT)MRT_TYPE::BLUR]->Create(arrRTTex, arrClear, pDSTex);

@@ -229,6 +229,9 @@
     <Filter Include="Engine\06. Component\02. RenderComponent\FogRender">
       <UniqueIdentifier>{da90f849-8cab-49e8-a321-7436210d9053}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\06. Component\02. RenderComponent\CLandScape">
+      <UniqueIdentifier>{2d06743a-e983-4664-9985-e23baf396135}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -480,6 +483,9 @@
     <ClInclude Include="CCollider.h">
       <Filter>Engine\06. Component\05. Collider</Filter>
     </ClInclude>
+    <ClInclude Include="CLandScape.h">
+      <Filter>Engine\06. Component\02. RenderComponent\CLandScape</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -686,6 +692,12 @@
     <ClCompile Include="CCollider.cpp">
       <Filter>Engine\06. Component\05. Collider</Filter>
     </ClCompile>
+    <ClCompile Include="CLandScape.cpp">
+      <Filter>Engine\06. Component\02. RenderComponent\CLandScape</Filter>
+    </ClCompile>
+    <ClCompile Include="CLandScape_init.cpp">
+      <Filter>Engine\06. Component\02. RenderComponent\CLandScape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="register.fx">
@@ -794,6 +806,12 @@
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
     <FxCompile Include="bloom_update.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="tess.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="landscape.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
   </ItemGroup>

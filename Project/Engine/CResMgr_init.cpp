@@ -99,12 +99,12 @@ void CResMgr::CreateDefaultMesh()
 	*iterVtx = v;
 
 	*iterIdx = 0;
-	*iterIdx = 2;
-	*iterIdx = 3;
-
-	*iterIdx = 0;
 	*iterIdx = 1;
 	*iterIdx = 2;
+
+	*iterIdx = 2;
+	*iterIdx = 3;
+	*iterIdx = 0;
 
 	pMesh = new CMesh(true);
 	pMesh->Create(vecVtx.data(), vecVtx.size(), vecIdx.data(), vecIdx.size());
@@ -1029,6 +1029,27 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::NONE);
 
 	AddRes<CGraphicsShader>(L"BloomUpdateShader", pShader);
+
+	// TessShader
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\tess.fx", "VS_Tess");
+	pShader->CreateHullShader(L"shader\\tess.fx", "HS_Tess");
+	pShader->CreateDomainShader(L"shader\\tess.fx", "DS_Tess");
+	pShader->CreatePixelShader(L"shader\\tess.fx", "PS_Tess");
+
+	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+
+	pShader->SetRSType(RS_TYPE::WIRE_FRAME);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
+
+	pShader->AddScalarParam(INT_0, "Tess Factor");
+	pShader->AddScalarParam(INT_1, "Tess Factor");
+	pShader->AddScalarParam(INT_2, "Tess Factor");
+	pShader->AddScalarParam(INT_3, "Tess Factor");
+
+	AddRes<CGraphicsShader>(L"TessShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1161,6 +1182,10 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BloomUpdateShader"));
 	AddRes<CMaterial>(L"BloomUpdateMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"TessShader"));
+	AddRes<CMaterial>(L"TessMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)

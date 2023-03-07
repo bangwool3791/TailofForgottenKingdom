@@ -43,10 +43,10 @@ float4 PS_BloomUpdate(VS_OUT _in) : SV_Target
 	float4 vOutColor;
 	float2 vUV = _in.vPosition.xy / g_vRenderResolution;
 
-	float4 vViewPos = g_tex_3.Sample(g_sam_0, vUV);
-
-	if (1.f != vViewPos.a)
-		discard;
+	//float4 vViewPos = g_tex_3.Sample(g_sam_0, vUV);
+	//
+	//if (1.f != vViewPos.a)
+	//	discard;
 
 	float4 vHDRColor = g_tex_0.Sample(g_sam_0, vUV);
 	float4 vBloomColor = g_tex_1.Sample(g_sam_2, vUV);

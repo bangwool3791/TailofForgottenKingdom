@@ -54,6 +54,12 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CJpsMgr.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLandScape.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLandScape_init.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLight3D.cpp"
 
 
@@ -61,7 +67,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CParticleExplosion.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CGameObject.cpp"
 
