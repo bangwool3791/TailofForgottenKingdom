@@ -814,5 +814,11 @@
     <FxCompile Include="landscape.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
+    <FxCompile Include="landscape_tri.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="landscapde_quad.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

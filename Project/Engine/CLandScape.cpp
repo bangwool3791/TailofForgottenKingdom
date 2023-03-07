@@ -38,7 +38,7 @@ void CLandScape::render()
 	GetCurMaterial()->SetScalarParam(VEC4_0, Vec4{ pObj->Transform()->GetRelativePos(), 1.f });
 
 	Transform()->UpdateData();
-
+	
 	GetCurMaterial()->UpdateData();
 	GetMesh()->render();
 

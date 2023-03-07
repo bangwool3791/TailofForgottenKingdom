@@ -174,6 +174,7 @@ void CreateTestLelvel()
 	// GameObject 초기화
 	CGameObject* pObject = nullptr;
 
+#ifdef false
 	pObject = new CGameObject;
 	pObject->SetName(L"Sphere");
 
@@ -238,7 +239,7 @@ void CreateTestLelvel()
 	pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
 	pObject->Decal()->SetDefaultLit(true);
 	pLevel->AddGameObject(pObject, 1);
-
+#endif
 
 
 	// SkyBox 추가
@@ -248,7 +249,7 @@ void CreateTestLelvel()
 	pSkyBox->AddComponent(new CTransform);
 	pSkyBox->AddComponent(new CSkyBox);
 
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
+	pSkyBox->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
 	pSkyBox->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
 	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
 	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);

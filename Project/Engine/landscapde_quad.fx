@@ -14,6 +14,8 @@
 struct VS_IN
 {
     float3 vPos : POSITION;
+    float3 vUV : TEXCOORD;
+
     float3 vTangent : TANGENT;
     float3 vNormal : NORMAL;
     float3 vBinormal : BINORMAL;
@@ -22,6 +24,7 @@ struct VS_IN
 struct VS_OUT
 {
     float3 vLocalPos : POSITION;
+    float2 vUV : TEXCOORD;
 };
 
 
@@ -30,6 +33,7 @@ VS_OUT VS_LandScape(VS_IN _in)
     VS_OUT output = (VS_OUT)0.f;
 
     output.vLocalPos = _in.vPos;
+    output.vUV = _in.vUV;
 
     return output;
 }
@@ -56,23 +60,15 @@ PatchTess PatchConstFunc(InputPatch<VS_OUT, 4> _patch, uint _patchId : SV_Primit
     float d = distance(centerW, camW);
 
     const float d0 = 20.f;
-    const float d1 = 3000.f;
+    const float d1 = 1000.f;
 
-    float tess = 64.0f * saturate((d1 - d) / (d1 - d0));
+    float tess = 32.0f * saturate((d1 - d) / (d1 - d0));
 
-    //factor.EdgeFactor[0] = g_int_0 * tess;
-    //factor.EdgeFactor[1] = g_int_0 * tess;
-    //factor.EdgeFactor[2] = g_int_0 * tess;
-    //factor.EdgeFactor[3] = g_int_0 * tess;
-    //factor.InsideFactor[0] = g_int_0 * tess;
-    //factor.InsideFactor[1] = g_int_0 * tess;
-
-   factor.EdgeFactor[0] = g_int_0 * tess;
-   factor.EdgeFactor[1] = g_int_0 * tess;
-   factor.EdgeFactor[2] = g_int_0 * tess;
-   factor.EdgeFactor[3] = g_int_0 * tess;
-   factor.InsideFactor[0] = g_int_0 * tess;
-   factor.InsideFactor[1] = g_int_0 * tess;
+    factor.EdgeFactor[0] = g_int_0 * tess;
+    factor.EdgeFactor[1] = g_int_0 * tess;
+    factor.EdgeFactor[2] = g_int_0 * tess;
+    factor.InsideFactor[0] = g_int_0 * tess;
+    factor.InsideFactor[1] = g_int_0 * tess;
 
     return factor;
 }
@@ -81,6 +77,7 @@ PatchTess PatchConstFunc(InputPatch<VS_OUT, 4> _patch, uint _patchId : SV_Primit
 struct HS_OUT
 {
     float3 vPos : POSITION;
+    float2 vUV : TEXCOORD;
 };
 
 
@@ -89,7 +86,7 @@ struct HS_OUT
 [partitioning("integer")] //partitioning("fractional_odd")]
 [outputtopology("triangle_cw")]
 [patchconstantfunc("PatchConstFunc")]
-[maxtessfactor(64)]
+[maxtessfactor(32)]
 HS_OUT HS_LandScape(InputPatch<VS_OUT, 4> _patch
     , uint _patchId : SV_PrimitiveID
     , uint _vtxId : SV_OutputControlPointID)
@@ -97,6 +94,7 @@ HS_OUT HS_LandScape(InputPatch<VS_OUT, 4> _patch
     HS_OUT output = (HS_OUT)0.f;
 
     output.vPos = _patch[_vtxId].vLocalPos;
+    output.vUV = _patch[_vtxId].vUV;
 
     return output;
 }
@@ -107,6 +105,7 @@ HS_OUT HS_LandScape(InputPatch<VS_OUT, 4> _patch
 struct DS_OUT
 {
     float4 vPosition : SV_Position;
+    float2 vUV : TEXCOORD;
 
     float3 vViewPos : POSITION;
     float3 vViewTangent : TANGENT;
@@ -125,10 +124,16 @@ DS_OUT DS_LandScape(PatchTess _tessFactor
     float3 v2 = lerp(_patch[3].vPos, _patch[2].vPos, 1 - _Ratio.y);
     float3 p = lerp(v1, v2, _Ratio.x);
 
-    //p.y = 0.3f * (p.z * sin(p.x) + p.x * cos(p.z));
-    p.y = HeightMap.SampleLevel(g_sam_0, _Ratio, 0).x;
+    float2 v3 = lerp(_patch[0].vUV, _patch[1].vUV, 1 - _Ratio.y);
+    float2 v4 = lerp(_patch[3].vUV, _patch[2].vUV, 1 - _Ratio.y);
+    float2 vUV = lerp(v3, v4, _Ratio.x);
+
+    float2 FullUV = vUV / float2(FACE_X, FACE_Z);
+
+    p.y = HeightMap.SampleLevel(g_sam_0, FullUV, 0).x;
 
     output.vPosition = mul(float4(p, 1.f), g_matWVP);
+    output.vUV = vUV;
 
     output.vViewPos = mul(float4(p, 1.f), g_matWV);
 

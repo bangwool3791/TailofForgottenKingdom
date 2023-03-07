@@ -384,7 +384,9 @@ call EngineCopy.bat</Command>
     <FxCompile Include="fog.fx" />
     <FxCompile Include="func.fx" />
     <FxCompile Include="blur.fx" />
+    <FxCompile Include="landscapde_quad.fx" />
     <FxCompile Include="landscape.fx" />
+    <FxCompile Include="landscape_tri.fx" />
     <FxCompile Include="light.fx" />
     <FxCompile Include="matrix.fx" />
     <FxCompile Include="merge.fx" />
