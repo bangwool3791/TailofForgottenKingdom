@@ -787,7 +787,13 @@
     <FxCompile Include="fog.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
-    <FxCompile Include="hdr.fx">
+    <FxCompile Include="blur.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="bloom.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="bloom_update.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
   </ItemGroup>

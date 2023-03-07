@@ -132,7 +132,7 @@ void CreateTestLelvel()
 	
 	pDirLight->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 	pDirLight->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
-	pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+	pDirLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
 	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
 	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
 	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
@@ -160,10 +160,10 @@ void CreateTestLelvel()
 	pSpotLight->AddComponent(new CTransform);
 	pSpotLight->AddComponent(new CLight3D);
 
-	float r = 200.f;
+	float r = 500.f;
 	pSpotLight->Transform()->SetRelativePos(0.f, -100.f, 400.f);
 	pSpotLight->Transform()->SetRelativeScale(r * sinf(XM_PI * 22.5f / 180.f) * 2.f, r * cosf(XM_PI * 22.5f / 180.f), r * sinf(XM_PI * 22.5f / 180.f) * 2.f);
-	pSpotLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+	pSpotLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
 	pSpotLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
 	pSpotLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
 	pSpotLight->Light3D()->SetRadius(r);
@@ -223,7 +223,7 @@ void CreateTestLelvel()
 
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
 	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DMtrl"));
-	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"DiffuseTargetTex"));
+	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"BlurBloomTargetTex"));
 	pLevel->AddGameObject(pObject, 1);
 
 	pObject = new CGameObject;

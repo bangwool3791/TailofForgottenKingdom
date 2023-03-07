@@ -72,6 +72,8 @@ void ParamUI::Param_Vec4(const string& _ParamName, Vec4* _pInOut)
 	ImGui::Text(_ParamName.c_str());
 	ImGui::SameLine();
 
+	ImGui::PushItemWidth(200.f);
+
 	if (ImGui::DragFloat4(szName, *_pInOut, 0.f, 0.f, 1.f, "%6.3f"))
 	{
 		if (ImGui::IsMouseReleased(ImGuiMouseButton_::ImGuiMouseButton_Left))
@@ -79,6 +81,7 @@ void ParamUI::Param_Vec4(const string& _ParamName, Vec4* _pInOut)
 			UI::ResetFocus();
 		}
 	}
+	//ImGui::PushItemWidth(200.f);
 	//if (ImGui::InputFloat4(szName, *_pInOut, "%.3f", ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue))
 	//{
 	//	UI::ResetFocus();

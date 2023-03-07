@@ -221,7 +221,11 @@ int CDevice::CreateSampler()
 	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::POINT].GetAddressOf());
 
-
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.Filter = D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
+	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
 	// 샘플러 바인딩
 	CONTEXT->VSSetSamplers((UINT)SAMPLER_TYPE::ANISOTROPIC, 1, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());
 	CONTEXT->HSSetSamplers((UINT)SAMPLER_TYPE::ANISOTROPIC, 1, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());
@@ -236,6 +240,13 @@ int CDevice::CreateSampler()
 	CONTEXT->GSSetSamplers((UINT)SAMPLER_TYPE::POINT, 1, m_arrSampler[(UINT)SAMPLER_TYPE::POINT].GetAddressOf());
 	CONTEXT->PSSetSamplers((UINT)SAMPLER_TYPE::POINT, 1, m_arrSampler[(UINT)SAMPLER_TYPE::POINT].GetAddressOf());
 	CONTEXT->CSSetSamplers((UINT)SAMPLER_TYPE::POINT, 1, m_arrSampler[(UINT)SAMPLER_TYPE::POINT].GetAddressOf());
+
+	CONTEXT->VSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
+	CONTEXT->HSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
+	CONTEXT->DSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
+	CONTEXT->GSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
+	CONTEXT->PSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
+	CONTEXT->CSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
 
 	return hr;
 }

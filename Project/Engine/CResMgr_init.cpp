@@ -965,7 +965,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 
 	AddRes<CGraphicsShader>(L"DecalShader", pShader);
 
-	// Decal Shader
+	// Decal Defferd Shader
 	pShader = new CGraphicsShader;
 	pShader->CreateVertexShader(L"shader\\decal.fx", "VS_Decal_Defferd");
 	pShader->CreatePixelShader(L"shader\\decal.fx", "PS_Decal_Defferd");
@@ -992,6 +992,43 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
 
 	AddRes<CGraphicsShader>(L"SkyBoxShader", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\blur.fx", "VS_Blur");
+	pShader->CreatePixelShader(L"shader\\blur.fx", "PS_Blurx");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::NONE);
+
+	AddRes<CGraphicsShader>(L"BlurShaderX", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\blur.fx", "VS_Blur");
+	pShader->CreatePixelShader(L"shader\\blur.fx", "PS_Blury");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::NONE);
+
+	AddRes<CGraphicsShader>(L"BlurShaderY", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\bloom.fx", "VS_Bloom");
+	pShader->CreatePixelShader(L"shader\\bloom.fx", "PS_Bloom");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::NONE);
+	pShader->AddScalarParam(VEC4_0, "Bloom White");
+	pShader->AddScalarParam(FLOAT_0, "Bloom Cos");
+	AddRes<CGraphicsShader>(L"BloomShader", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\bloom_update.fx", "VS_BloomUpdate");
+	pShader->CreatePixelShader(L"shader\\bloom_update.fx", "PS_BloomUpdate");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::NONE);
+
+	AddRes<CGraphicsShader>(L"BloomUpdateShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1107,6 +1144,23 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"SkyBoxShader"));
 	AddRes<CMaterial>(L"SkyBoxMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BlurShaderX"));
+	AddRes<CMaterial>(L"BlurMtrlX", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BlurShaderY"));
+	AddRes<CMaterial>(L"BlurMtrlY", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BloomShader"));
+	AddRes<CMaterial>(L"BloomMtrl", pMaterial);
+
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BloomUpdateShader"));
+	AddRes<CMaterial>(L"BloomUpdateMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)

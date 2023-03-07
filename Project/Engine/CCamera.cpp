@@ -172,17 +172,45 @@ void CCamera::render()
 	m_LightCS->Excute();
  	m_LightCS->Clear();
 
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HDR)->OMSet();
+	//Defferd-> HDR
 
-	// Deferred -> SwapChain 병합
-	static Ptr<CMaterial> pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
-	static Ptr<CMesh> pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	static Ptr<CMaterial> pMergeMtrl;
+	static Ptr<CMesh> pRectMesh;
+
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();
 	pRectMesh->render();
-
 	CMaterial::Clear();
 
-	// HDR
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::BLOOM)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BloomMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+
+	// HDR -> Blur-> SwapChain 병합
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::BLUR)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BlurMtrlX");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BlurMtrlY");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BloomUpdateMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
 
 	render_opaque();
 	render_mask();

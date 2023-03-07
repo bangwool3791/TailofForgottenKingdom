@@ -68,6 +68,7 @@ enum class SAMPLER_TYPE
 {
 	ANISOTROPIC, // �̹漺
 	POINT,
+	BLUR,
 
 	END,
 };
@@ -385,6 +386,9 @@ enum class MRT_TYPE
 	DEFERRED,
 	DECAL,
 	LIGHT,
+	HDR,
+	BLUR,
+	BLOOM,
 	SHADOW,
 	END,
 };

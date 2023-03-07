@@ -49,6 +49,32 @@ void CRenderMgr::init()
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DeferredDecalMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
+
+	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BlurMtrlX");
+	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"BlurBloomTargetTex"));
+	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
+	a = 1600.f;
+	pMtrl->SetScalarParam(FLOAT_0, &a);
+
+	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BlurMtrlY");
+	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"BlurBloomTargetTex"));
+	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
+	a = 900.f;
+	pMtrl->SetScalarParam(FLOAT_0, &a);
+
+	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BloomMtrl");
+	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"HdrTargetTex"));
+	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
+	Vec4 vec{0.5f, 0.5f, 0.5f, 0.f};
+	pMtrl->SetScalarParam(VEC4_0, &vec);
+	float fCos = 0.99f;
+	pMtrl->SetScalarParam(FLOAT_0, &fCos);
+
+	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"BloomUpdateMtrl");
+	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"HdrTargetTex"));
+	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"BlurTargetTex"));
+	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"BloomTargetTex"));
+	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
 }
 
 void CRenderMgr::CreateMRT()
@@ -157,6 +183,66 @@ void CRenderMgr::CreateMRT()
 
 			m_arrMRT[(UINT)MRT_TYPE::DECAL] = new CMRT;
 			m_arrMRT[(UINT)MRT_TYPE::DECAL]->Create(arrRTTex, arrClear, pDSTex);
+		}
+
+		// =========
+		// Blur MRT
+		// =========
+		{
+			Ptr<CTexture> arrRTTex[8] =
+			{
+				CResMgr::GetInst()->CreateTexture(L"BlurTargetTex"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+			};
+
+			Vec4 arrClear[8] = {
+				  Vec4(0.f, 0.f, 0.f, 0.f)
+				, Vec4(0.f, 0.f, 0.f, 0.f)
+			};
+
+			Ptr<CTexture> pDSTex = nullptr;
+
+			m_arrMRT[(UINT)MRT_TYPE::BLUR] = new CMRT;
+			m_arrMRT[(UINT)MRT_TYPE::BLUR]->Create(arrRTTex, arrClear, pDSTex);
+		}
+
+		// =========
+		// Bloom MRT
+		// =========
+		{
+			Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
+
+			Ptr<CTexture> arrRTTex[8] =
+			{
+				CResMgr::GetInst()->CreateTexture(L"BlurBloomTargetTex"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			};
+
+			Ptr<CTexture> pDSTex = nullptr;
+			m_arrMRT[(UINT)MRT_TYPE::BLOOM] = new CMRT;
+			m_arrMRT[(UINT)MRT_TYPE::BLOOM]->Create(arrRTTex, arrClear, pDSTex);
+		}
+
+		// =========
+		// HDR MRT
+		// =========
+		{
+			Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
+
+			Ptr<CTexture> arrRTTex[8] =
+			{
+				CResMgr::GetInst()->CreateTexture(L"HdrTargetTex"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+			};
+
+			Ptr<CTexture> pDSTex = nullptr;
+			m_arrMRT[(UINT)MRT_TYPE::HDR] = new CMRT;
+			m_arrMRT[(UINT)MRT_TYPE::HDR]->Create(arrRTTex, arrClear, pDSTex);
 		}
 	}
 }

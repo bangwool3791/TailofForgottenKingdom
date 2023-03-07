@@ -365,6 +365,8 @@ call EngineCopy.bat</Command>
     <ClCompile Include="tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="bloom.fx" />
+    <FxCompile Include="bloom_update.fx" />
     <FxCompile Include="bordermap.fx" />
     <FxCompile Include="building.fx" />
     <FxCompile Include="compute.fx" />
@@ -378,7 +380,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="editor.fx" />
     <FxCompile Include="fog.fx" />
     <FxCompile Include="func.fx" />
-    <FxCompile Include="hdr.fx" />
+    <FxCompile Include="blur.fx" />
     <FxCompile Include="light.fx" />
     <FxCompile Include="matrix.fx" />
     <FxCompile Include="merge.fx" />
