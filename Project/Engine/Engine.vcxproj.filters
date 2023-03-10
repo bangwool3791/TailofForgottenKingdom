@@ -232,6 +232,21 @@
     <Filter Include="Engine\06. Component\02. RenderComponent\CLandScape">
       <UniqueIdentifier>{2d06743a-e983-4664-9985-e23baf396135}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\12. Physics">
+      <UniqueIdentifier>{4aed2854-e1fa-45dc-8d83-32aec9a7dc26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\01. core">
+      <UniqueIdentifier>{7f107b05-02e2-480a-a9b6-293e2e81fcc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\02. random">
+      <UniqueIdentifier>{ca9fb99c-fbf6-439c-913f-7b977380ea96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\03. particle">
+      <UniqueIdentifier>{2221a400-deea-4c58-9b80-8d4125b44764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\04. rigid body">
+      <UniqueIdentifier>{b9e84cfe-7029-4ca3-bfd5-cc52256cbcc2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -486,6 +501,21 @@
     <ClInclude Include="CLandScape.h">
       <Filter>Engine\06. Component\02. RenderComponent\CLandScape</Filter>
     </ClInclude>
+    <ClInclude Include="precision.h">
+      <Filter>Engine\12. Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="core.h">
+      <Filter>Engine\12. Physics\01. core</Filter>
+    </ClInclude>
+    <ClInclude Include="random.h">
+      <Filter>Engine\12. Physics\02. random</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>Engine\12. Physics\03. particle</Filter>
+    </ClInclude>
+    <ClInclude Include="body.h">
+      <Filter>Engine\12. Physics\04. rigid body</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -697,6 +727,18 @@
     </ClCompile>
     <ClCompile Include="CLandScape_init.cpp">
       <Filter>Engine\06. Component\02. RenderComponent\CLandScape</Filter>
+    </ClCompile>
+    <ClCompile Include="core.cpp">
+      <Filter>Engine\12. Physics\01. core</Filter>
+    </ClCompile>
+    <ClCompile Include="random.cpp">
+      <Filter>Engine\12. Physics\02. random</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>Engine\12. Physics\03. particle</Filter>
+    </ClCompile>
+    <ClCompile Include="body.cpp">
+      <Filter>Engine\12. Physics\04. rigid body</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
