@@ -89,10 +89,6 @@ void CLevelCameraScript::Move()
 
 			fRot.y += DT * XM_PI * 0.2;
 			Transform()->SetRelativeRotation(fRot);
-
-			m_pCamera->CalcViewMat();
-			m_pCamera->CalcProjMat();
-			m_pFrustum->finaltick();
 			bCheck = true;
 		}
 
@@ -102,16 +98,17 @@ void CLevelCameraScript::Move()
 
 			fRot.y -= DT * XM_PI * 0.2;
 			Transform()->SetRelativeRotation(fRot);
-
-			m_pCamera->CalcViewMat();
-			m_pCamera->CalcProjMat();
-			m_pFrustum->finaltick();
 			bCheck = true;
 		}
 
 
 		if (bCheck)
 		{
+			m_pCamera->Transform()->finaltick();
+			m_pCamera->CalcViewMat();
+			m_pCamera->CalcProjMat();
+			m_pFrustum->finaltick();
+
 			int iSize = 0;
 			size_t iVtxSize = 0;
 			Vec3* points = m_pFrustum->GetWorldArray(iSize);

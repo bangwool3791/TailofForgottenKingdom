@@ -255,6 +255,20 @@ float4 decode(float _value)
     return float4(r, g, b, a);
 }
 
+float GetTessFactor(float3 _vPos, int _iMinLevel, int _iMaxLevel, float _MinDistance, float _MaxDistance)
+{
+    float fDistance = length(_vPos);
+
+    if (_MaxDistance < fDistance)
+        return _iMinLevel;
+    if (fDistance < _MinDistance)
+        return _iMaxLevel;
+
+    float fLevel = _iMaxLevel - (_iMaxLevel - _iMinLevel) * ((fDistance - _MinDistance) / (_MaxDistance - _MinDistance));
+
+    return fLevel;
+}
+
 #endif
 
 

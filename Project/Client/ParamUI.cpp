@@ -10,7 +10,7 @@
 
 UINT ParamUI::ParamCount = 0;
 
-void ParamUI::Param_Int(const string& _ParamName, int* _pInOut)
+bool ParamUI::Param_Int(const string& _ParamName, int* _pInOut)
 {
 	char szName[50] = "";
 	sprintf_s(szName, 50, "##int%d", ParamCount++);
@@ -22,10 +22,12 @@ void ParamUI::Param_Int(const string& _ParamName, int* _pInOut)
 	if (ImGui::InputInt(szName, _pInOut, 1, 1, ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue))
 	{
 		UI::ResetFocus();
+		return true;
 	}
+	return false;
 }
 
-void ParamUI::Param_Float(const string& _ParamName, float* _pInOut)
+bool ParamUI::Param_Float(const string& _ParamName, float* _pInOut)
 {
 	char szName[50] = "";
 	sprintf_s(szName, 50, "##Float%d", ParamCount++);
@@ -39,10 +41,12 @@ void ParamUI::Param_Float(const string& _ParamName, float* _pInOut)
 		{
 			UI::ResetFocus();
 		}
+		return true;
 	}
+	return false;
 }
 
-void ParamUI::Param_Vec2(const string& _ParamName, Vec2* _pInOut)
+bool ParamUI::Param_Vec2(const string& _ParamName, Vec2* _pInOut)
 {
 	char szName[50] = "";
 	sprintf_s(szName, 50, "##Vec2%d", ParamCount++);
@@ -56,15 +60,16 @@ void ParamUI::Param_Vec2(const string& _ParamName, Vec2* _pInOut)
 		{
 			UI::ResetFocus();
 		}
+		return true;
 	}
-
+	return false;
 	//if (ImGui::InputFloat(szName, *_pInOut, 0.f, 0.f, "%6.3f", ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue))
 	//{
 	//	UI::ResetFocus();
 	//}
 }
 
-void ParamUI::Param_Vec4(const string& _ParamName, Vec4* _pInOut)
+bool ParamUI::Param_Vec4(const string& _ParamName, Vec4* _pInOut)
 {
 	char szName[50] = "";
 	sprintf_s(szName, 50, "##Vec4%d", ParamCount++);
@@ -80,7 +85,9 @@ void ParamUI::Param_Vec4(const string& _ParamName, Vec4* _pInOut)
 		{
 			UI::ResetFocus();
 		}
+		return true;
 	}
+	return false;
 	//ImGui::PushItemWidth(200.f);
 	//if (ImGui::InputFloat4(szName, *_pInOut, "%.3f", ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue))
 	//{
@@ -89,8 +96,9 @@ void ParamUI::Param_Vec4(const string& _ParamName, Vec4* _pInOut)
 }
 
 
-void ParamUI::Param_Mat(const string& _ParamName, Matrix* _pInOut)
+bool ParamUI::Param_Mat(const string& _ParamName, Matrix* _pInOut)
 {
+	return true;
 }
 
 bool ParamUI::Param_Tex(const string& _ParamName, Ptr<CTexture>& _Tex, UI* _Inst, FUNC_1 _Func)

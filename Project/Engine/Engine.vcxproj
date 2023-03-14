@@ -196,7 +196,9 @@ call EngineCopy.bat</Command>
     <ClInclude Include="BitArray.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="body.h" />
+    <ClInclude Include="body.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="CAnimation2D.h" />
     <ClInclude Include="CAnimator2D.h" />
     <ClInclude Include="CCamera.h" />
@@ -218,7 +220,9 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CLight3D.h" />
     <ClInclude Include="CMRT.h" />
     <ClInclude Include="CCollider.h" />
-    <ClInclude Include="core.h" />
+    <ClInclude Include="core.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="CoreTypeDef.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -268,11 +272,17 @@ call EngineCopy.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Memorypool.h" />
-    <ClInclude Include="particle.h" />
-    <ClInclude Include="precision.h" />
+    <ClInclude Include="particle.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="precision.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="QuadNode.h" />
     <ClInclude Include="QuadTree.h" />
-    <ClInclude Include="random.h" />
+    <ClInclude Include="random.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="singleton.h" />
     <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTimeMgr.h" />
@@ -292,7 +302,9 @@ call EngineCopy.bat</Command>
     <ClInclude Include="tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="body.cpp" />
+    <ClCompile Include="body.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="CAnimation2D.cpp" />
     <ClCompile Include="CAnimator2D.cpp" />
     <ClCompile Include="CCamera.cpp" />
@@ -315,7 +327,9 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CLandScape_init.cpp" />
     <ClCompile Include="CLight3D.cpp" />
     <ClCompile Include="CMRT.cpp" />
-    <ClCompile Include="core.cpp" />
+    <ClCompile Include="core.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="CParticleExplosion.cpp" />
     <ClCompile Include="CGameObject.cpp" />
     <ClCompile Include="CGraphicsShader.cpp" />
@@ -360,7 +374,9 @@ call EngineCopy.bat</Command>
     <ClCompile Include="JPSPath.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="particle.cpp" />
+    <ClCompile Include="particle.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -369,7 +385,9 @@ call EngineCopy.bat</Command>
     </ClCompile>
     <ClCompile Include="QuadNode.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="random.cpp" />
+    <ClCompile Include="random.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="smallobjallocator.cpp" />
     <ClCompile Include="tinystr.cpp" />
     <ClCompile Include="tinyxml.cpp" />
@@ -378,6 +396,7 @@ call EngineCopy.bat</Command>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="bloom.fx" />
+    <FxCompile Include="bloom_blur.fx" />
     <FxCompile Include="bloom_update.fx" />
     <FxCompile Include="bordermap.fx" />
     <FxCompile Include="building.fx" />

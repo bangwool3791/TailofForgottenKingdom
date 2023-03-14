@@ -33,12 +33,11 @@ void CLandScape::render()
 	if (nullptr == GetMesh() || nullptr == GetCurMaterial())
 		return;
 
-	CGameObject* pObj = CLevelMgr::GetInst()->FindObjectByName(L"SecendCamera");
-
-	GetCurMaterial()->SetScalarParam(VEC4_0, Vec4{ pObj->Transform()->GetRelativePos(), 1.f });
-
 	Transform()->UpdateData();
 	
+	GetCurMaterial()->SetScalarParam(INT_0, &m_iXFaceCount);
+	GetCurMaterial()->SetScalarParam(INT_1, &m_iZFaceCount);
+
 	GetCurMaterial()->UpdateData();
 	GetMesh()->render();
 

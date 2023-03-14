@@ -247,6 +247,9 @@
     <Filter Include="Engine\12. Physics\04. rigid body">
       <UniqueIdentifier>{b9e84cfe-7029-4ca3-bfd5-cc52256cbcc2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Render\3D\blur and bloom">
+      <UniqueIdentifier>{5f71063f-d18c-498c-be86-b3a18cc5ffcb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -841,15 +844,6 @@
     <FxCompile Include="fog.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
-    <FxCompile Include="blur.fx">
-      <Filter>HLSL\Render\3D</Filter>
-    </FxCompile>
-    <FxCompile Include="bloom.fx">
-      <Filter>HLSL\Render\3D</Filter>
-    </FxCompile>
-    <FxCompile Include="bloom_update.fx">
-      <Filter>HLSL\Render\3D</Filter>
-    </FxCompile>
     <FxCompile Include="tess.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
@@ -861,6 +855,18 @@
     </FxCompile>
     <FxCompile Include="landscapde_quad.fx">
       <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="bloom.fx">
+      <Filter>HLSL\Render\3D\blur and bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="bloom_blur.fx">
+      <Filter>HLSL\Render\3D\blur and bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="bloom_update.fx">
+      <Filter>HLSL\Render\3D\blur and bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="blur.fx">
+      <Filter>HLSL\Render\3D\blur and bloom</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

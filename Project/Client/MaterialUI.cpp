@@ -144,8 +144,8 @@ void MaterialUI::render_update()
 		{
 			int iData = 0;
 			pMtrl->GetScalarParam(vecScalar[i].eParam, &iData);
-			ParamUI::Param_Int(vecScalar[i].strName, &iData);
-			pMtrl->SetScalarParam(vecScalar[i].eParam, &iData);
+			if(ParamUI::Param_Int(vecScalar[i].strName, &iData))
+				pMtrl->SetScalarParam(vecScalar[i].eParam, &iData);
 		}
 			break;
 		case FLOAT_0:
@@ -155,8 +155,8 @@ void MaterialUI::render_update()
 		{
 			float fData = 0;
 			pMtrl->GetScalarParam(vecScalar[i].eParam, &fData);
-			ParamUI::Param_Float(vecScalar[i].strName, &fData);
-			pMtrl->SetScalarParam(vecScalar[i].eParam, &fData);
+			if(ParamUI::Param_Float(vecScalar[i].strName, &fData))
+				pMtrl->SetScalarParam(vecScalar[i].eParam, &fData);
 		}
 			break;
 		case VEC2_0:
@@ -166,8 +166,8 @@ void MaterialUI::render_update()
 		{
 			Vec2 data;
 			pMtrl->GetScalarParam(vecScalar[i].eParam, &data);
-			ParamUI::Param_Vec2(vecScalar[i].strName, &data);
-			pMtrl->SetScalarParam(vecScalar[i].eParam, &data);
+			if(ParamUI::Param_Vec2(vecScalar[i].strName, &data))
+				pMtrl->SetScalarParam(vecScalar[i].eParam, &data);
 		}
 			break;
 		case VEC4_0:
@@ -177,8 +177,8 @@ void MaterialUI::render_update()
 		{
 			Vec4 data;
 			pMtrl->GetScalarParam(vecScalar[i].eParam, &data);
-			ParamUI::Param_Vec4(vecScalar[i].strName, &data);
-			pMtrl->SetScalarParam(vecScalar[i].eParam, &data);
+			if(ParamUI::Param_Vec4(vecScalar[i].strName, &data))
+				pMtrl->SetScalarParam(vecScalar[i].eParam, &data);
 		}
 			break;
 		case MAT_0:

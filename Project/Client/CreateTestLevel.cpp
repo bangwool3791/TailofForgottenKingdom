@@ -171,11 +171,44 @@ void CreateTestLelvel()
 	pSpotLight->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
 
 	pLevel->AddGameObject(pSpotLight, 1);
-	// GameObject 초기화
-	CGameObject* pObject = nullptr;
 
-#ifdef false
-	pObject = new CGameObject;
+	// SkyBox 추가
+	CGameObject* pSkyBox = new CGameObject;
+	pSkyBox->SetName(L"SkyBox");
+
+	pSkyBox->AddComponent(new CTransform);
+	pSkyBox->AddComponent(new CSkyBox);
+
+	pSkyBox->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
+	pSkyBox->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
+	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
+	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
+	pLevel->AddGameObject(pSkyBox, 1);
+
+	// LandScape 추가
+	CGameObject* pLandScape = new CGameObject;
+	pLandScape->SetName(L"LandScape");
+
+	pLandScape->AddComponent(new CTransform);
+	pLandScape->AddComponent(new CLandScape);
+
+	pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
+	pLandScape->LandScape()->SetFaceCount(16, 16);
+	pLandScape->LandScape()->SetFrustumCulling(false);
+
+	pLevel->AddGameObject(pLandScape, 1);
+
+
+	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);
+	CCollisionMgr::GetInst()->CollisionLayerCheck(1, 1);
+	CLevelMgr::GetInst()->ChangeLevel(pLevel);
+	pLevel->begin();
+#endif
+}
+
+void CreateDefaultObj(CLevel* pLevel)
+{
+	CGameObject *pObject = new CGameObject;
 	pObject->SetName(L"Sphere");
 
 	pObject->AddComponent(new CTransform);
@@ -239,39 +272,12 @@ void CreateTestLelvel()
 	pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
 	pObject->Decal()->SetDefaultLit(true);
 	pLevel->AddGameObject(pObject, 1);
-#endif
+}
 
+void CreateCamera()
+{
+	//카메라 1개 생성
+	//6방향 돌려가며 Texture 찍기
+	CGameObject* pObj = new CGameObject;
 
-	// SkyBox 추가
-	CGameObject* pSkyBox = new CGameObject;
-	pSkyBox->SetName(L"SkyBox");
-
-	pSkyBox->AddComponent(new CTransform);
-	pSkyBox->AddComponent(new CSkyBox);
-
-	pSkyBox->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
-	pSkyBox->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
-	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
-	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
-	pLevel->AddGameObject(pSkyBox, 1);
-
-	// LandScape 추가
-	CGameObject* pLandScape = new CGameObject;
-	pLandScape->SetName(L"LandScape");
-
-	pLandScape->AddComponent(new CTransform);
-	pLandScape->AddComponent(new CLandScape);
-
-	pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
-	pLandScape->LandScape()->SetFaceCount(16, 16);
-	pLandScape->LandScape()->SetFrustumCulling(false);
-
-	pLevel->AddGameObject(pLandScape, 1);
-
-
-	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);
-	CCollisionMgr::GetInst()->CollisionLayerCheck(1, 1);
-	CLevelMgr::GetInst()->ChangeLevel(pLevel);
-	pLevel->begin();
-#endif
 }

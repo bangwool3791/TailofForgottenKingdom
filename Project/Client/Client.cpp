@@ -69,7 +69,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    // 주석 끝
     // 기본 메시지 루프입니다:
 
-    //g_Hook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, hInstance, NULL);
+    g_Hook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, hInstance, NULL);
 
     while (true)
     {
