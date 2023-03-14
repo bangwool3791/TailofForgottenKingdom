@@ -3,5 +3,6 @@ class CLevel;
 
 void CreateTestLelvel();
 void CreateDefaultPrefab();
-void CreateDefaultObj();
 void CreateDefaultObj(CLevel* pLevel);
+void CreateCamera(CLevel* pLevel);
+void CreateLight(CLevel* pLevel);

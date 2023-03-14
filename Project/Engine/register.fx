@@ -14,6 +14,8 @@ cbuffer TRANSFORM : register(b0)
 
     row_major matrix g_matWV;
     row_major matrix g_matWVP;
+
+    row_major matrix g_matReflection;
 };
 
 
@@ -98,6 +100,7 @@ cbuffer GLOBAL : register(b2)
     float   g_fAccTime;
     float   g_fDT;
 }
+
 cbuffer ANIM2DINFO : register(b3)
 {
     float2  g_vLeftTop;
@@ -108,7 +111,6 @@ cbuffer ANIM2DINFO : register(b3)
     int     g_iAnim2DUse;
     int3    iPadding;
 }
-
 
 // 텍스쳐 레지스터
 Texture2D g_tex_0 : register(t0);

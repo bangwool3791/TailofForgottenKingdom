@@ -136,8 +136,6 @@ DS_OUT DS_LandScape(PatchTess _tessFactor
     output.vPosition = mul(float4(vLocalPos, 1.f), g_matWVP);
     output.vUV = vUV;
 
-
-
     output.vViewPos = mul(float4(vLocalPos, 1.f), g_matWV);
 
     float3 vTangent = float3(1.f, 0.f, 0.f);

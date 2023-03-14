@@ -13,7 +13,6 @@ private:
 public:
 	int init(HWND _hWnd, UINT _iWidth, UINT _iHeight);
 	void progress();
-
 private:
 	void tick();
 	void finaltick();

@@ -63,7 +63,6 @@ private :
     void render_transparent();
     void render_postprocess();
     void render_ui() {}
-    void Sound();
     //void update_render(Ptr<CMesh> p);
 public :
     virtual void finaltick();

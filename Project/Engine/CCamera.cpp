@@ -189,7 +189,7 @@ void CCamera::render()
 	
 	render_transparent();
 	render_postprocess();
-	Sound();
+
 }
 
 /*
@@ -537,10 +537,6 @@ void CCamera::LoadFromFile(FILE* _File)
 	fread(&m_fScale, sizeof(float), 1, _File);
 	fread(&m_iLayerMask, sizeof(UINT), 1, _File);
 	fread(&m_iCamIdx, sizeof(int), 1, _File);
-}
-
-void CCamera::Sound()
-{
 }
 
 Ray CCamera::CalRay()

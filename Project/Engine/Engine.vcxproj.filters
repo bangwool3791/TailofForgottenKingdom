@@ -250,6 +250,9 @@
     <Filter Include="HLSL\Render\3D\blur and bloom">
       <UniqueIdentifier>{5f71063f-d18c-498c-be86-b3a18cc5ffcb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Render\3D\reflection">
+      <UniqueIdentifier>{2858e7a2-0f99-47a2-83dc-f7e48734e9de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -867,6 +870,9 @@
     </FxCompile>
     <FxCompile Include="blur.fx">
       <Filter>HLSL\Render\3D\blur and bloom</Filter>
+    </FxCompile>
+    <FxCompile Include="reflection.fx">
+      <Filter>HLSL\Render\3D\reflection</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

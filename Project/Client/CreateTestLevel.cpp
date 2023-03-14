@@ -92,85 +92,7 @@ void CreateTestLelvel()
 	//pLevel->GetLayer(3)->SetName(L"Monster");
 	//pLevel->GetLayer(4)->SetName(L"MonsterProjecttile");
 
-	// Camera Object 추가
-	CGameObject* pCamObj = new CGameObject;
-	pCamObj->SetName(L"MainCamera");
-
-	pCamObj->AddComponent(new CTransform);
-	pCamObj->AddComponent(new CCamera);
-	pCamObj->AddComponent(new CMeshRender);
-	pCamObj->AddComponent(new CCollider3D);
-	pCamObj->AddComponent(new CFrustumScript);
-	pCamObj->AddComponent(new CLevelCameraScript);
-
-	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
-	pCamObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"FrustumMesh"));
-	pCamObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
-
-	pCamObj->Camera()->SetProjType(PERSPECTIVE);
-	pCamObj->Camera()->SetLayerMaskZero();
-	pLevel->AddGameObject(pCamObj, 0);
-
-	pCamObj = new CGameObject;
-	pCamObj->SetName(L"SecendCamera");
-
-	pCamObj->AddComponent(new CTransform);
-	pCamObj->AddComponent(new CCamera);
-	pCamObj->AddComponent(new CSecondCameraScript);
-
-	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-	pCamObj->Camera()->SetProjType(PERSPECTIVE);
-	pCamObj->Camera()->SetLayerMask(1);
-	pLevel->AddGameObject(pCamObj, 0);
-
-	// Directional Light 추가
-	CGameObject* pDirLight = new CGameObject;
-	pDirLight->SetName(L"DirectionalLight");
-	
-	pDirLight->AddComponent(new CTransform);
-	pDirLight->AddComponent(new CLight3D);
-	
-	pDirLight->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-	pDirLight->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
-	pDirLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
-	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
-	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
-	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
-	//
-	pLevel->AddGameObject(pDirLight, 1);
-	// Point Light 추가
-	//CGameObject* pPointLight = new CGameObject;
-	//pPointLight->SetName(L"PointLight");
-
-	//pPointLight->AddComponent(new CTransform);
-	//pPointLight->AddComponent(new CLight3D);
-
-	//pPointLight->Transform()->SetRelativePos(0.f, -200.f, 400.f);
-	//pPointLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
-	//pPointLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
-	//pPointLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
-	//pPointLight->Light3D()->SetRadius(400.f);
-	//pPointLight->Light3D()->SetLightType(LIGHT_TYPE::POINT2);
-
-	//Instantiate(pPointLight, Vec3(0.f, -200.f, 400.f), 0);
-
-	CGameObject* pSpotLight = new CGameObject;
-	pSpotLight->SetName(L"SpotLight");
-
-	pSpotLight->AddComponent(new CTransform);
-	pSpotLight->AddComponent(new CLight3D);
-
-	float r = 500.f;
-	pSpotLight->Transform()->SetRelativePos(0.f, -100.f, 400.f);
-	pSpotLight->Transform()->SetRelativeScale(r * sinf(XM_PI * 22.5f / 180.f) * 2.f, r * cosf(XM_PI * 22.5f / 180.f), r * sinf(XM_PI * 22.5f / 180.f) * 2.f);
-	pSpotLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
-	pSpotLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
-	pSpotLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
-	pSpotLight->Light3D()->SetRadius(r);
-	pSpotLight->Light3D()->SetAngle(XM_PI / 4.f);
-	pSpotLight->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
-
-	pLevel->AddGameObject(pSpotLight, 1);
+	CreateCamera(pLevel);
 
 	// SkyBox 추가
 	CGameObject* pSkyBox = new CGameObject;
@@ -274,10 +196,87 @@ void CreateDefaultObj(CLevel* pLevel)
 	pLevel->AddGameObject(pObject, 1);
 }
 
-void CreateCamera()
+void CreateCamera(CLevel* pLevel)
 {
-	//카메라 1개 생성
-	//6방향 돌려가며 Texture 찍기
-	CGameObject* pObj = new CGameObject;
+	CGameObject* pCamObj = new CGameObject;
+	pCamObj->SetName(L"MainCamera");
 
+	pCamObj->AddComponent(new CTransform);
+	pCamObj->AddComponent(new CCamera);
+	pCamObj->AddComponent(new CMeshRender);
+	pCamObj->AddComponent(new CCollider3D);
+	pCamObj->AddComponent(new CFrustumScript);
+	pCamObj->AddComponent(new CLevelCameraScript);
+
+	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
+	pCamObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"FrustumMesh"));
+	pCamObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+
+	pCamObj->Camera()->SetProjType(PERSPECTIVE);
+	pCamObj->Camera()->SetLayerMaskZero();
+	pLevel->AddGameObject(pCamObj, 0);
+
+	pCamObj = new CGameObject;
+	pCamObj->SetName(L"SecendCamera");
+
+	pCamObj->AddComponent(new CTransform);
+	pCamObj->AddComponent(new CCamera);
+	pCamObj->AddComponent(new CSecondCameraScript);
+
+	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+	pCamObj->Camera()->SetProjType(PERSPECTIVE);
+	pCamObj->Camera()->SetLayerMask(1);
+	pLevel->AddGameObject(pCamObj, 0);
+}
+
+void CreateLight(CLevel* pLevel)
+{
+	// Directional Light 추가
+	CGameObject* pDirLight = new CGameObject;
+	pDirLight->SetName(L"DirectionalLight");
+
+	pDirLight->AddComponent(new CTransform);
+	pDirLight->AddComponent(new CLight3D);
+
+	pDirLight->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+	pDirLight->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
+	pDirLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
+	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
+	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
+	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+	//
+	pLevel->AddGameObject(pDirLight, 1);
+	// Point Light 추가
+	//CGameObject* pPointLight = new CGameObject;
+	//pPointLight->SetName(L"PointLight");
+
+	//pPointLight->AddComponent(new CTransform);
+	//pPointLight->AddComponent(new CLight3D);
+
+	//pPointLight->Transform()->SetRelativePos(0.f, -200.f, 400.f);
+	//pPointLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+	//pPointLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
+	//pPointLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
+	//pPointLight->Light3D()->SetRadius(400.f);
+	//pPointLight->Light3D()->SetLightType(LIGHT_TYPE::POINT2);
+
+	//Instantiate(pPointLight, Vec3(0.f, -200.f, 400.f), 0);
+
+	CGameObject* pSpotLight = new CGameObject;
+	pSpotLight->SetName(L"SpotLight");
+
+	pSpotLight->AddComponent(new CTransform);
+	pSpotLight->AddComponent(new CLight3D);
+
+	float r = 500.f;
+	pSpotLight->Transform()->SetRelativePos(0.f, -100.f, 400.f);
+	pSpotLight->Transform()->SetRelativeScale(r * sinf(XM_PI * 22.5f / 180.f) * 2.f, r * cosf(XM_PI * 22.5f / 180.f), r * sinf(XM_PI * 22.5f / 180.f) * 2.f);
+	pSpotLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
+	pSpotLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
+	pSpotLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
+	pSpotLight->Light3D()->SetRadius(r);
+	pSpotLight->Light3D()->SetAngle(XM_PI / 4.f);
+	pSpotLight->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
+
+	pLevel->AddGameObject(pSpotLight, 1);
 }

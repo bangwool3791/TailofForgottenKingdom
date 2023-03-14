@@ -64,11 +64,11 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 
 	float2 vUV = _in.vPosition.xy / g_vRenderResolution;
 
-	//float4 vViewPos = g_tex_1.Sample(g_sam_0, vUV);
-	//
-	////위치 정보가 없는 픽셀 discard
-	//if (1.f != vViewPos.a)
-	//	discard;
+	float4 vViewPos = g_tex_1.Sample(g_sam_0, vUV);
+	
+	//위치 정보가 없는 픽셀 discard
+	if (1.f != vViewPos.a)
+		discard;
 
 	//색상 텍스쳐 참조
 	vOutColor = g_tex_0.Sample(g_sam_0, vUV);
@@ -77,8 +77,6 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float4 vDiffuse = g_tex_2.Sample(g_sam_0, vUV);
 	float4 vSpecular = g_tex_3.Sample(g_sam_0, vUV);
 	vOutColor.rgb = (vOutColor.rgb * vDiffuse.rgb) + vSpecular.rgb;
-
-	vOutColor.rgb = ToneMapping(vOutColor.rgb);
 	return vOutColor;
 
 }

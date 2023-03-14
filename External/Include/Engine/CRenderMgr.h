@@ -58,6 +58,7 @@ public:
 	vector<tDebugShapeInfo>& GetDebugDrawInfo() { return m_DebugDrawInfo; }
 
 private:
+	void CreateReflectTexture();
 	void UpdateNoiseTexture();
 	void UpdateLight2D();
 	void UpdateLight3D();
@@ -66,6 +67,7 @@ public:
 	void tick();
 	void render();
 
+	void clear();
 	void render_game();
 	void render_editor();
 

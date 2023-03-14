@@ -37,6 +37,19 @@ CRenderMgr::~CRenderMgr()
 	}
 }
 
+#include "CMRT.h"
+
+void CRenderMgr::CreateReflectTexture()
+{
+	clear();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+
+	CGameObject* pObj = CLevelMgr::GetInst()->FindObjectByName(L"ReflectCamera");
+	CCamera* pCamera = pObj->Camera();
+	pCamera->render();
+}
+
 void CRenderMgr::tick()
 {
 	m_vecCam.clear();
@@ -47,20 +60,7 @@ void CRenderMgr::tick()
 
 void CRenderMgr::render()
 {
-	// MRT 타겟 클리어
-	ClearMRT();
-
-	UpdateNoiseTexture();
-
-	UpdateLight2D();
-
-	UpdateLight3D();
-
-	static CConstBuffer* pGlobalCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::GLOBAL);
-	pGlobalCB->SetData(&g_global);
-	pGlobalCB->UpdateData(PIPELINE_STAGE::ALL_STAGE);
-	pGlobalCB->UpdateData_CS();
-	
+	clear();
 	//render_game();
 	//GUI 주석
 	CLevel* pLevel = CLevelMgr::GetInst()->GetCurLevel();
@@ -75,6 +75,23 @@ void CRenderMgr::render()
 	}
 	//GUI 주석 끝
 
+}
+
+void CRenderMgr::clear()
+{
+	// MRT 타겟 클리어
+	ClearMRT();
+
+	UpdateNoiseTexture();
+
+	UpdateLight2D();
+
+	UpdateLight3D();
+
+	static CConstBuffer* pGlobalCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::GLOBAL);
+	pGlobalCB->SetData(&g_global);
+	pGlobalCB->UpdateData(PIPELINE_STAGE::ALL_STAGE);
+	pGlobalCB->UpdateData_CS();
 }
 
 void CRenderMgr::render_game()

@@ -391,6 +391,7 @@ enum class MRT_TYPE
 	BLUR,
 	BLOOM,
 	SHADOW,
+	REFLECT,
 	END,
 };
 
