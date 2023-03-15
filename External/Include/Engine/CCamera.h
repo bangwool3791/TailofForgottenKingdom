@@ -25,6 +25,7 @@ private:
     Matrix                  m_matViewInv;
     Matrix                  m_matProj;
     Matrix                  m_matProjInv;
+    Matrix                  m_matReflect;
 
     PROJ_TYPE               m_eProjType;
     float                   m_fAspectRatio;
@@ -70,6 +71,7 @@ public :
 public:
     void CalcViewMat();
     void CalcProjMat();
+    void CalcReflectMat(float height);
 public :
 
     double        GetOrthographicScale() { return m_fScale; }

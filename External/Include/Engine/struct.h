@@ -104,6 +104,8 @@ struct tTransform
 
 	Matrix matWV;
 	Matrix matWVP;
+
+	Matrix matReflect;
 };
 
 struct tMtrlConst

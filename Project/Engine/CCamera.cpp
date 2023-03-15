@@ -83,6 +83,8 @@ void CCamera::finaltick()
 {
 	CalcViewMat();
 
+	CalcReflectMat(-1.5f);
+
 	CalcProjMat();
 
 	CRenderMgr::GetInst()->RegisterCamera(this);
@@ -131,6 +133,34 @@ void CCamera::CalcViewMat()
 		m_matViewInv = mat;
 }
 
+void CCamera::CalcReflectMat(float height)
+{
+	Vec3	vPos = Transform()->GetRelativePos();
+	Matrix	matViewTrnas = XMMatrixTranslation(-vPos.x, vPos.y - (height *2.0f), -vPos.z);
+	Vec3	vRight = Transform()->GetRelativeDir(DIR::RIGHT);
+	Vec3	vUp = Transform()->GetRelativeDir(DIR::UP);
+	Vec3	vLook = Transform()->GetRelativeDir(DIR::FRONT);
+
+	Matrix matViewRot = XMMatrixIdentity();
+	/*
+	* 직교 벡터, 방향 벡터의 경우 전치 행렬을 만들면, 원본 행렬과 전치행렬 각 성분의 곱이 내적에 따라, 단위 행렬이 된다.
+	*/
+	matViewRot._11 = vRight.x;
+	matViewRot._21 = vRight.y;
+	matViewRot._31 = vRight.z;
+
+	matViewRot._12 = vUp.x;
+	matViewRot._22 = vUp.y;
+	matViewRot._32 = vUp.z;
+
+	matViewRot._13 = vLook.x;
+	matViewRot._23 = vLook.y;
+	matViewRot._33 = vLook.z;
+
+	m_matReflect = matViewTrnas * matViewRot;
+}
+
+
 void CCamera::CalcProjMat()
 {
 	Vec2 vRenderResolution = CDevice::GetInst()->GetRenderResolution();
@@ -154,6 +184,10 @@ void CCamera::render()
 	g_transform.matViewInv		= m_matViewInv;
 	g_transform.matProj			= m_matProj;
 	g_transform.matProjInv		= m_matProjInv;
+	g_transform.matReflect		= m_matReflect;
+	/*
+	* 여기서 행렬 세팅 -> render transform 업데이트
+	*/
 	SortObject();
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
 	render_deferred();
@@ -172,12 +206,17 @@ void CCamera::render()
 	m_LightCS->Excute();
  	m_LightCS->Clear();
 
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
-	//Defferd-> HDR
-
 	static Ptr<CMaterial> pMergeMtrl;
 	static Ptr<CMesh> pRectMesh;
 
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::COPY_SWAPCHAIN)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
 	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
 	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();

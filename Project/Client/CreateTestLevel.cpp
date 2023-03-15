@@ -93,7 +93,8 @@ void CreateTestLelvel()
 	//pLevel->GetLayer(4)->SetName(L"MonsterProjecttile");
 
 	CreateCamera(pLevel);
-
+	CreateLight(pLevel);
+	CreateDefaultObj(pLevel);
 	// SkyBox 추가
 	CGameObject* pSkyBox = new CGameObject;
 	pSkyBox->SetName(L"SkyBox");
@@ -108,17 +109,17 @@ void CreateTestLelvel()
 	pLevel->AddGameObject(pSkyBox, 1);
 
 	// LandScape 추가
-	CGameObject* pLandScape = new CGameObject;
-	pLandScape->SetName(L"LandScape");
-
-	pLandScape->AddComponent(new CTransform);
-	pLandScape->AddComponent(new CLandScape);
-
-	pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
-	pLandScape->LandScape()->SetFaceCount(16, 16);
-	pLandScape->LandScape()->SetFrustumCulling(false);
-
-	pLevel->AddGameObject(pLandScape, 1);
+	//CGameObject* pLandScape = new CGameObject;
+	//pLandScape->SetName(L"LandScape");
+	//
+	//pLandScape->AddComponent(new CTransform);
+	//pLandScape->AddComponent(new CLandScape);
+	//
+	//pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
+	//pLandScape->LandScape()->SetFaceCount(16, 16);
+	//pLandScape->LandScape()->SetFrustumCulling(false);
+	//
+	//pLevel->AddGameObject(pLandScape, 1);
 
 
 	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);
@@ -154,17 +155,15 @@ void CreateDefaultObj(CLevel* pLevel)
 
 	pObject->AddComponent(new CTransform);
 	pObject->AddComponent(new CMeshRender);
-	pObject->AddComponent(new CCollider3D);
-	pObject->AddComponent(new CPlayerScript);
 
-	pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
-	pObject->Transform()->SetRelativeScale(Vec3(1000.f, 1000.f, 1000.f));
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 400.f));
+	pObject->Transform()->SetRelativeScale(Vec3(5000.f, 5000.f, 5000.f));
 	pObject->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
 
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ReflectMtrl"));
+	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"blue01.dds"));
+	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
 	pLevel->AddGameObject(pObject, 1);
 
 	pObject = new CGameObject;
@@ -175,25 +174,24 @@ void CreateDefaultObj(CLevel* pLevel)
 
 	pObject->Transform()->SetRelativePos(Vec3(-200.f, -200.f, 400.f));
 	pObject->Transform()->SetRelativeScale(Vec3(200.f, 200.f, 1.f));
-	pObject->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
 
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
 	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DMtrl"));
-	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"BlurTargetTex"));
+	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
 	pLevel->AddGameObject(pObject, 1);
 
-	pObject = new CGameObject;
-	pObject->SetName(L"Decal");
-
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CDecal);
-
-	pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
-	pObject->Transform()->SetRelativeScale(Vec3(250.f, 250.f, 250.f));
-
-	pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
-	pObject->Decal()->SetDefaultLit(true);
-	pLevel->AddGameObject(pObject, 1);
+	//pObject = new CGameObject;
+	//pObject->SetName(L"Decal");
+	//
+	//pObject->AddComponent(new CTransform);
+	//pObject->AddComponent(new CDecal);
+	//
+	//pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
+	//pObject->Transform()->SetRelativeScale(Vec3(250.f, 250.f, 250.f));
+	//
+	//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
+	//pObject->Decal()->SetDefaultLit(true);
+	//pLevel->AddGameObject(pObject, 1);
 }
 
 void CreateCamera(CLevel* pLevel)
@@ -240,7 +238,7 @@ void CreateLight(CLevel* pLevel)
 
 	pDirLight->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 	pDirLight->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
-	pDirLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
+	pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
 	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
 	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
@@ -262,21 +260,21 @@ void CreateLight(CLevel* pLevel)
 
 	//Instantiate(pPointLight, Vec3(0.f, -200.f, 400.f), 0);
 
-	CGameObject* pSpotLight = new CGameObject;
-	pSpotLight->SetName(L"SpotLight");
-
-	pSpotLight->AddComponent(new CTransform);
-	pSpotLight->AddComponent(new CLight3D);
-
-	float r = 500.f;
-	pSpotLight->Transform()->SetRelativePos(0.f, -100.f, 400.f);
-	pSpotLight->Transform()->SetRelativeScale(r * sinf(XM_PI * 22.5f / 180.f) * 2.f, r * cosf(XM_PI * 22.5f / 180.f), r * sinf(XM_PI * 22.5f / 180.f) * 2.f);
-	pSpotLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
-	pSpotLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
-	pSpotLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
-	pSpotLight->Light3D()->SetRadius(r);
-	pSpotLight->Light3D()->SetAngle(XM_PI / 4.f);
-	pSpotLight->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
-
-	pLevel->AddGameObject(pSpotLight, 1);
+	//CGameObject* pSpotLight = new CGameObject;
+	//pSpotLight->SetName(L"SpotLight");
+	//
+	//pSpotLight->AddComponent(new CTransform);
+	//pSpotLight->AddComponent(new CLight3D);
+	//
+	//float r = 500.f;
+	//pSpotLight->Transform()->SetRelativePos(0.f, -100.f, 400.f);
+	//pSpotLight->Transform()->SetRelativeScale(r * sinf(XM_PI * 22.5f / 180.f) * 2.f, r * cosf(XM_PI * 22.5f / 180.f), r * sinf(XM_PI * 22.5f / 180.f) * 2.f);
+	//pSpotLight->Light3D()->SetLightColor(Vec3(0.5f, 0.5f, 0.5f));
+	//pSpotLight->Light3D()->SetLightSpecular(Vec3(0.f, 0.f, 0.f));
+	//pSpotLight->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
+	//pSpotLight->Light3D()->SetRadius(r);
+	//pSpotLight->Light3D()->SetAngle(XM_PI / 4.f);
+	//pSpotLight->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
+	//
+	//pLevel->AddGameObject(pSpotLight, 1);
 }

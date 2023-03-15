@@ -75,6 +75,7 @@ void CRenderMgr::init()
 	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"BlurTargetTex"));
 	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"BloomTargetTex"));
 	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
+
 }
 
 void CRenderMgr::CreateMRT()
@@ -243,6 +244,25 @@ void CRenderMgr::CreateMRT()
 			Ptr<CTexture> pDSTex = nullptr;
 			m_arrMRT[(UINT)MRT_TYPE::HDR] = new CMRT;
 			m_arrMRT[(UINT)MRT_TYPE::HDR]->Create(arrRTTex, arrClear, pDSTex);
+		}
+
+		// =========
+		// Copy MRT
+		// =========
+		{
+			Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
+
+			Ptr<CTexture> arrRTTex[8] =
+			{
+				CResMgr::GetInst()->CreateTexture(L"CopyRenderTargetTex"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+			};
+
+			Ptr<CTexture> pDSTex = nullptr;
+			m_arrMRT[(UINT)MRT_TYPE::COPY_SWAPCHAIN] = new CMRT;
+			m_arrMRT[(UINT)MRT_TYPE::COPY_SWAPCHAIN]->Create(arrRTTex, arrClear, pDSTex);
 		}
 	}
 }

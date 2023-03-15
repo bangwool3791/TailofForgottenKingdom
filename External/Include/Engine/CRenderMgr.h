@@ -58,7 +58,6 @@ public:
 	vector<tDebugShapeInfo>& GetDebugDrawInfo() { return m_DebugDrawInfo; }
 
 private:
-	void CreateReflectTexture();
 	void UpdateNoiseTexture();
 	void UpdateLight2D();
 	void UpdateLight3D();

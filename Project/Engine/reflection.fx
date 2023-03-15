@@ -36,7 +36,9 @@ VS_OUT ReflectionVertexShader(VS_IN _in)
 	output.position = mul(_in.position, g_matWVP);
 	output.tex = _in.tex;
 
-	output.reflectionPosition = mul(g_matReflection, g_matProj);
+	reflectProjectWorld = mul(g_matReflection, g_matProj);
+	reflectProjectWorld = mul(g_matWorld, reflectProjectWorld);
+	output.reflectionPosition = mul(_in.position, reflectProjectWorld);
 
 	return output;
 }

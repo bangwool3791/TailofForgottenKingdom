@@ -226,6 +226,20 @@ int CDevice::CreateSampler()
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_CLAMP;
 	desc.Filter = D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
 	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
+
+	//desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//desc.MipLODBias = 0.0f;
+	//desc.MaxAnisotropy = 1;
+	//desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	//desc.BorderColor[0] = 0.f;
+	//desc.BorderColor[1] = 0.f;
+	//desc.BorderColor[2] = 0.f;
+	//desc.BorderColor[3] = 0.f;
+	//desc.MinLOD = 0;
+	//desc.MaxLOD = D3D11_FLOAT32_MAX;
+	//desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+	//desc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
+	//desc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
 	// 샘플러 바인딩
 	CONTEXT->VSSetSamplers((UINT)SAMPLER_TYPE::ANISOTROPIC, 1, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());
 	CONTEXT->HSSetSamplers((UINT)SAMPLER_TYPE::ANISOTROPIC, 1, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());

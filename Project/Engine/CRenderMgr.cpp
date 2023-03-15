@@ -39,17 +39,6 @@ CRenderMgr::~CRenderMgr()
 
 #include "CMRT.h"
 
-void CRenderMgr::CreateReflectTexture()
-{
-	clear();
-
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
-
-	CGameObject* pObj = CLevelMgr::GetInst()->FindObjectByName(L"ReflectCamera");
-	CCamera* pCamera = pObj->Camera();
-	pCamera->render();
-}
-
 void CRenderMgr::tick()
 {
 	m_vecCam.clear();

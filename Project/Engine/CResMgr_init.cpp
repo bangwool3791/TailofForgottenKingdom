@@ -719,6 +719,8 @@ void CResMgr::CreateDefaultTexture()
 	CResMgr::GetInst()->CreateTexture(L"DiffuseTargetTexCopy"
 		, vRenderResolution.x, vRenderResolution.y
 		, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_UNORDERED_ACCESS);
+
+	Load<CTexture>(L"texture\\blue01.dds", L"texture\\blue01.dds");
 }
 
 void CResMgr::CreateDefaultSound()
@@ -1050,6 +1052,16 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->AddScalarParam(INT_3, "Tess Factor");
 
 	AddRes<CGraphicsShader>(L"TessShader", pShader);
+
+	//reflect shader
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\reflection.fx", "ReflectionVertexShader");
+	pShader->CreatePixelShader(L"shader\\reflection.fx", "ReflectionPixelShader");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
+
+	AddRes<CGraphicsShader>(L"ReflectShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1186,6 +1198,10 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"TessShader"));
 	AddRes<CMaterial>(L"TessMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ReflectShader"));
+	AddRes<CMaterial>(L"ReflectMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)
