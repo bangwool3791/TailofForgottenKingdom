@@ -148,18 +148,18 @@ void CreateDefaultObj(CLevel* pLevel)
 	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	pLevel->AddGameObject(pObject, 1);
 
-	//pObject = new CGameObject;
-	//pObject->SetName(L"CubeBox");
-	//
-	//pObject->AddComponent(new CTransform);
-	//pObject->AddComponent(new CMeshRender);
-	//
-	//pObject->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
-	//pObject->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
-	//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
-	//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
-	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"EnvTexture"));
-	//pLevel->AddGameObject(pObject, 1);
+	pObject = new CGameObject;
+	pObject->SetName(L"CubeBox");
+	
+	pObject->AddComponent(new CTransform);
+	pObject->AddComponent(new CMeshRender);
+	
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
+	pObject->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
+	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"SphereMesh"));
+	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ReflectionCubeMtrl"));
+	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_CUBE_0, CResMgr::GetInst()->FindRes<CTexture>(L"EnvTexture"));
+	pLevel->AddGameObject(pObject, 1);
 	//DiffuseTargetTex
 
 	//pObject = new CGameObject;

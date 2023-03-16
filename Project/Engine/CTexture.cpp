@@ -163,19 +163,22 @@ void CTexture::CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Forma
     if (_iBindFlag & D3D11_BIND_DEPTH_STENCIL)
     {
         D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+        memset(&descDSV, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
         descDSV.Format = m_Desc.Format;
         descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
         descDSV.Texture2DArray.FirstArraySlice = 0;
         descDSV.Texture2DArray.ArraySize = 6;
         descDSV.Texture2DArray.MipSlice = 0;
+        descDSV.Flags = 0;
         hr = DEVICE->CreateDepthStencilView(m_Tex2D.Get(), &descDSV, m_DSV.GetAddressOf());
-     
+        assert(!FAILED(hr));
     }
     else
     {
         if (_iBindFlag & D3D11_BIND_RENDER_TARGET)
         {
             D3D11_RENDER_TARGET_VIEW_DESC tRTVDesc = {};
+            memset(&tRTVDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
             tRTVDesc.Format = m_Desc.Format;
             tRTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
             tRTVDesc.Texture2DArray.ArraySize = 6;
@@ -188,6 +191,7 @@ void CTexture::CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Forma
         if (_iBindFlag & D3D11_BIND_SHADER_RESOURCE)
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
+            memset(&tSRVDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
             tSRVDesc.Format = m_Desc.Format;
             tSRVDesc.TextureCube.MipLevels = 9;
             tSRVDesc.TextureCube.MostDetailedMip = 0;
@@ -199,6 +203,7 @@ void CTexture::CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Forma
         if (_iBindFlag & D3D11_BIND_UNORDERED_ACCESS)
         {
             D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
+            memset(&tUAVDesc, 0, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
             tUAVDesc.Format = m_Desc.Format;
             tUAVDesc.Texture2D.MipSlice = 0;
             tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;

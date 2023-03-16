@@ -51,7 +51,8 @@ float4 PS_CubeMap(GS_OUTPUT_CUBE_MAP _in) : SV_Target
 {
 	float4 vOutColor = (float4)0.f;
 
-	float2 vUV = _in.Pos.xy / g_vRenderResolution;
+	float4 vProj = mul(_in.Pos, g_matEvnProj);
+	float2 vUV = vProj.xy / g_vRenderResolution;
 
 	float4 vViewPos = g_tex_1.Sample(g_sam_0, vUV);
 

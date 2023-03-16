@@ -255,44 +255,44 @@ void CCamera::render()
 	* 여기서 행렬 세팅 -> render transform 업데이트
 	*/
 
-	//CONTEXT->RSSetViewports(1, &m_tViewPort);
-	//SortObject();
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
-	//render_deferred();
-	//
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
-	//render_decal(); 
-	//
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
-	//
-	//const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
-	//
-	//for (size_t i = 0; i < vecLight3D.size(); ++i)
-	//	vecLight3D[i]->render();
-	//
+	CONTEXT->RSSetViewports(1, &m_tViewPort);
+	SortObject();
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
+	render_deferred();
+	
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
+	render_decal(); 
+	
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
+	
+	const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
+	
+	for (size_t i = 0; i < vecLight3D.size(); ++i)
+		vecLight3D[i]->render();
+	
 	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
 	//m_LightCS->Excute();
  	//m_LightCS->Clear();
-	//
+	
 	static Ptr<CMaterial> pMergeMtrl;
 	static Ptr<CMesh> pRectMesh;
 	//
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::SWAPCHAIN);
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
-	//pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
-	//pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
-	//pMergeMtrl->UpdateData();
-	//pRectMesh->render();
-	//CMaterial::Clear();
-	//
-	//render_opaque();
-	//render_mask();
-	//
-	//render_transparent();
-	//render_postprocess();
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::SWAPCHAIN);
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+	
+	render_opaque();
+	render_mask();
+	
+	render_transparent();
+	render_postprocess();
 
 	static bool bstart = false;
 
@@ -306,8 +306,12 @@ void CCamera::render()
 		pMergeMtrl->UpdateData();
 		pRectMesh->render();
 		CMaterial::Clear();
+		bstart = false;
 	}
 	
+	CONTEXT->RSSetViewports(1, &m_tViewPort);
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+
 	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
 	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
 	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
