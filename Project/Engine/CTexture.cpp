@@ -62,7 +62,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
 {
     m_Desc.BindFlags = _iBindFlag;
  
-    m_Desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+    m_Desc.Usage = D3D11_USAGE::D3D11_USAGE_STAGING;
     m_Desc.CPUAccessFlags = 0;
 
     m_Desc.Format = _Format;
@@ -132,86 +132,67 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
 
 void CTexture::CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag)
 {
-    m_Desc.BindFlags = _iBindFlag;
+    ID3D11Texture2D* cubeTexture = NULL;
+    ComPtr<ID3D11ShaderResourceView> shaderResourceView = NULL;
 
-    m_Desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
-    m_Desc.CPUAccessFlags = 0;
+    //Description of each face
+    D3D11_TEXTURE2D_DESC texDesc = {};
 
-    m_Desc.Format = _Format;
-    m_Desc.Width = m_fWidth = 256;
-    m_Desc.Height = m_fHeight = 256;
-    m_Desc.ArraySize = 6;
+    D3D11_TEXTURE2D_DESC texDesc1 = {};
+    texDesc1.Width = _iWidth;
+    texDesc1.Height = _iHeight;
+    texDesc1.MipLevels = 9;
+    texDesc1.Format = _Format;
+    //The Shader Resource view description
+    D3D11_SHADER_RESOURCE_VIEW_DESC SMViewDesc = {};
+    wstring str[6] = { L"LeftTargetTex", L"RightTargetTex", L"DownTargetTex", L"UpTargetTex",L"BackTargetTex", L"FrontTargetTex" };
+    ComPtr<ID3D11Texture2D> tex[6]{};
 
-    m_Desc.SampleDesc.Count = 1;
-    m_Desc.SampleDesc.Quality = 0;
-
-    if (_iBindFlag & D3D11_BIND_DEPTH_STENCIL)
+    for (size_t i = 0; i < 6; ++i)
     {
-        m_Desc.MipLevels = 1;
-        m_Desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-    }
-    else
-    {
-        m_Desc.MipLevels = 9;
-        m_Desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE;
+        tex[i] = CResMgr::GetInst()->FindRes<CTexture>(str[i])->GetTex2D();
     }
 
-    HRESULT hr = DEVICE->CreateTexture2D(&m_Desc, nullptr, m_Tex2D.GetAddressOf());
-    assert(!FAILED(hr));
+    tex[0]->GetDesc(&texDesc1);
 
-    //DEPTH Stencill View는 한가지의 View만 가질 수 있다.
-    if (_iBindFlag & D3D11_BIND_DEPTH_STENCIL)
+    texDesc.Width = texDesc1.Width;
+    texDesc.Height = texDesc1.Height;
+    texDesc.MipLevels = texDesc1.MipLevels;
+    texDesc.ArraySize = 6;
+    texDesc.Format = texDesc1.Format;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.SampleDesc.Quality = 0;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+    SMViewDesc.Format = texDesc.Format;
+    SMViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+    SMViewDesc.TextureCube.MipLevels = texDesc.MipLevels;
+    SMViewDesc.TextureCube.MostDetailedMip = 0;
+
+
+    DEVICE->CreateTexture2D(&texDesc, NULL, &cubeTexture);
+    for (int i = 0; i < 6; i++)
     {
-        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-        memset(&descDSV, 0, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-        descDSV.Format = m_Desc.Format;
-        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-        descDSV.Texture2DArray.FirstArraySlice = 0;
-        descDSV.Texture2DArray.ArraySize = 6;
-        descDSV.Texture2DArray.MipSlice = 0;
-        descDSV.Flags = 0;
-        hr = DEVICE->CreateDepthStencilView(m_Tex2D.Get(), &descDSV, m_DSV.GetAddressOf());
-        assert(!FAILED(hr));
-    }
-    else
-    {
-        if (_iBindFlag & D3D11_BIND_RENDER_TARGET)
-        {
-            D3D11_RENDER_TARGET_VIEW_DESC tRTVDesc = {};
-            memset(&tRTVDesc, 0, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-            tRTVDesc.Format = m_Desc.Format;
-            tRTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-            tRTVDesc.Texture2DArray.ArraySize = 6;
-            tRTVDesc.Texture2DArray.FirstArraySlice = 0;
-            tRTVDesc.Texture2DArray.MipSlice = 0;
-            hr = DEVICE->CreateRenderTargetView(m_Tex2D.Get(), &tRTVDesc, m_RTV.GetAddressOf());
-            assert(!FAILED(hr));
-        }
 
-        if (_iBindFlag & D3D11_BIND_SHADER_RESOURCE)
+        for (UINT mipLevel = 0; mipLevel < texDesc.MipLevels; ++mipLevel)
         {
-            D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
-            memset(&tSRVDesc, 0, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-            tSRVDesc.Format = m_Desc.Format;
-            tSRVDesc.TextureCube.MipLevels = 9;
-            tSRVDesc.TextureCube.MostDetailedMip = 0;
-            tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D_SRV_DIMENSION_TEXTURECUBE;
-            hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), &tSRVDesc, m_SRV.GetAddressOf());
-            assert(!FAILED(hr));
-        }
+            D3D11_MAPPED_SUBRESOURCE mappedTex2D;
+            memset(&mappedTex2D, 0, sizeof(D3D11_MAPPED_SUBRESOURCE));
+            HRESULT hr = CONTEXT->Map(tex[i].Get(), mipLevel, D3D11_MAP_READ, 0, &mappedTex2D);
+            assert(SUCCEEDED(hr));
+            CONTEXT->UpdateSubresource(cubeTexture,
+                D3D11CalcSubresource(mipLevel, i, texDesc.MipLevels),
+                0, mappedTex2D.pData, mappedTex2D.RowPitch, mappedTex2D.DepthPitch);
 
-        if (_iBindFlag & D3D11_BIND_UNORDERED_ACCESS)
-        {
-            D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
-            memset(&tUAVDesc, 0, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
-            tUAVDesc.Format = m_Desc.Format;
-            tUAVDesc.Texture2D.MipSlice = 0;
-            tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
-            hr = DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), &tUAVDesc, m_UAV.GetAddressOf());
-            //    m_UAV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_UAV") - 1, "CTexture::m_UAV");
-            assert(!FAILED(hr));
+            CONTEXT->Unmap(tex[i].Get(), mipLevel);
         }
     }
+
+    DEVICE->CreateShaderResourceView(cubeTexture, &SMViewDesc, shaderResourceView.GetAddressOf());
 }
 
 void CTexture::Init_EnvViewPort()

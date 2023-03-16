@@ -25,6 +25,7 @@ private:
     ComPtr<ID3D11Texture2D>             m_Tex2D;    // GPU Mem 에 옮긴 데이터 관리하는 객체
     
     ComPtr<ID3D11RenderTargetView>      m_RTV;      // Tex2D 를 OM(OutputMerge) RenderTarget 으로 전달할 때 사용
+    ComPtr<ID3D11RenderTargetView>      m_arrRTV[6];
     ComPtr<ID3D11DepthStencilView>      m_DSV;      // Tex2D 를 OM(OutputMerge) DepthStencil 로 전달할 때 사용
     ComPtr<ID3D11ShaderResourceView>    m_SRV;      // Tex2D 를 t 레지스터에 바인딩할 때 사용
     ComPtr<ID3D11UnorderedAccessView>   m_UAV;      // Tex2D 를 컴퓨트 쉐이더 u 레지스터에 전달할 때 사용

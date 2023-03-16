@@ -409,7 +409,9 @@ call EngineCopy.bat</Command>
     <FxCompile Include="decal.fx" />
     <FxCompile Include="DragEffect.fx" />
     <FxCompile Include="editor.fx" />
-    <FxCompile Include="EnvCubeMap.fx" />
+    <FxCompile Include="EnvCubeMap.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="fog.fx" />
     <FxCompile Include="func.fx" />
     <FxCompile Include="blur.fx" />

@@ -24,7 +24,7 @@ VS_OUTPUT_CUBE_MAP VS_CubeMap(float4 Pos: POSITION)
 /*
 * 큐브로 생성 GS
 */
-[maxvertexcount(18)]
+[maxvertexcount(36)]
 void GS_CubeMap
 	(triangle VS_OUTPUT_CUBE_MAP In[3], 
 		inout TriangleStream<GS_OUTPUT_CUBE_MAP> CubeMapStream)
@@ -35,7 +35,7 @@ void GS_CubeMap
 		GS_OUTPUT_CUBE_MAP result;
 		result.RTIndex = surface;
 
-		for (int vertex = 0; vertex < 3; ++vertex)
+		for (int vertex = 0; vertex < 6; ++vertex)
 		{
 			result.Pos = mul(In[vertex].Pos, g_matEnvView[surface]);
 			//투영 좌표계 변환

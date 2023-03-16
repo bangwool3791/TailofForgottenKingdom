@@ -392,6 +392,12 @@ enum class MRT_TYPE
 	BLOOM,
 	SHADOW,
 	ENVBOX,
+	FRONT,
+	BACK,
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN,
 	END,
 };
 

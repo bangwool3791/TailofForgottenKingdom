@@ -71,6 +71,7 @@ public:
 	void render_editor();
 
 	void CreateMRT();
+	void CreateMRT(const wstring& wstr, MRT_TYPE eType);
 	void ClearMRT();
 	void ClearMRT(MRT_TYPE _eType);
 };

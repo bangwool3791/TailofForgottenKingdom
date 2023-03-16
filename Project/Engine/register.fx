@@ -16,10 +16,6 @@ cbuffer TRANSFORM : register(b0)
     row_major matrix g_matWVP;
 
     row_major matrix g_matReflection;
-
-    row_major matrix g_matEnvView[6];
-
-    row_major matrix g_matEvnProj;
 };
 
 

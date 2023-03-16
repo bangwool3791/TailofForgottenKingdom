@@ -74,6 +74,7 @@ public :
     void InitializeEnvView(Vec3 vEyePos);
     virtual void finaltick();
     void         render();
+    void         render(MRT_TYPE _eType);
 public:
     void CalcViewMat();
     void CalcProjMat();

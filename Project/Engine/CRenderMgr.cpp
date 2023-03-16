@@ -69,7 +69,7 @@ void CRenderMgr::render()
 void CRenderMgr::clear()
 {
 	// MRT Å¸°Ù Å¬¸®¾î
-	//ClearMRT();
+	ClearMRT();
 
 	UpdateNoiseTexture();
 
@@ -85,9 +85,77 @@ void CRenderMgr::clear()
 
 void CRenderMgr::render_game()
 {
+	static bool bCheck = false;
+
+	if (!bCheck)
+	{
+		for (auto elem{ m_vecCam.begin() }; elem != m_vecCam.end(); ++elem)
+		{
+			const wstring& wstr = (*elem)->GetOwner()->GetName();
+
+			if (!lstrcmp(wstr.c_str(), L"FrontCamera"))
+			{
+				(*elem)->render(MRT_TYPE::FRONT);
+			}
+			else if (!lstrcmp(wstr.c_str(), L"BackCamera"))
+			{
+				(*elem)->render(MRT_TYPE::BACK);
+			}
+			else if (!lstrcmp(wstr.c_str(), L"LeftCamera"))
+			{
+				(*elem)->render(MRT_TYPE::LEFT);
+			}
+			else if (!lstrcmp(wstr.c_str(), L"RightCamera"))
+			{
+				(*elem)->render(MRT_TYPE::RIGHT);
+			}
+			else if (!lstrcmp(wstr.c_str(), L"UpCamera"))
+			{
+				(*elem)->render(MRT_TYPE::UP);
+			}
+			else if (!lstrcmp(wstr.c_str(), L"DownCamera"))
+			{
+				(*elem)->render(MRT_TYPE::DOWN);
+			}
+		}
+
+		CResMgr::GetInst()->CreateCubeTexture(L"EnvCubeTexture"
+			, 256.f, 256.f
+			, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+
+		
+		bCheck = true;
+	}
 
 	for (auto elem{ m_vecCam.begin() }; elem != m_vecCam.end(); ++elem)
 	{
+		const wstring& wstr = (*elem)->GetOwner()->GetName();
+
+		if (!lstrcmp(wstr.c_str(), L"FrontCamera"))
+		{
+			continue;
+		}
+		else if (!lstrcmp(wstr.c_str(), L"BackCamera"))
+		{
+			continue;
+		}
+		else if (!lstrcmp(wstr.c_str(), L"LeftCamera"))
+		{
+			continue;
+		}
+		else if (!lstrcmp(wstr.c_str(), L"RightCamera"))
+		{
+			continue;
+		}
+		else if (!lstrcmp(wstr.c_str(), L"UpCamera"))
+		{
+			continue;
+		}
+		else if (!lstrcmp(wstr.c_str(), L"DownCamera"))
+		{
+			continue;
+		}
+
 		(*elem)->render();
 	}
 }

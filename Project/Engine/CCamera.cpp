@@ -144,8 +144,6 @@ void CCamera::finaltick()
 {
 	CalcViewMat();
 
-	CalcReflectMat(-1.5f);
-
 	CalcProjMat();
 
 	CRenderMgr::GetInst()->RegisterCamera(this);
@@ -241,82 +239,102 @@ void CCamera::CalcProjMat()
 
 void CCamera::render()
 {
-	g_transform.matView			= m_matView;
-	g_transform.matViewInv		= m_matViewInv;
-	g_transform.matProj			= m_matProj;
-	g_transform.matProjInv		= m_matProjInv;
-	g_transform.matReflect		= m_matReflect;
 
-	for (size_t i = 0; i < 6; ++i)
-		g_transform.matEnvView[i] = m_matCubeMapView[i];
-
-	g_transform.matEvnProj		= m_matCubeMapProj;
+	g_transform.matView = m_matView;
+	g_transform.matViewInv = m_matViewInv;
+	g_transform.matProj = m_matProj;
+	g_transform.matProjInv = m_matProjInv;
+	g_transform.matReflect = m_matReflect;
 	/*
 	* 여기서 행렬 세팅 -> render transform 업데이트
 	*/
-
-	CONTEXT->RSSetViewports(1, &m_tViewPort);
 	SortObject();
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
 	render_deferred();
-	
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
-	render_decal(); 
-	
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+	render_decal();
+
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
-	
 	const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
-	
+
 	for (size_t i = 0; i < vecLight3D.size(); ++i)
 		vecLight3D[i]->render();
-	
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
-	//m_LightCS->Excute();
- 	//m_LightCS->Clear();
-	
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
+	m_LightCS->Excute();
+	m_LightCS->Clear();
+
+
 	static Ptr<CMaterial> pMergeMtrl;
 	static Ptr<CMesh> pRectMesh;
-	//
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::SWAPCHAIN);
+
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
 	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
 	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();
 	pRectMesh->render();
 	CMaterial::Clear();
-	
 	render_opaque();
 	render_mask();
-	
+
 	render_transparent();
 	render_postprocess();
 
-	static bool bstart = false;
-
-	if (!bstart)
-	{
-		CONTEXT->RSSetViewports(1, &m_tEnvViewPort[0]);
-		CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::ENVBOX);
-		CRenderMgr::GetInst()->GetMRT(MRT_TYPE::ENVBOX)->OMSet();
-		pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"EnvCubeMtrl");
-		pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
-		pMergeMtrl->UpdateData();
-		pRectMesh->render();
-		CMaterial::Clear();
-		bstart = false;
-	}
-	
-	CONTEXT->RSSetViewports(1, &m_tViewPort);
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
-
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
 }
 
+void CCamera::render(MRT_TYPE _eType)
+{
+	g_transform.matView = m_matView;
+	g_transform.matViewInv = m_matViewInv;
+	g_transform.matProj = m_matProj;
+	g_transform.matProjInv = m_matProjInv;
+	g_transform.matReflect = m_matReflect;
+	/*
+	* 여기서 행렬 세팅 -> render transform 업데이트
+	*/
+	SortObject();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
+	render_deferred();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
+	render_decal();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
+
+	const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
+
+	for (size_t i = 0; i < vecLight3D.size(); ++i)
+		vecLight3D[i]->render();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
+	m_LightCS->Excute();
+	m_LightCS->Clear();
+
+
+	static Ptr<CMaterial> pMergeMtrl;
+	static Ptr<CMesh> pRectMesh;
+
+	CRenderMgr::GetInst()->GetMRT(_eType)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+
+	render_opaque();
+	render_mask();
+
+	render_transparent();
+	render_postprocess();
+
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+}
 /*
 * 상수 버퍼 불러와서, 오브젝트 -> 텍스쳐 업데이트
 * 맵 -> 벡터 -> 오브젝트1 -> 업데이트

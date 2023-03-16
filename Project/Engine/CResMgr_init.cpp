@@ -1077,17 +1077,6 @@ void CResMgr::CreateDefaultGraphicsShader()
 	AddRes<CGraphicsShader>(L"ReflectShader", pShader);
 
 	pShader = new CGraphicsShader();
-	pShader->CreateVertexShader(L"shader\\EnvCubeMap.fx", "VS_CubeMap");
-	pShader->CreateGeometryShader(L"shader\\EnvCubeMap.fx", "GS_CubeMap");
-	pShader->CreatePixelShader(L"shader\\EnvCubeMap.fx", "PS_CubeMap");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::DEFAULT);
-	pShader->SetDSType(DS_TYPE::LESS);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
-
-	AddRes<CGraphicsShader>(L"EnvCubeShader", pShader);
-
-	pShader = new CGraphicsShader();
 	pShader->CreateVertexShader(L"shader\\reflection2.fx", "VS_EnvMappedScene_NoTexture");
 	pShader->CreatePixelShader(L"shader\\reflection2.fx", "PS_EnvMappedScene_NoTexture");
 	pShader->SetRSType(RS_TYPE::CULL_FRONT);
