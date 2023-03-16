@@ -66,8 +66,8 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
     m_Desc.CPUAccessFlags = 0;
 
     m_Desc.Format = _Format;
-    m_Desc.Width = _iWidth;
-    m_Desc.Height = _iHeight;
+    m_Desc.Width = m_fWidth = _iWidth;
+    m_Desc.Height = m_fHeight = _iHeight;
     m_Desc.ArraySize = 1;
 
     m_Desc.SampleDesc.Count = 1;////MSAA(Multi Sampling Anti Aliasing)쓸꺼냐? 1, 0 이면 안쓴다는 옵션.
@@ -128,6 +128,89 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
             assert(!FAILED(hr));
         }
     }
+}
+
+void CTexture::CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag)
+{
+    m_Desc.BindFlags = _iBindFlag;
+
+    m_Desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+    m_Desc.CPUAccessFlags = 0;
+
+    m_Desc.Format = _Format;
+    m_Desc.Width = m_fWidth = 256;
+    m_Desc.Height = m_fHeight = 256;
+    m_Desc.ArraySize = 6;
+
+    m_Desc.SampleDesc.Count = 1;
+    m_Desc.SampleDesc.Quality = 0;
+
+    if (_iBindFlag & D3D11_BIND_DEPTH_STENCIL)
+    {
+        m_Desc.MipLevels = 1;
+        m_Desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+    }
+    else
+    {
+        m_Desc.MipLevels = 9;
+        m_Desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE;
+    }
+
+    HRESULT hr = DEVICE->CreateTexture2D(&m_Desc, nullptr, m_Tex2D.GetAddressOf());
+    assert(!FAILED(hr));
+
+    //DEPTH Stencill View는 한가지의 View만 가질 수 있다.
+    if (_iBindFlag & D3D11_BIND_DEPTH_STENCIL)
+    {
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+        descDSV.Format = m_Desc.Format;
+        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+        descDSV.Texture2DArray.FirstArraySlice = 0;
+        descDSV.Texture2DArray.ArraySize = 6;
+        descDSV.Texture2DArray.MipSlice = 0;
+        hr = DEVICE->CreateDepthStencilView(m_Tex2D.Get(), &descDSV, m_DSV.GetAddressOf());
+     
+    }
+    else
+    {
+        if (_iBindFlag & D3D11_BIND_RENDER_TARGET)
+        {
+            D3D11_RENDER_TARGET_VIEW_DESC tRTVDesc = {};
+            tRTVDesc.Format = m_Desc.Format;
+            tRTVDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+            tRTVDesc.Texture2DArray.ArraySize = 6;
+            tRTVDesc.Texture2DArray.FirstArraySlice = 0;
+            tRTVDesc.Texture2DArray.MipSlice = 0;
+            hr = DEVICE->CreateRenderTargetView(m_Tex2D.Get(), &tRTVDesc, m_RTV.GetAddressOf());
+            assert(!FAILED(hr));
+        }
+
+        if (_iBindFlag & D3D11_BIND_SHADER_RESOURCE)
+        {
+            D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
+            tSRVDesc.Format = m_Desc.Format;
+            tSRVDesc.TextureCube.MipLevels = 9;
+            tSRVDesc.TextureCube.MostDetailedMip = 0;
+            tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D_SRV_DIMENSION_TEXTURECUBE;
+            hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), &tSRVDesc, m_SRV.GetAddressOf());
+            assert(!FAILED(hr));
+        }
+
+        if (_iBindFlag & D3D11_BIND_UNORDERED_ACCESS)
+        {
+            D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
+            tUAVDesc.Format = m_Desc.Format;
+            tUAVDesc.Texture2D.MipSlice = 0;
+            tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+            hr = DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), &tUAVDesc, m_UAV.GetAddressOf());
+            //    m_UAV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_UAV") - 1, "CTexture::m_UAV");
+            assert(!FAILED(hr));
+        }
+    }
+}
+
+void CTexture::Init_EnvViewPort()
+{
 }
 
 void CTexture::Create(ComPtr<ID3D11Texture2D> _Tex2D)

@@ -231,39 +231,44 @@ void CRenderMgr::CreateMRT()
 		// HDR MRT
 		// =========
 		{
-			Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
-
-			Ptr<CTexture> arrRTTex[8] =
-			{
-				CResMgr::GetInst()->CreateTexture(L"HdrTargetTex"
-				, vRenderResolution.x, vRenderResolution.y
-				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-
-			};
-
-			Ptr<CTexture> pDSTex = nullptr;
-			m_arrMRT[(UINT)MRT_TYPE::HDR] = new CMRT;
-			m_arrMRT[(UINT)MRT_TYPE::HDR]->Create(arrRTTex, arrClear, pDSTex);
+			//Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
+			//
+			//Ptr<CTexture> arrRTTex[8] =
+			//{
+			//	CResMgr::GetInst()->CreateTexture(L"HdrTargetTex"
+			//	, vRenderResolution.x, vRenderResolution.y
+			//	, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			//
+			//};
+			//
+			//Ptr<CTexture> pDSTex = nullptr;
+			//m_arrMRT[(UINT)MRT_TYPE::HDR] = new CMRT;
+			//m_arrMRT[(UINT)MRT_TYPE::HDR]->Create(arrRTTex, arrClear, pDSTex);
 		}
 
 		// =========
-		// Copy MRT
+		// Env CubeMap MRT
 		// =========
 		{
 			Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
-
+			
 			Ptr<CTexture> arrRTTex[8] =
 			{
-				CResMgr::GetInst()->CreateTexture(L"CopyRenderTargetTex"
-				, vRenderResolution.x, vRenderResolution.y
-				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-
+				CResMgr::GetInst()->CreateCubeTexture(L"EnvTexture"
+					, vRenderResolution.x, vRenderResolution.y
+					, DXGI_FORMAT_R16G16B16A16_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			
 			};
-
-			Ptr<CTexture> pDSTex = nullptr;
-			m_arrMRT[(UINT)MRT_TYPE::COPY_SWAPCHAIN] = new CMRT;
-			m_arrMRT[(UINT)MRT_TYPE::COPY_SWAPCHAIN]->Create(arrRTTex, arrClear, pDSTex);
+			
+			Ptr<CTexture> pDSTex = CResMgr::GetInst()->CreateCubeTexture(L"EnvDepthTexture"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL);
+			//pDSTex = CResMgr::GetInst()->FindRes<CTexture>(L"DepthStencilTex");
+			//pDSTex = nullptr;
+			m_arrMRT[(UINT)MRT_TYPE::ENVBOX] = new CMRT;
+			m_arrMRT[(UINT)MRT_TYPE::ENVBOX]->Create(arrRTTex, arrClear, pDSTex);
 		}
+
 	}
 }
 
@@ -271,9 +276,17 @@ void CRenderMgr::ClearMRT()
 {
 	for (int i = 0; i < (UINT)MRT_TYPE::END; ++i)
 	{
+		//if ((UINT)MRT_TYPE::ENVBOX == i)
+		//	continue;
+
 		if (nullptr != m_arrMRT[i])
 		{
 			m_arrMRT[i]->Clear();
 		}
 	}
+}
+
+void CRenderMgr::ClearMRT(MRT_TYPE _eType)
+{
+	m_arrMRT[(UINT)_eType]->Clear();
 }

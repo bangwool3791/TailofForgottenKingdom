@@ -69,7 +69,7 @@ void CRenderMgr::render()
 void CRenderMgr::clear()
 {
 	// MRT Å¸°Ù Å¬¸®¾î
-	ClearMRT();
+	//ClearMRT();
 
 	UpdateNoiseTexture();
 
@@ -85,6 +85,7 @@ void CRenderMgr::clear()
 
 void CRenderMgr::render_game()
 {
+
 	for (auto elem{ m_vecCam.begin() }; elem != m_vecCam.end(); ++elem)
 	{
 		(*elem)->render();

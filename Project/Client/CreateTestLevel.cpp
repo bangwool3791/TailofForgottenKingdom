@@ -131,7 +131,7 @@ void CreateTestLelvel()
 
 void CreateDefaultObj(CLevel* pLevel)
 {
-	CGameObject *pObject = new CGameObject;
+	CGameObject* pObject = new CGameObject;
 	pObject->SetName(L"Sphere");
 
 	pObject->AddComponent(new CTransform);
@@ -139,7 +139,7 @@ void CreateDefaultObj(CLevel* pLevel)
 	pObject->AddComponent(new CCollider3D);
 	pObject->AddComponent(new CPlayerScript);
 
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 500.f));
 	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
 
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"SphereMesh"));
@@ -148,37 +148,35 @@ void CreateDefaultObj(CLevel* pLevel)
 	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	pLevel->AddGameObject(pObject, 1);
 
+	//pObject = new CGameObject;
+	//pObject->SetName(L"CubeBox");
+	//
+	//pObject->AddComponent(new CTransform);
+	//pObject->AddComponent(new CMeshRender);
+	//
+	//pObject->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
+	//pObject->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
+	//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+	//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
+	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"EnvTexture"));
+	//pLevel->AddGameObject(pObject, 1);
 	//DiffuseTargetTex
 
-	pObject = new CGameObject;
-	pObject->SetName(L"Plane");
-
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CMeshRender);
-
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 400.f));
-	pObject->Transform()->SetRelativeScale(Vec3(5000.f, 5000.f, 5000.f));
-	pObject->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
-
-	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ReflectMtrl"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"blue01.dds"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
-	pLevel->AddGameObject(pObject, 1);
-
-	pObject = new CGameObject;
-	pObject->SetName(L"Diffuse");
-
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CMeshRender);
-
-	pObject->Transform()->SetRelativePos(Vec3(-200.f, -200.f, 400.f));
-	pObject->Transform()->SetRelativeScale(Vec3(200.f, 200.f, 1.f));
-
-	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DMtrl"));
-	pObject->MeshRender()->GetDynamicMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
-	pLevel->AddGameObject(pObject, 1);
+	//pObject = new CGameObject;
+	//pObject->SetName(L"Plane");
+	//
+	//pObject->AddComponent(new CTransform);
+	//pObject->AddComponent(new CMeshRender);
+	//
+	//pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 400.f));
+	//pObject->Transform()->SetRelativeScale(Vec3(5000.f, 5000.f, 5000.f));
+	//pObject->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
+	//
+	//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
+	//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ReflectMtrl"));
+	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"blue01.dds"));
+	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
+	//pLevel->AddGameObject(pObject, 1);
 
 	//pObject = new CGameObject;
 	//pObject->SetName(L"Decal");
@@ -198,18 +196,18 @@ void CreateCamera(CLevel* pLevel)
 {
 	CGameObject* pCamObj = new CGameObject;
 	pCamObj->SetName(L"MainCamera");
-
+	
 	pCamObj->AddComponent(new CTransform);
 	pCamObj->AddComponent(new CCamera);
 	pCamObj->AddComponent(new CMeshRender);
 	pCamObj->AddComponent(new CCollider3D);
 	pCamObj->AddComponent(new CFrustumScript);
 	pCamObj->AddComponent(new CLevelCameraScript);
-
+	
 	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
 	pCamObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"FrustumMesh"));
 	pCamObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
-
+	
 	pCamObj->Camera()->SetProjType(PERSPECTIVE);
 	pCamObj->Camera()->SetLayerMaskZero();
 	pLevel->AddGameObject(pCamObj, 0);
@@ -224,6 +222,7 @@ void CreateCamera(CLevel* pLevel)
 	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 	pCamObj->Camera()->SetProjType(PERSPECTIVE);
 	pCamObj->Camera()->SetLayerMask(1);
+	pCamObj->Camera()->InitializeEnvView(Vec3(0.f, 0.f, 0.f));
 	pLevel->AddGameObject(pCamObj, 0);
 }
 

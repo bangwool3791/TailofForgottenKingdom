@@ -16,7 +16,8 @@ class CTexture :
 private:
     uint8_t*                            m_pPixels;
     long long                           m_iPixelSize;
-
+    FLOAT                               m_fWidth;
+    FLOAT                               m_fHeight;
 public :
     uint8_t* GetPixel() { return m_pPixels; }
 private:
@@ -53,7 +54,8 @@ public:
     // »ý¼º
     void Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
     void Create(ComPtr<ID3D11Texture2D> _Tex2D);
-
+    void CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
+    void Init_EnvViewPort();
     CLONE_ASSERT(CTexture);
 public:
     CTexture(bool _bEngineRes = false);

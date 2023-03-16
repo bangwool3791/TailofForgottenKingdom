@@ -106,6 +106,9 @@ struct tTransform
 	Matrix matWVP;
 
 	Matrix matReflect;
+
+	Matrix matEnvView[6];
+	Matrix matEvnProj;
 };
 
 struct tMtrlConst

@@ -23,7 +23,6 @@ private:
 
 	ComPtr<IDXGISwapChain>			m_pSwapChain;			// RenderTarget(FrontBuffer, BackBuffer) 를 관리 및 역할 교체 지시
 	D3D11_VIEWPORT					m_tViewPort;			// 백버퍼를 윈도우에 그릴 영역(위치, 크기) 지정
-
 	Vec2							m_vRenderResolution;	// 렌더링 버퍼 해상도
 
 	ComPtr<ID3D11SamplerState>		m_arrSampler[(UINT)SAMPLER_TYPE::END];

@@ -51,6 +51,20 @@ CCamera::CCamera()
 
 	m_pObjectRenderBuffer = new CStructuredBuffer;
 	m_pObjectRenderBuffer->Create(sizeof(tObjectRender), 2, SB_TYPE::SRV_ONLY, nullptr, true);
+
+	m_tViewPort.TopLeftX = 0;
+	m_tViewPort.TopLeftY = 0;
+	m_tViewPort.Width = vRenderResolution.x;
+	m_tViewPort.Height = vRenderResolution.y;
+	m_tViewPort.MinDepth = 0.f;
+	m_tViewPort.MaxDepth = 1.f;
+
+	m_tEnvViewPort[0].TopLeftX = 0;
+	m_tEnvViewPort[0].TopLeftY = 0;
+	m_tEnvViewPort[0].Width = 256;
+	m_tEnvViewPort[0].Height = 256;
+	m_tEnvViewPort[0].MinDepth = 0.f;
+	m_tEnvViewPort[0].MaxDepth = 1.f;
 }
 
 CCamera::CCamera(const CCamera& rhs)
@@ -77,6 +91,53 @@ CCamera::~CCamera()
 void CCamera::begin()
 {
 	m_LightCS->SetTargetTex(CResMgr::GetInst()->FindRes<CTexture>(L"DiffuseTargetTex"));
+}
+
+void CCamera::InitializeEnvView(Vec3 vEyePos)
+{
+	Vec3 vEyePt = vEyePos;
+	Vec3 vLookDir;
+	Vec3 vUpDir;
+
+	//+X축면
+	vLookDir = vEyePt + Vec3(1.f, 0.f, 0.f);
+	vUpDir = Vec3(0.f, 1.f, 0.f);
+	m_matCubeMapView[0] = XMMatrixLookAtLH(vEyePt, vLookDir, vUpDir);
+
+	//-X축면
+	vLookDir = vEyePt + Vec3(-1.f, 0.f, 0.f);
+	vUpDir = Vec3(0.f, 1.f, 0.f);
+	m_matCubeMapView[1] = XMMatrixLookAtLH(vEyePt, vLookDir, vUpDir);
+
+	//+Y축면
+	/*
+	z축 안쪽으로 뚫고 들어가는 화면이 vLookDir
+	vLookDir -> y축이면 
+	vUpDir -> -z축이다.
+	*/
+	vLookDir = vEyePt + Vec3(0.f, 1.f, 0.f);
+	vUpDir = Vec3(0.f, 0.f, -1.f);
+	m_matCubeMapView[2] = XMMatrixLookAtLH(vEyePt, vLookDir, vUpDir);
+
+	vLookDir = vEyePt + Vec3(0.f, -1.f, 0.f);
+	vUpDir = Vec3(0.f, 0.f, 1.f);
+	m_matCubeMapView[3] = XMMatrixLookAtLH(vEyePt, vLookDir, vUpDir);
+
+	//+Z축면
+	/*
+	* https://sonagi87174.tistory.com/16
+	* 기준 축에 따른 Up벡터 계산
+	*/
+	vLookDir = vEyePt + Vec3(0.f, 0.f, 1.f);
+	vUpDir = Vec3(0.f, 1.f, 0.f);
+	m_matCubeMapView[4] = XMMatrixLookAtLH(vEyePt, vLookDir, vUpDir);
+
+	//+Z축면
+	vLookDir = vEyePt + Vec3(0.f, 0.f, 1.f);
+	vUpDir = Vec3(0.f, 1.f, 0.f);
+	m_matCubeMapView[5] = XMMatrixLookAtLH(vEyePt, vLookDir, vUpDir);
+
+	m_matCubeMapProj = XMMatrixPerspectiveFovLH(XMConvertToRadians(90.f), 1.f, 1.f, 100.f);
 }
 
 void CCamera::finaltick()
@@ -185,50 +246,71 @@ void CCamera::render()
 	g_transform.matProj			= m_matProj;
 	g_transform.matProjInv		= m_matProjInv;
 	g_transform.matReflect		= m_matReflect;
+
+	for (size_t i = 0; i < 6; ++i)
+		g_transform.matEnvView[i] = m_matCubeMapView[i];
+
+	g_transform.matEvnProj		= m_matCubeMapProj;
 	/*
 	* 여기서 행렬 세팅 -> render transform 업데이트
 	*/
-	SortObject();
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
-	render_deferred();
 
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
-	render_decal(); 
-
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
-
-	const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
-
-	for (size_t i = 0; i < vecLight3D.size(); ++i)
-		vecLight3D[i]->render();
-
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
-	m_LightCS->Excute();
- 	m_LightCS->Clear();
-
+	//CONTEXT->RSSetViewports(1, &m_tViewPort);
+	//SortObject();
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
+	//render_deferred();
+	//
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
+	//render_decal(); 
+	//
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
+	//
+	//const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
+	//
+	//for (size_t i = 0; i < vecLight3D.size(); ++i)
+	//	vecLight3D[i]->render();
+	//
+	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
+	//m_LightCS->Excute();
+ 	//m_LightCS->Clear();
+	//
 	static Ptr<CMaterial> pMergeMtrl;
 	static Ptr<CMesh> pRectMesh;
+	//
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::SWAPCHAIN);
+	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+	//pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	//pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	//pMergeMtrl->UpdateData();
+	//pRectMesh->render();
+	//CMaterial::Clear();
+	//
+	//render_opaque();
+	//render_mask();
+	//
+	//render_transparent();
+	//render_postprocess();
 
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::COPY_SWAPCHAIN)->OMSet();
-	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
-	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
-	pMergeMtrl->UpdateData();
-	pRectMesh->render();
-	CMaterial::Clear();
+	static bool bstart = false;
 
-	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
-	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
-	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
-	pMergeMtrl->UpdateData();
-	pRectMesh->render();
-	CMaterial::Clear();
-
-	render_opaque();
-	render_mask();
+	if (!bstart)
+	{
+		CONTEXT->RSSetViewports(1, &m_tEnvViewPort[0]);
+		CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::ENVBOX);
+		CRenderMgr::GetInst()->GetMRT(MRT_TYPE::ENVBOX)->OMSet();
+		pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"EnvCubeMtrl");
+		pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+		pMergeMtrl->UpdateData();
+		pRectMesh->render();
+		CMaterial::Clear();
+	}
 	
-	render_transparent();
-	render_postprocess();
-
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
 }
 
 /*
@@ -463,20 +545,20 @@ void CCamera::SortObject()
 				Vec3 vRot = vecGameObject[j]->Transform()->GetRelativeRotation();
 				aabb_t arrayAABB{ {-vScale.x, -vScale.y, -vScale.z},{vScale.x, vScale.y, vScale.z} };
 				// Calculate Frustum
-				CCamera* pCamera = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera();
-				Matrix matVP = pCamera->GetViewMat() * pCamera->GetProjMat();
-				Matrix matWorld = pCamera->GetOwner()->Transform()->GetWorldMat();
-				calculate_frustum(frus, matVP, matWorld);
+				//CCamera* pCamera = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera();
+				//Matrix matVP = pCamera->GetViewMat() * pCamera->GetProjMat();
+				//Matrix matWorld = pCamera->GetOwner()->Transform()->GetWorldMat();
+				//calculate_frustum(frus, matVP, matWorld);
 
 				//평면 뒤에 있으면 false
-				bool didHit = aabb_to_frustum(arrayAABB, frus);
-
-				if (!didHit)
-				{
-					DebugDrawCube(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
-					continue;
-				}
-
+				//bool didHit = aabb_to_frustum(arrayAABB, frus);
+				//
+				//if (!didHit)
+				//{
+				//	DebugDrawCube(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
+				//	continue;
+				//}
+				//
 				DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
 				Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial()->GetShader();
 

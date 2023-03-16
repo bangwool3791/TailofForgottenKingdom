@@ -38,6 +38,8 @@ VS_OUT ReflectionVertexShader(VS_IN _in)
 
 	reflectProjectWorld = mul(g_matReflection, g_matProj);
 	reflectProjectWorld = mul(g_matWorld, reflectProjectWorld);
+	//WVP
+	//입력 메쉬 로컬 좌표를 반사 좌표계로 전환
 	output.reflectionPosition = mul(_in.position, reflectProjectWorld);
 
 	return output;

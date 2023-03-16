@@ -27,6 +27,11 @@ private:
     Matrix                  m_matProjInv;
     Matrix                  m_matReflect;
 
+    Matrix                  m_matCubeMapView[6];
+    Matrix                  m_matCubeMapProj;
+
+    D3D11_VIEWPORT			m_tEnvViewPort[1];			// È¯°æ¸Ê¿ë 
+    D3D11_VIEWPORT          m_tViewPort;
     PROJ_TYPE               m_eProjType;
     float                   m_fAspectRatio;
 
@@ -66,6 +71,7 @@ private :
     void render_ui() {}
     //void update_render(Ptr<CMesh> p);
 public :
+    void InitializeEnvView(Vec3 vEyePos);
     virtual void finaltick();
     void         render();
 public:

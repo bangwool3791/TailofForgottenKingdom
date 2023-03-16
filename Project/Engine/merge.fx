@@ -47,6 +47,9 @@ struct VS_OUT
 VS_OUT VS_Merge(VS_IN _in)
 {
 	VS_OUT output = (VS_OUT)0.f;
+	/*
+	* -1 ~ 1사이 값으로 변환
+	*/
 	output.vPosition = float4(_in.vPos.xy * 2.f, 0.f, 1.f);
 	return output;
 }

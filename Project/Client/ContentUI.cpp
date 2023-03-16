@@ -147,49 +147,49 @@ void ContentUI::render_update()
 	{
 		if (KEY_RELEASE(KEY::LBTN))
 		{
-			Ray ray{};
+			//Ray ray{};
 
-			Vec2 p = CKeyMgr::GetInst()->GetMousePos();
-			Vec2 vResolution = CDevice::GetInst()->GetRenderResolution();
-			//float fScale = m_pCameraObejct->Camera()->GetOrthographicScale();
-			//vResolution = vResolution * fScale;
+			//Vec2 p = CKeyMgr::GetInst()->GetMousePos();
+			//Vec2 vResolution = CDevice::GetInst()->GetRenderResolution();
+			////float fScale = m_pCameraObejct->Camera()->GetOrthographicScale();
+			////vResolution = vResolution * fScale;
 
-			p.x = (2.0f * p.x) / vResolution.x - 1.0f;
-			p.y = 1.0f - (2.0f * p.y) / vResolution.y;
+			//p.x = (2.0f * p.x) / vResolution.x - 1.0f;
+			//p.y = 1.0f - (2.0f * p.y) / vResolution.y;
 
-			XMVECTOR det; //Determinant, needed for matrix inverse function call
-			Vector3 origin = Vector3(p.x, p.y, -1);
-			Vector3 faraway = Vector3(p.x, p.y, 1);
+			//XMVECTOR det; //Determinant, needed for matrix inverse function call
+			//Vector3 origin = Vector3(p.x, p.y, -1);
+			//Vector3 faraway = Vector3(p.x, p.y, 1);
 
-			const Matrix& matView = m_pLevelCamera->Camera()->GetViewMat();
-			const Matrix& matProj = m_pLevelCamera->Camera()->GetProjMat();
-			XMMATRIX invViewProj = XMMatrixInverse(&det, matView * matProj);
-			Vector3 rayorigin = XMVector3Transform(origin, invViewProj);
-			Vector3 rayend = XMVector3Transform(faraway, invViewProj);
-			Vector3 raydirection = rayend - rayorigin;
-			raydirection.Normalize();
-			ray.position = rayorigin;
-			ray.direction = raydirection;
+			//const Matrix& matView = m_pLevelCamera->Camera()->GetViewMat();
+			//const Matrix& matProj = m_pLevelCamera->Camera()->GetProjMat();
+			//XMMATRIX invViewProj = XMMatrixInverse(&det, matView * matProj);
+			//Vector3 rayorigin = XMVector3Transform(origin, invViewProj);
+			//Vector3 rayend = XMVector3Transform(faraway, invViewProj);
+			//Vector3 raydirection = rayend - rayorigin;
+			//raydirection.Normalize();
+			//ray.position = rayorigin;
+			//ray.direction = raydirection;
 
-			Vec3 vMousePos{};
-			Vec3 vCameraPos = m_pLevelCamera->Transform()->GetRelativePos();
+			//Vec3 vMousePos{};
+			//Vec3 vCameraPos = m_pLevelCamera->Transform()->GetRelativePos();
 
-			BoundingFrustum fr(m_pLevelCamera->Camera()->GetProjMat());
+			//BoundingFrustum fr(m_pLevelCamera->Camera()->GetProjMat());
 
-			if (m_pLevelTerrain->Terrain()->GetMesh()->GetPosition(ray, vMousePos))
-			{
-				Vec2 vRes = CDevice::GetInst()->GetRenderResolution();
+			//if (m_pLevelTerrain->Terrain()->GetMesh()->GetPosition(ray, vMousePos))
+			//{
+			//	Vec2 vRes = CDevice::GetInst()->GetRenderResolution();
 
-				float fDelta = m_pLevelCamera->Camera()->GetFar() - m_pLevelCamera->Camera()->GetNear();
-				BoundingBox box(vMousePos - vCameraPos, Vec3(vRes.x, vRes.y, fDelta));
-				BoundingFrustum fr(m_pLevelCamera->Camera()->GetProjMat());
+			//	float fDelta = m_pLevelCamera->Camera()->GetFar() - m_pLevelCamera->Camera()->GetNear();
+			//	BoundingBox box(vMousePos - vCameraPos, Vec3(vRes.x, vRes.y, fDelta));
+			//	BoundingFrustum fr(m_pLevelCamera->Camera()->GetProjMat());
 
-				if (fr.Contains(box))
-				{
-					CGameObject* pGameObject = m_pTargetPrefab->Instantiate();
-					Instantiate(pGameObject, vMousePos, iLayer);
-				}
-			}
+			//	if (fr.Contains(box))
+			//	{
+			//		CGameObject* pGameObject = m_pTargetPrefab->Instantiate();
+			//		Instantiate(pGameObject, vMousePos, iLayer);
+			//	}
+			//}
 		}
 	}
 }

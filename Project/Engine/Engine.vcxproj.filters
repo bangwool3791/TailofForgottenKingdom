@@ -253,6 +253,9 @@
     <Filter Include="HLSL\Render\3D\reflection">
       <UniqueIdentifier>{2858e7a2-0f99-47a2-83dc-f7e48734e9de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Render\3D\RenderTarget">
+      <UniqueIdentifier>{bb25163c-f5e0-4cc7-ac17-b56eee9bb1f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -872,6 +875,12 @@
       <Filter>HLSL\Render\3D\blur and bloom</Filter>
     </FxCompile>
     <FxCompile Include="reflection.fx">
+      <Filter>HLSL\Render\3D\reflection</Filter>
+    </FxCompile>
+    <FxCompile Include="EnvCubeMap.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="reflection2.fx">
       <Filter>HLSL\Render\3D\reflection</Filter>
     </FxCompile>
   </ItemGroup>

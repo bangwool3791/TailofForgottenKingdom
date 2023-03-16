@@ -72,4 +72,5 @@ public:
 
 	void CreateMRT();
 	void ClearMRT();
+	void ClearMRT(MRT_TYPE _eType);
 };

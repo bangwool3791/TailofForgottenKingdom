@@ -53,6 +53,19 @@ Ptr<CTexture> CResMgr::CreateTexture(const wstring& _strKey, ComPtr<ID3D11Textur
 	return pTex;
 }
 
+Ptr<CTexture> CResMgr::CreateCubeTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag)
+{
+	Ptr<CTexture> pTex = FindRes<CTexture>(_strKey);
+	assert(!pTex.Get());
+
+	pTex = new CTexture(true);
+
+	pTex->CreateCubeTexture(_iWidth, _iHeight, _eFormat, _iBindFlag);
+
+	AddRes<CTexture>(_strKey, pTex.Get());
+	return pTex;
+}
+
 void CResMgr::CreateDefaultMesh()
 {
 	vector<Vtx> vecVtx;
@@ -1062,6 +1075,17 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
 
 	AddRes<CGraphicsShader>(L"ReflectShader", pShader);
+
+	pShader = new CGraphicsShader();
+	pShader->CreateVertexShader(L"shader\\EnvCubeMap.fx", "VS_CubeMap");
+	pShader->CreateGeometryShader(L"shader\\EnvCubeMap.fx", "GS_CubeMap");
+	pShader->CreatePixelShader(L"shader\\EnvCubeMap.fx", "PS_CubeMap");
+	pShader->SetRSType(RS_TYPE::CULL_NONE);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
+
+	AddRes<CGraphicsShader>(L"EnvCubeShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1190,7 +1214,6 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BloomShader"));
 	AddRes<CMaterial>(L"BloomMtrl", pMaterial);
 
-
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BloomUpdateShader"));
 	AddRes<CMaterial>(L"BloomUpdateMtrl", pMaterial);
@@ -1202,6 +1225,10 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ReflectShader"));
 	AddRes<CMaterial>(L"ReflectMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"EnvCubeShader"));
+	AddRes<CMaterial>(L"EnvCubeMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)

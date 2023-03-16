@@ -48,7 +48,7 @@ void CMRT::Clear()
 
 	if (m_DSTex.Get())
 	{
-		CONTEXT->ClearDepthStencilView(m_DSTex->GetDSV().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_DEPTH, 1.f, 0.f);
+		CONTEXT->ClearDepthStencilView(m_DSTex->GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.f, 0.f);
 	}
 }
 

@@ -81,14 +81,14 @@ int CDevice::init(HWND _hWnd, Vec2 _vResolution)
 
 
 	// ViewPort
-	m_tViewPort.TopLeftX = 0;
-	m_tViewPort.TopLeftY = 0;
-	m_tViewPort.Width = _vResolution.x;
-	m_tViewPort.Height = _vResolution.y;
-	m_tViewPort.MinDepth = 0.f;
-	m_tViewPort.MaxDepth = 1.f;
+	//m_tViewPort.TopLeftX = 0;
+	//m_tViewPort.TopLeftY = 0;
+	//m_tViewPort.Width = _vResolution.x;
+	//m_tViewPort.Height = _vResolution.y;
+	//m_tViewPort.MinDepth = 0.f;
+	//m_tViewPort.MaxDepth = 1.f;
 
-	m_pDeviceContext->RSSetViewports(1, &m_tViewPort);
+	//m_pDeviceContext->RSSetViewports(1, &m_tViewPort);
 	
 
 	// 샘플러 생성 및 바인딩

@@ -48,7 +48,7 @@ public:
 	Ptr<CTexture> CreateTexture(const wstring& _strKey
 		, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag);
 	Ptr<CTexture> CreateTexture(const wstring& _strKey, ComPtr<ID3D11Texture2D> _Tex2D);
-
+	Ptr<CTexture> CreateCubeTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag);
 	const map<wstring, Ptr<CRes>>& GetResource(RES_TYPE _eResType)
 	{
 		return m_arrRes[(UINT)_eResType];
