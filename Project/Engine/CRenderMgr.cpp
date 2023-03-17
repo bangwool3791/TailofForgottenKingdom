@@ -246,7 +246,7 @@ CCamera* CRenderMgr::GetMainCam()
 		if (m_vecCam.empty())
 			return nullptr;
 
-		return m_vecCam[1];
+		return m_vecCam[0];
 	}
 	else
 	{

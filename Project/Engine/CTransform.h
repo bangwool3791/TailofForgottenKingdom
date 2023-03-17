@@ -53,6 +53,7 @@ public:
 	void SetIgnoreParentScale(bool _blgn) { m_blgnParentScale = _blgn; }
 	bool IsIgnoreParentScale() { return m_blgnParentScale; }
 	const Matrix& GetWorldMat() { return m_matWorld; }
+	const Matrix& GetWorldInvMat() { return m_matWorldInv; }
 
 	bool Picking(Vec3& _vPos);
 	Vec3 Picking(Ray _ray);

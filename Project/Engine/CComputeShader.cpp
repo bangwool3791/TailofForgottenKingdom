@@ -50,7 +50,7 @@ void CComputeShader::CreateComputeShader(const wstring& _strRelativePath, const 
 	assert(!FAILED(hr));
 }
 
-void CComputeShader::Excute()
+void CComputeShader::Execute()
 {
 	/*
 	* 자식 Shader 클래스에서, 상수 버퍼(m_Param)를 업데이트한다. 

@@ -238,6 +238,23 @@ struct colored_vertex
 	inline colored_vertex(const Vec3& p, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) : pos{ p }, color{ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f } {}
 };
 
+
+// 광선 구조체
+struct tRay
+{
+	Vec3 vStart;
+	Vec3 vDir;
+};
+
+// Raycast 결과를 받을 구조체
+struct tRaycastOut
+{
+	Vec2 vUV;
+	int  iDist;
+	int  bSuccess;
+};
+
+
 extern tGlobalData g_global;
 extern  tTransform g_transform;
 extern  std::vector<tObjectRender>	g_vecInfoObject;

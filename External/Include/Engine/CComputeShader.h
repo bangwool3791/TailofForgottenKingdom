@@ -21,7 +21,7 @@ protected:
 
 public :
 	void CreateComputeShader(const wstring& _strRelativePath, const string& _strFuncName);
-	void Excute();
+	void Execute();
 
 	virtual void UpdateData() = 0;
 	virtual void Clear() = 0;

@@ -64,9 +64,14 @@ using namespace std::experimental::filesystem;
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <wrl.h>
+#include "d3dx11.h"
+#include "d3dx11core.h"
+#include <wincodec.h>
+#include "d3dx11tex.h"
 
 #pragma comment(lib, "d3d11")
 #pragma comment(lib, "d3dcompiler")
+#pragma comment(lib, "d3dx11")
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;

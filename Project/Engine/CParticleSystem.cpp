@@ -114,7 +114,7 @@ void CParticleSystem::finaltick()
 	m_UpdateCS->SetMinMaxSpeed(m_vMinMaxSpeed);
 	m_UpdateCS->SetMinMaxLifeTime(m_vMinMaxLifeTime);
 	m_UpdateCS->SetParticleType(m_iType);
-	m_UpdateCS->Excute();
+	m_UpdateCS->Execute();
 }
 
 void CParticleSystem::render()

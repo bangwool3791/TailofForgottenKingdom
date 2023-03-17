@@ -34,8 +34,17 @@ void CMRT::Create(Ptr<CTexture>(&_arrTex)[8], Vec4(&arrClear)[8], Ptr<CTexture> 
 	{
 		m_arrClearColor[i] = arrClear[i];
 	}
-
 	m_DSTex = _pDesTex;
+
+	// ViewPort ¼³Á¤	
+	m_tViewPort.TopLeftX = 0;
+	m_tViewPort.TopLeftY = 0;
+
+	m_tViewPort.Width = m_arrTarget[0]->GetWidth();
+	m_tViewPort.Height = m_arrTarget[0]->GetHeight();
+
+	m_tViewPort.MinDepth = 0;
+	m_tViewPort.MaxDepth = 1;
 }
 
 //Clear Render Target view, Depth stencil view

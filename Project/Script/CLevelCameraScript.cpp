@@ -101,6 +101,15 @@ void CLevelCameraScript::Move()
 			bCheck = true;
 		}
 
+		if (KEY_PRESSED(KEY::RBTN))
+		{
+			Vec3 vRot = Transform()->GetRelativeRotation();
+
+			vRot.y += vMouseDir.x * DT * XM_PI;
+			vRot.x -= vMouseDir.y * DT * XM_PI;
+			Transform()->SetRelativeRotation(vRot);
+			bCheck = true;
+		}
 
 		if (bCheck)
 		{
@@ -146,8 +155,6 @@ void CLevelCameraScript::Move()
 
 			GetOwner()->GetRenderComponent()->GetMesh()->UpdateVertex(vtx, iVtxSize);
 		}
-
-
 
 		if (1 == g_ScrollUp || 1 == g_ScrollDown)
 		{

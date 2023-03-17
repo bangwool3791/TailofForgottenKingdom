@@ -131,7 +131,7 @@ DS_OUT DS_LandScape(PatchTess _tessFactor
 
     float2 FullUV = vUV / float2(FACE_X, FACE_Z);
 
-    //vLocalPos.y = HeightMap.SampleLevel(g_sam_0, FullUV, 0).x;
+    vLocalPos.y = HeightMap.SampleLevel(g_sam_0, FullUV, 0).x;
 
     output.vPosition = mul(float4(vLocalPos, 1.f), g_matWVP);
     output.vUV = vUV;

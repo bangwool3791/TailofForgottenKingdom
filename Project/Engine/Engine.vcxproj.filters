@@ -256,6 +256,15 @@
     <Filter Include="HLSL\Render\3D\RenderTarget">
       <UniqueIdentifier>{bb25163c-f5e0-4cc7-ac17-b56eee9bb1f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Compute\LandScape">
+      <UniqueIdentifier>{633b22bd-ce4b-453f-a829-af5596857442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\Compute\LandScape\HeightMap">
+      <UniqueIdentifier>{2022d5c4-71e3-40dc-be4d-23b61d942d55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\Compute\LandScape\RayCast">
+      <UniqueIdentifier>{959d2c20-b8ad-4d6c-ae5f-1d7c1ef22401}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -525,6 +534,21 @@
     <ClInclude Include="body.h">
       <Filter>Engine\12. Physics\04. rigid body</Filter>
     </ClInclude>
+    <ClInclude Include="CHeightMapShader.h">
+      <Filter>HLSL\Compute\LandScape\HeightMap</Filter>
+    </ClInclude>
+    <ClInclude Include="CRaycastShader.h">
+      <Filter>HLSL\Compute\LandScape\RayCast</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx11.h">
+      <Filter>Engine\00. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx11core.h">
+      <Filter>Engine\00. Header</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx11tex.h">
+      <Filter>Engine\00. Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -749,6 +773,12 @@
     <ClCompile Include="body.cpp">
       <Filter>Engine\12. Physics\04. rigid body</Filter>
     </ClCompile>
+    <ClCompile Include="CHeightMapShader.cpp">
+      <Filter>HLSL\Compute\LandScape\HeightMap</Filter>
+    </ClCompile>
+    <ClCompile Include="CRaycastShader.cpp">
+      <Filter>HLSL\Compute\LandScape\RayCast</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="register.fx">
@@ -882,6 +912,12 @@
     </FxCompile>
     <FxCompile Include="reflection2.fx">
       <Filter>HLSL\Render\3D\reflection</Filter>
+    </FxCompile>
+    <FxCompile Include="heightmap.fx">
+      <Filter>HLSL\Compute\LandScape\HeightMap</Filter>
+    </FxCompile>
+    <FxCompile Include="raycast.fx">
+      <Filter>HLSL\Compute\LandScape\RayCast</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

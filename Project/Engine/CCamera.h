@@ -17,9 +17,9 @@ class CCamera :
 
 {
 private:
+    tRay                    m_ray;      // 마우스 방향을 향하는 직선
     CSLight*                m_LightCS;
     CFrustum                m_Frustum;
-    Ray                     m_ray;
 
     Matrix                  m_matView;
     Matrix                  m_matViewInv;
@@ -96,8 +96,8 @@ public :
     void        SetFar(double _fFar) { m_fFar = _fFar; }
     double       GetFar() { return m_fFar; }
 
-    Ray        CalRay();
-
+    void        CalRay();
+    const tRay& GetRay() { return m_ray; }
     float GetFOV() { return m_FOV; }
     void SetFOV(float _fov) { m_FOV = _fov; }
     /*

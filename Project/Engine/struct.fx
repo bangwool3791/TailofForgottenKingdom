@@ -109,4 +109,12 @@ struct tTile
     int         iIndex;
     int         iInfo;
 };
+
+struct tRaycastOut
+{
+    float2 vUV;
+    int iDist;
+    int success;
+};
+
 #endif

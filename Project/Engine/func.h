@@ -219,6 +219,7 @@ const wchar_t* ToWString(OBJECT_TYPE);
 const char* ToString(RES_TYPE);
 const wchar_t* ToWString(RES_TYPE);
 
+
 #ifdef _DEBUG
 void DebugDrawRect(Vec4 _vColor, Vec3 _vPosition, Vec3 _vScale, Vec3 _vRotation, float _fDuration = 0.f);
 void DebugDrawCircle(Vec4 _vColor, Vec3 _vPosition, float _fRadius, float _fDuration = 0.f);

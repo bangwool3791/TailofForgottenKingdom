@@ -15,9 +15,10 @@ private:
 	//Depth Stencil Texture
 	Ptr<CTexture>	m_DSTex;
 	int				m_RTCount;
-
+	D3D11_VIEWPORT  m_tViewPort;
 public :
 	void Create(Ptr<CTexture>(&_arrTex)[8], Vec4(&arrClear)[8], Ptr<CTexture> _pDesTex);
+	const D3D11_VIEWPORT& GetViewPort() { return m_tViewPort; }
 	void Clear();
 	void OMSet();
 	void OMClear();

@@ -33,9 +33,10 @@ private:
     D3D11_TEXTURE2D_DESC                m_Desc;     // Tex2D Description 구조체
 public:
     // PIPELINE_STAGE
+    void SaveTexture();
     void UpdateData(UINT _iRegisterNum, UINT _iPipelineStage);
     void UpdateData_CS(UINT _iRegisterNum, bool _bShaderRes);
-
+    DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt);
     UINT  GetWidth()     { return m_Desc.Width; }
     UINT  GetHeight()    { return m_Desc.Height; }
 
@@ -46,6 +47,7 @@ public:
     ComPtr<ID3D11UnorderedAccessView> GetUAV() { return  m_UAV; }
 
     static void Clear(UINT _iRegisterNum);
+    static void Clear_CS(UINT _iRegisterNum);
     static void Clear_CS(UINT _iRegisterNum, bool _bShaderRes);
 private:
     // 파일로 부터 로딩
@@ -56,7 +58,10 @@ public:
     void Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
     void Create(ComPtr<ID3D11Texture2D> _Tex2D);
     void CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
-    void Init_EnvViewPort();
+    HRESULT CaptureTexture(_In_ ID3D11DeviceContext* pContext,
+        _In_ ID3D11Resource* pSource,
+        _Inout_ D3D11_TEXTURE2D_DESC& desc,
+        _Inout_ ComPtr<ID3D11Texture2D>& pStaging);
     CLONE_ASSERT(CTexture);
 public:
     CTexture(bool _bEngineRes = false);

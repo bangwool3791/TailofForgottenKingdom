@@ -269,6 +269,91 @@ float GetTessFactor(float3 _vPos, int _iMinLevel, int _iMaxLevel, float _MinDist
     return fLevel;
 }
 
+// 0 ~ 1 사이 값을 반환
+float Random(int key)
+{
+    float fValue = 0.f;
+
+    return fValue;
+}
+
+bool IsBinding(in Texture2D _tex)
+{
+    uint width, height;
+    _tex.GetDimensions(width, height);
+
+    if (width == 0 || height == 0)
+        return false;
+
+    return true;
+}
+
+
+int IntersectsLay(float3 _vertices[3], float3 _vStart, float3 _vDir, out float3 _vCrossPoint, out float _fResult)
+{
+    float3 edge[2] = { (float3) 0.f, (float3) 0.f };
+    /*
+    * 삼각형의 두 변 생성
+    */
+    edge[0] = _vertices[1].xyz - _vertices[0].xyz;
+    edge[1] = _vertices[2].xyz - _vertices[0].xyz;
+
+    /*
+    * 삼각형 법선 벡터 생성
+    * 
+    */
+    float3 normal = normalize(cross(edge[0], edge[1]));
+    /*
+    * 시점 -> 종점까지 거리 구하는 계산
+    * 
+    * 법선과 레이 방향 내적
+    * 각도 편차 +  b -> 0
+    * 각도 편차 -  b -> 1
+    */
+    float b = dot(normal, _vDir);
+
+    /*
+    * 삼각형에서 바라보는 레이 시점 생성(길이 포함)
+    */
+    float3 w0 = _vStart - _vertices[0].xyz;
+    /*
+    * 삼각형 법선에 역방향으로 내적시킨다.
+    */
+    float a = -dot(normal, w0);
+    float t = a / b;
+    //비를 구한다.
+    _fResult = t;
+
+    float3 p = _vStart + t * _vDir;
+
+    _vCrossPoint = p;
+
+    float uu, uv, vv, wu, wv, inverseD;
+    uu = dot(edge[0], edge[0]);
+    uv = dot(edge[0], edge[1]);
+    vv = dot(edge[1], edge[1]);
+
+    float3 w = p - _vertices[0].xyz;
+    wu = dot(w, edge[0]);
+    wv = dot(w, edge[1]);
+    inverseD = uv * uv - uu * vv;
+    inverseD = 1.0f / inverseD;
+
+    float u = (uv * wv - vv * wu) * inverseD;
+    if (u < 0.0f || u > 1.0f)
+    {
+        return 0;
+    }
+
+    float v = (uv * wu - uu * wv) * inverseD;
+    if (v < 0.0f || (u + v) > 1.0f)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
 #endif
 
 
