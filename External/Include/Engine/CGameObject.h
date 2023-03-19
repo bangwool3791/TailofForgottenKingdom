@@ -18,6 +18,7 @@ class CCollider3D;
 class CDecal;
 class CSkyBox;
 class CLandScape;
+class CWaveRenderer;
 
 #define GET_COMPONENT(classname, CLASSNAME ) C##classname* classname() { return ( C##classname*)GetComponent(COMPONENT_TYPE::CLASSNAME); }
 
@@ -82,6 +83,7 @@ public:
 	GET_COMPONENT(Decal, DECAL);
 	GET_COMPONENT(SkyBox, SKYBOX);
 	GET_COMPONENT(LandScape, LANDSCAPE);
+	GET_COMPONENT(WaveRenderer, WAVERENDERER);
 
 	template<typename T>
 	T* GetScript();

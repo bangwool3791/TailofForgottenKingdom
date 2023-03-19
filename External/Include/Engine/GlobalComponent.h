@@ -13,6 +13,7 @@
 #include "CDecal.h"
 #include "CSkyBox.h"
 #include "CLandScape.h"
+#include "CWaveRenderer.h"
 /*
 * Particle
 */

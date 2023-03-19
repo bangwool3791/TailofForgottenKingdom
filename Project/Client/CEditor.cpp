@@ -4,7 +4,7 @@
 
 #include "CGameObjectEx.h"
 
-#include "CGrid2DScript.h"
+#include "CCameraScript.h"
 #include "CBorderScript.h"
 
 #include <Engine/CTimeMgr.h>
@@ -27,7 +27,7 @@
 #include <Engine\Base.h>
 
 CEditor::CEditor()
-	:m_editmode{ EDIT_MODE::OBJECT }
+	:m_editmode{ EDIT_MODE::MAPTOOL }
 {
 }
 
@@ -49,6 +49,9 @@ CEditor::~CEditor()
 	Safe_Delete(m_pCameraObject);
 }
 
+#include "CImGuiMgr.h"
+#include "TileMapUI.h"
+
 void CEditor::init()
 {
 
@@ -60,16 +63,28 @@ void CEditor::init()
 	m_pCameraObject->SetName(L"Editor Camera");
 
 	m_pCameraObject->AddComponent(new CTransform);
-	m_pCameraObject->AddComponent(new CEditorCam);
+	m_pCameraObject->AddComponent(new CCamera);
 	m_pCameraObject->AddComponent(new CCameraScript);
-	m_pCameraObject->Camera()->SetProjType(ORTHOGRAHPICS);
-	m_pCameraObject->Camera()->SetFar(100000.f);
-	m_pCameraObject->Camera()->SetLayerMaskAll();
-	m_pCameraObject->Camera()->SetLayerMask(31);
-	m_pCameraObject->Transform()->SetRelativePos(0.f, 0.f, 0.f);
-	m_pCameraObject->Transform()->SetRelativeRotation(Vec3(XM_PI * 0.25f, 0.f, 0.f));
+
+	m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
+
+	m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
+	m_pCameraObject->Camera()->SetLayerMask(1);
 	CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
 
+	// LandScape Ãß°¡
+	CGameObjectEx* pLandScape = new CGameObjectEx;
+	pLandScape->SetName(L"EditLandScape");
+
+	pLandScape->AddComponent(new CTransform);
+	pLandScape->AddComponent(new CLandScape);
+
+	pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
+	pLandScape->LandScape()->SetFaceCount(16, 16);
+	pLandScape->LandScape()->SetFrustumCulling(false);
+	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
+	TileMapUI* pContentUI = (TileMapUI*)CImGuiMgr::GetInst()->FindUI("TileMapUI");
+	pContentUI->begin();
 	/*
 	* Component List
 	*/

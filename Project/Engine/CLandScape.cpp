@@ -14,6 +14,7 @@ CLandScape::CLandScape()
 	, m_iXFaceCount(1)
 	, m_iZFaceCount(1)
 	, m_vBrushScale(Vec2(0.1f, 0.1f))
+	, m_bCreateTex{false}
 {
 	SetFaceCount(1, 1);
 
@@ -58,10 +59,6 @@ void CLandScape::finaltick()
 		m_pCSHeightMap->Execute();
 	}
 
-	if (KEY_PRESSED(KEY::S))
-	{
-		SaveTexture();
-	}
 }
 
 #include "CLevelMgr.h"
@@ -91,9 +88,9 @@ void CLandScape::SetFaceCount(UINT _X, UINT _Z)
 	CreateMesh();
 }
 
-void CLandScape::SaveTexture()
+void CLandScape::SaveTexture(const wstring& _path)
 {
-	m_pBrushTex->SaveTexture();
+	m_pHeightMap->SaveTexture(_path);
 }
 
 void CLandScape::Raycasting()
@@ -122,4 +119,29 @@ void CLandScape::Raycasting()
 	m_pCSRaycast->SetOuputBuffer(m_pCrossBuffer);
 
 	m_pCSRaycast->Execute();
+}
+
+void CLandScape::SaveBmpFile(const wstring& path)
+{
+	m_pHeightMap->SaveBmpFile(path);
+}
+
+void CLandScape::LoadBmpFile(const wstring& path)
+{
+	m_pHeightMap->LoadBmpFile(path);
+}
+
+void CLandScape::SaveToFile(FILE* _File) 
+{
+	COMPONENT_TYPE type = GetType();
+	fwrite(&type, sizeof(UINT), 1, _File);
+
+	fwrite(&m_iXFaceCount, sizeof(UINT), 1, _File);
+	fwrite(&m_iZFaceCount, sizeof(UINT), 1, _File);
+}
+
+void CLandScape::LoadFromFile(FILE* _File)
+{
+	fread(&m_iXFaceCount, sizeof(UINT), 1, _File);
+	fread(&m_iZFaceCount, sizeof(UINT), 1, _File);
 }

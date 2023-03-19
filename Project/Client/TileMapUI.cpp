@@ -8,21 +8,26 @@
 #include <Engine\CLevelMgr.h>
 
 #include <Engine\CGameObject.h>
-#include <Engine\CTerrain.h>
 
 #include <Engine\CTexture.h>
 #include <Engine\CResMgr.h>
 
 #include <Engine\CScript.h>
 
+#include "CEditor.h"
 #include "TransformUI.h"
 #include "MeshRenderUI.h"
 #include "ProgressUI.h"
 
 TileMapUI::TileMapUI()
 	: UI("TileMapUI")
-	, m_vTileSize{1.f, 1.f }
+	, m_tFaceid{}
+	, m_bDialogLoad{}
+	, m_bDialogSave{}
+	, m_fileDialogLoad{}
+	, m_fileDialogSave{}
 {
+	
 }
 
 TileMapUI::~TileMapUI()
@@ -31,6 +36,8 @@ TileMapUI::~TileMapUI()
 
 void TileMapUI::begin()
 {
+	m_pLandObj = CEditor::GetInst()->FindByName(L"EditLandScape");
+	m_pLandScape = m_pLandObj->LandScape();
 }
 
 void TileMapUI::update()
@@ -48,33 +55,115 @@ void TileMapUI::render_update()
 	ImGui::PopStyleColor(3);
 	ImGui::PopID();
 
-	if(ImGui::Button("Save"))
+	if(ImGui::Button("Save", ImVec2(65.f, 40.f)))
 	{
-		m_pEditTerrainObject->GetRenderComponent()->GetMesh()->Save(L"Terrain\\Terrain.dat");
+		m_fileDialogSave.type = ImGuiFileDialogType_SaveFile;
+		m_fileDialogSave.title = "Save File";
+		m_fileDialogSave.fileName = "blank.png";
+		
+		string path = CPathMgr::GetInst()->GetSingleContentPath();
+		std::filesystem::path _path(path + "\\texture");
+		m_fileDialogSave.directoryPath = _path;
+		m_bDialogSave = true;
+	}
+
+	if (m_bDialogSave)
+	{
+		if (ImGui::FileDialog(&m_bDialogSave, &m_fileDialogSave))
+		{
+			m_pLandScape->SaveTexture(m_fileDialogSave.resultPath);
+		}
 	}
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Load"))
+	if (ImGui::Button("LoadHeigtMap", ImVec2(65.f, 40.f)))
 	{
-		m_pEditTerrainObject->GetRenderComponent()->GetMesh()->Load(L"Terrain\\Terrain.dat");
+		m_fileDialogLoad.type = ImGuiFileDialogType_OpenFile;
+		m_fileDialogLoad.title = "Open File";
+		m_fileDialogLoad.fileName = "blank.png";
+
+		string path = CPathMgr::GetInst()->GetSingleContentPath();
+		std::filesystem::path _path(path + "\\texture");
+		m_fileDialogLoad.directoryPath = _path;
+		m_bDialogLoad = true;
 	}
 
-	if (ImGui::Button("추후 업데이트 Apply"))
+	if (m_bDialogLoad)
+	{
+		// Any place in draw loop
+		if (ImGui::FileDialog(&m_bDialogLoad, &m_fileDialogLoad))
+		{
+			LoadTextureFromEdit(m_fileDialogLoad.resultPath);
+		}
+	}
+
+	if (ImGui::Button("Initialize", ImVec2(65.f, 40.f)))
 	{
 		ProgressUI* pProgressUI = dynamic_cast<ProgressUI*>(CImGuiMgr::GetInst()->FindUI("ProgressUI"));
 		
 		assert(nullptr != pProgressUI);
 		pProgressUI->Open();
+		m_pLandScape->Initialize();
+	}
+
+	if (ImGui::Button("Test", ImVec2(65.f, 40.f)))
+	{
+		string path = CPathMgr::GetInst()->GetSingleContentPath();
+		path.append("\\texture\\test.bmp");
+		m_pLandScape->SaveBmpFile(wstring(path.begin(), path.end()));
+	}
+
+	if (ImGui::Button("Test1", ImVec2(65.f, 40.f)))
+	{
+		string path = CPathMgr::GetInst()->GetSingleContentPath();
+		path.append("\\texture\\test.bmp");
+		m_pLandScape->LoadBmpFile(wstring(path.begin(), path.end()));
+	}
+	
+	if (ImGui::InputInt("FaceCount X ", &m_iXFaceCount))
+	{
+		if (1 > m_iXFaceCount)
+			m_iXFaceCount = 1;
+
+		m_pLandScape->SetFaceCount(m_iXFaceCount, m_iZFaceCount);
+	}
+
+	if (ImGui::InputInt("FaceCount Z ", &m_iZFaceCount))
+	{
+		if (1 > m_iZFaceCount)
+			m_iZFaceCount = 1;
+
+		m_pLandScape->SetFaceCount(m_iXFaceCount, m_iZFaceCount);
 	}
 }
 
-void TileMapUI::Initialize(void* pAddr)
+#include <Engine\CTexture.h>
+
+void TileMapUI::LoadTextureFromEdit(const wstring& _path)
 {
-	m_pEditTerrainObject = (CGameObject*)pAddr;
-	m_pEditTerrain = static_cast<CTerrain*>(m_pEditTerrainObject->GetRenderComponent());
+	//Texture 파일 경로 찾기
+	wstring wstrFilePath = CPathMgr::GetInst()->GetContentPath();
+	string strFilePath = string(wstrFilePath.begin(), wstrFilePath.end());
+	strFilePath.append("\\");
+	string strFullPath({ _path.begin(), _path.end() });
+
+	std::size_t ind = strFullPath.find(strFilePath); // Find the starting position of substring in the string
+
+	if (ind != std::string::npos) {
+		strFullPath.erase(ind, strFilePath.length()); // erase function takes two parameter, the starting index in the string from where you want to erase characters and total no of characters you want to erase.
+
+		wstring wstrFileName = wstring(strFullPath.begin(), strFullPath.end());
+		Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(wstrFileName.c_str());
+		
+		//pTex->Create(pOri->GetTex2D(), D3D11_BIND_UNORDERED_ACCESS);
+		
+		if(nullptr != pTex)
+			m_pLandScape->SetHeightMap(pTex);
+	}
 }
 
-
-
-
+void TileMapUI::InitializeHeightMap()
+{
+	m_pLandScape->CreateTexture();
+}

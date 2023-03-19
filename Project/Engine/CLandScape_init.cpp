@@ -86,7 +86,7 @@ void CLandScape::CreateMaterial()
 
 	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
-	pShader->SetRSType(RS_TYPE::WIRE_FRAME);
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
 	pShader->SetBSType(BS_TYPE::DEFAULT);
 	pShader->SetDSType(DS_TYPE::LESS);
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE);
@@ -94,6 +94,7 @@ void CLandScape::CreateMaterial()
 	pShader->AddScalarParam(INT_0, "Tess");
 	pShader->AddScalarParam(VEC4_0, "Camera Distance");
 	pShader->AddTexureParam(TEX_0, "HeightMap");
+	pShader->AddTexureParam(TEX_1, "texture\\MaterialAlb_Slice_18_.png");
 
 	tEvent evn = {};
 
@@ -104,6 +105,7 @@ void CLandScape::CreateMaterial()
 	Ptr<CMaterial> pMtrl = new CMaterial(true);
 	pMtrl->SetShader(pShader);
 	pMtrl->SetKey(L"LandScapeMtrl");
+	pMtrl->SetTexParam(TEX_1,CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MaterialAlb_Slice_18_.png"));
 	SetSharedMaterial(pMtrl);
 
 	// 추가
@@ -147,9 +149,58 @@ void CLandScape::CreateTexture()
 	pMtrl->SetScalarParam(SCALAR_PARAM::INT_0, &m_iXFaceCount);
 	pMtrl->SetScalarParam(SCALAR_PARAM::INT_1, &m_iZFaceCount);
 
+	Update_HeightMap();
+
+	m_pBrushTex = CResMgr::GetInst()->FindRes<CTexture>(L"texture\\brush\\Brush_02.png");
+
+	m_bCreateTex = true;
+}
+
+void CLandScape::Initialize()
+{
+	// 높이맵 텍스쳐	
+
+	if (m_bCreateTex)
+	{
+		DeleteRes(m_pHeightMap.Get(), RES_TYPE::TEXTURE);
+
+		m_pHeightMap = CResMgr::GetInst()->CreateTexture(L"HeightMap1"
+			, 2048, 2048
+			, DXGI_FORMAT_R32_FLOAT
+			, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+	
+		m_bCreateTex = false;
+	}
+	else
+	{
+		DeleteRes(m_pHeightMap.Get(), RES_TYPE::TEXTURE);
+
+		m_pHeightMap = CResMgr::GetInst()->CreateTexture(L"HeightMap"
+			, 2048, 2048
+			, DXGI_FORMAT_R32_FLOAT
+			, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+
+		m_bCreateTex = true;
+	}
+
+	Update_HeightMap();
+
+
+}
+
+void CLandScape::SetHeightMap(Ptr<CTexture> _pTex)
+{
+	m_pHeightMap = _pTex;
+
+	Update_HeightMap();
+}
+
+void CLandScape::Update_HeightMap()
+{
+	Ptr<CMaterial> pMtrl = GetSharedMaterial();
 	Vec2 vResolution = Vec2(m_pHeightMap->GetWidth(), m_pHeightMap->GetHeight());
 	pMtrl->SetScalarParam(SCALAR_PARAM::VEC2_0, &vResolution);
 	pMtrl->SetTexParam(TEX_PARAM::TEX_0, m_pHeightMap);
-
-	m_pBrushTex = CResMgr::GetInst()->FindRes<CTexture>(L"texture\\brush\\Brush_02.png");
+	m_pCSRaycast->SetHeightMap(m_pHeightMap);
+	m_pCSHeightMap->SetHeightMap(m_pHeightMap);
 }

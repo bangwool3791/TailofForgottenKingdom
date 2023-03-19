@@ -92,6 +92,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
     m_Desc.MiscFlags = 0;
 
     HRESULT hr = DEVICE->CreateTexture2D(&m_Desc, nullptr, m_Tex2D.GetAddressOf());
+
     if (FAILED(hr))
     {
         int a = 0;
@@ -102,7 +103,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
     if (_iBindFlag & D3D11_BIND_DEPTH_STENCIL)
     {
         hr = DEVICE->CreateDepthStencilView(m_Tex2D.Get(), nullptr, m_DSV.GetAddressOf());
-      //  m_DSV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_DSV") - 1, "CTexture::m_DSV");
+        m_DSV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_DSV") - 1, "CTexture::m_DSV");
     }
     else
     {
@@ -110,7 +111,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
         {
             hr = DEVICE->CreateRenderTargetView(m_Tex2D.Get(), nullptr, m_RTV.GetAddressOf());
             assert(!FAILED(hr));
-         //   m_RTV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_RTV") - 1, "CTexture::m_RTV");
+            m_RTV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_RTV") - 1, "CTexture::m_RTV");
         }
 
         if (_iBindFlag & D3D11_BIND_SHADER_RESOURCE)
@@ -121,7 +122,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
             tSRVDesc.Texture2D.MostDetailedMip = 0;
             tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
             hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), &tSRVDesc, m_SRV.GetAddressOf());
-         //   m_SRV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_SRV") - 1, "CTexture::m_SRV");
+            m_SRV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_SRV") - 1, "CTexture::m_SRV");
             if (FAILED(hr))
             {
                 int a = 0;
@@ -136,7 +137,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
             tUAVDesc.Texture2D.MipSlice = 0;
             tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
             hr = DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), &tUAVDesc, m_UAV.GetAddressOf());
-        //    m_UAV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_UAV") - 1, "CTexture::m_UAV");
+            m_UAV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_UAV") - 1, "CTexture::m_UAV");
             assert(!FAILED(hr));
         }
     }
@@ -315,12 +316,16 @@ void CTexture::Clear_CS(UINT _iRegisterNum, bool _bShaderRes)
     }
 }
 
+#include "CPathMgr.h"
 
-void CTexture::SaveTexture()
+void CTexture::SaveTexture(const wstring& path)
 {
+    ScratchImage image; 
+    CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), image);
+    SaveToDDSFile(*image.GetImages(), DDS_FLAGS_NONE, path.c_str());
    //HRESULT hr;
    // // Write out the render target as a PNG
-    D3DX11SaveTextureToFileW(CONTEXT, m_Tex2D.Get(), D3DX11_IFF_PNG, L"D:\Dev\MyEngine\D3D\AssortRockDx112D-master\\SCREENSHOT.PNG");
+  //  D3DX11SaveTextureToFileW(CONTEXT, m_Tex2D.Get(), D3DX11_IFF_PNG, L"D:\Dev\MyEngine\D3D\AssortRockDx112D-master\\SCREENSHOT.PNG");
    //
    // // Write out the render target as JPG
    // hr = SaveWICTextureToFile(context.Get(), backBufferTex.Get(), GUID_ContainerFormatJpeg, L"SCREENSHOT.JPG");
@@ -355,145 +360,250 @@ void CTexture::SaveTexture()
    // // Write out the render target as a DDS
    // hr = SaveDDSTextureToFile(context.Get(), backBufferTex.Get(), L"SCREENSHOT.DDS");
 }
+#include "CImage.h"
 
-HRESULT CTexture::CaptureTexture(_In_ ID3D11DeviceContext* pContext,
-    _In_ ID3D11Resource* pSource,
-    _Inout_ D3D11_TEXTURE2D_DESC& desc,
-    _Inout_ ComPtr<ID3D11Texture2D>& pStaging)
+void CTexture::SaveBmpFile(const wstring& _Path)
 {
-    if (!pContext || !pSource)
-        return E_INVALIDARG;
+    ScratchImage image;
+    CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), image);
+    const Image* pImage = image.GetImages();
 
-    D3D11_RESOURCE_DIMENSION resType = D3D11_RESOURCE_DIMENSION_UNKNOWN;
-    pSource->GetType(&resType);
+    int s = pImage->rowPitch;
+    int k = pImage->slicePitch;
 
-    if (resType != D3D11_RESOURCE_DIMENSION_TEXTURE2D)
-        return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    int w = pImage->width;
+    int h = pImage->height;
 
-    ComPtr<ID3D11Texture2D> pTexture;
-    HRESULT hr = pSource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(pTexture.GetAddressOf()));
-    if (FAILED(hr))
-        return hr;
+    CImage tImage(w, h);
 
-    assert(pTexture);
-
-    pTexture->GetDesc(&desc);
-
-    ComPtr<ID3D11Device> d3dDevice;
-    pContext->GetDevice(d3dDevice.GetAddressOf());
-
-    if (desc.SampleDesc.Count > 1)
+    int i = 0;
+    for (int y = 0; y < h; ++y)
     {
-        // MSAA content must be resolved before being copied to a staging texture
-        desc.SampleDesc.Count = 1;
-        desc.SampleDesc.Quality = 0;
-
-        ComPtr<ID3D11Texture2D> pTemp;
-        hr = d3dDevice->CreateTexture2D(&desc, 0, pTemp.GetAddressOf());
-        if (FAILED(hr))
-            return hr;
-
-        assert(pTemp);
-
-        DXGI_FORMAT fmt = EnsureNotTypeless(desc.Format);
-
-        UINT support = 0;
-        hr = d3dDevice->CheckFormatSupport(fmt, &support);
-        if (FAILED(hr))
-            return hr;
-
-        if (!(support & D3D11_FORMAT_SUPPORT_MULTISAMPLE_RESOLVE))
-            return E_FAIL;
-
-        for (UINT item = 0; item < desc.ArraySize; ++item)
+        for (int x = 0; x < w; ++x)
         {
-            for (UINT level = 0; level < desc.MipLevels; ++level)
+            //tImage.SetColor(tColor((float)x / (float)w, 1.0f - ((float)x / (float)w), (float)y / (float)h), x, y);
+            if (0 != (float)pImage->pixels[i + 2])
             {
-                UINT index = D3D11CalcSubresource(level, item, desc.MipLevels);
-                pContext->ResolveSubresource(pTemp.Get(), index, pSource, index, fmt);
-            }
+                int a = 0;
+           }
+           tImage.SetColor(tColor{ (float)pImage->pixels[i + 2], (float)pImage->pixels[i + 1], (float)pImage->pixels[i] }, x, y);
+           i += 3;
         }
-
-        desc.BindFlags = 0;
-        desc.MiscFlags &= D3D11_RESOURCE_MISC_TEXTURECUBE;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-        desc.Usage = D3D11_USAGE_STAGING;
-
-        hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.GetAddressOf());
-        if (FAILED(hr))
-            return hr;
-
-        assert(pStaging);
-
-        pContext->CopyResource(pStaging.Get(), pTemp.Get());
     }
-    else if ((desc.Usage == D3D11_USAGE_STAGING) && (desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ))
-    {
-        // Handle case where the source is already a staging texture we can use directly
-        pStaging = pTexture;
-    }
-    else
-    {
-        // Otherwise, create a staging texture from the non-MSAA source
-        desc.BindFlags = 0;
-        desc.MiscFlags &= D3D11_RESOURCE_MISC_TEXTURECUBE;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-        desc.Usage = D3D11_USAGE_STAGING;
+    tImage.Export(string(_Path.begin(), _Path.end()).c_str());
+    //BYTE* buffer = new BYTE[w * h];
 
-        hr = d3dDevice->CreateTexture2D(&desc, 0, pStaging.GetAddressOf());
-        if (FAILED(hr))
-            return hr;
+    //for (size_t i = 0; i < k; i += 4)
+    //{
+    //    // flip the order of every 3 bytes
+    //    unsigned char tmp = pImage->pixels[i];
+    //    pImage->pixels[i] = pImage->pixels[i + 2];
+    //    pImage->pixels[i + 2] = tmp;
+    //}
 
-        assert(pStaging);
+    //SaveBitmapToFile(pImage->pixels, w, h, 24, 0, _Path.c_str());
 
-        pContext->CopyResource(pStaging.Get(), pSource);
-    }
+
+    return;
 }
 
-DXGI_FORMAT CTexture::EnsureNotTypeless(DXGI_FORMAT fmt)
+
+void CTexture::LoadBmpFile(const wstring& _Path)
 {
-        // Assumes UNORM or FLOAT; doesn't use UINT or SINT
-    switch (fmt)
+    ScratchImage image;
+    CONTEXT->CopyResource(m_TexCopy.Get(), m_Tex2D.Get());
+    D3D11_MAPPED_SUBRESOURCE tSub;
+    
+    CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), image);
+    Image* pImage = const_cast<Image*>(image.GetImages());
+
+    int x, y;
+    uint8_t r = 0, g, b;
+    int w = pImage->width;
+    int h = pImage->height;
+    int k = pImage->slicePitch;
+    unsigned long size = w * h;
+   
+    FILE* pFile = nullptr;
+
+    BYTE* pbuffer = LoadBMP(&w, &h, &size, _Path.c_str());
+
+    CONTEXT->Map(m_TexCopy.Get(), 0, D3D11_MAP_WRITE, 0, &tSub);
+
+    tSub.pData = pbuffer;
+
+    CONTEXT->Unmap(m_TexCopy.Get(), 0);
+
+    return;
+}
+
+void CTexture::SaveBitmapToFile(BYTE* pBitmapBits,
+    LONG lWidth,
+    LONG lHeight,
+    WORD wBitsPerPixel,
+    const unsigned long& padding_size,
+    LPCTSTR lpszFileName)
+{
+    // Some basic bitmap parameters  
+    unsigned long headers_size = sizeof(BITMAPFILEHEADER) +
+        sizeof(BITMAPINFOHEADER);
+
+    unsigned long pixel_data_size = lHeight * ((lWidth * (wBitsPerPixel / 8)) + padding_size);
+
+    BITMAPINFOHEADER bmpInfoHeader = { 0 };
+
+    // Set the size  
+    bmpInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
+
+    // Bit count  
+    bmpInfoHeader.biBitCount = wBitsPerPixel;
+
+    // Use all colors  
+    bmpInfoHeader.biClrImportant = 0;
+
+    // Use as many colors according to bits per pixel  
+    bmpInfoHeader.biClrUsed = 0;
+
+    // Store as un Compressed  
+    bmpInfoHeader.biCompression = BI_RGB;
+
+    // Set the height in pixels  
+    bmpInfoHeader.biHeight = lHeight;
+
+    // Width of the Image in pixels  
+    bmpInfoHeader.biWidth = lWidth;
+
+    // Default number of planes  
+    bmpInfoHeader.biPlanes = 1;
+
+    // Calculate the image size in bytes  
+    bmpInfoHeader.biSizeImage = pixel_data_size;
+
+    BITMAPFILEHEADER bfh = { 0 };
+
+    // This value should be values of BM letters i.e 0x4D42  
+    // 0x4D = M 0¡¿42 = B storing in reverse order to match with endian  
+    bfh.bfType = 0x4D42;
+    //bfh.bfType = 'B'+('M' << 8); 
+
+    // <<8 used to shift ¡®M¡¯ to end  */  
+
+    // Offset to the RGBQUAD  
+    bfh.bfOffBits = headers_size;
+
+    // Total size of image including size of headers  
+    bfh.bfSize = headers_size + pixel_data_size;
+
+    // Create the file in disk to write  
+    HANDLE hFile = CreateFile(lpszFileName,
+        GENERIC_WRITE,
+        0,
+        NULL,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+
+    // Return if error opening file  
+    if (!hFile) return;
+
+    DWORD dwWritten = 0;
+
+    // Write the File header  
+    WriteFile(hFile,
+        &bfh,
+        sizeof(bfh),
+        &dwWritten,
+        NULL);
+
+    // Write the bitmap info header  
+    WriteFile(hFile,
+        &bmpInfoHeader,
+        sizeof(bmpInfoHeader),
+        &dwWritten,
+        NULL);
+
+    // Write the RGB Data  
+    WriteFile(hFile,
+        pBitmapBits,
+        bmpInfoHeader.biSizeImage,
+        &dwWritten,
+        NULL);
+
+    // Close the file handle  
+    CloseHandle(hFile);
+}
+
+BYTE* CTexture::LoadBMP(int* width, int* height, unsigned long* size, LPCTSTR bmpfile)
+{
+    BITMAPFILEHEADER bmpheader;
+    BITMAPINFOHEADER bmpinfo;
+    // value to be used in ReadFile funcs
+    DWORD bytesread;
+    // open file to read from
+    HANDLE file = CreateFile(bmpfile,
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_EXISTING,
+        FILE_FLAG_SEQUENTIAL_SCAN,
+        NULL);
+    if (NULL == file)
+        return NULL;
+
+    if (ReadFile(file, &bmpheader, sizeof(BITMAPFILEHEADER), &bytesread, NULL) == false)
     {
-    case DXGI_FORMAT_R32G32B32A32_TYPELESS:
-        return DXGI_FORMAT_R32G32B32A32_FLOAT;
-    case DXGI_FORMAT_R32G32B32_TYPELESS:
-        return DXGI_FORMAT_R32G32B32_FLOAT;
-    case DXGI_FORMAT_R16G16B16A16_TYPELESS:
-        return DXGI_FORMAT_R16G16B16A16_UNORM;
-    case DXGI_FORMAT_R32G32_TYPELESS:
-        return DXGI_FORMAT_R32G32_FLOAT;
-    case DXGI_FORMAT_R10G10B10A2_TYPELESS:
-        return DXGI_FORMAT_R10G10B10A2_UNORM;
-    case DXGI_FORMAT_R8G8B8A8_TYPELESS:
-        return DXGI_FORMAT_R8G8B8A8_UNORM;
-    case DXGI_FORMAT_R16G16_TYPELESS:
-        return DXGI_FORMAT_R16G16_UNORM;
-    case DXGI_FORMAT_R32_TYPELESS:
-        return DXGI_FORMAT_R32_FLOAT;
-    case DXGI_FORMAT_R8G8_TYPELESS:
-        return DXGI_FORMAT_R8G8_UNORM;
-    case DXGI_FORMAT_R16_TYPELESS:
-        return DXGI_FORMAT_R16_UNORM;
-    case DXGI_FORMAT_R8_TYPELESS:
-        return DXGI_FORMAT_R8_UNORM;
-    case DXGI_FORMAT_BC1_TYPELESS:
-        return DXGI_FORMAT_BC1_UNORM;
-    case DXGI_FORMAT_BC2_TYPELESS:
-        return DXGI_FORMAT_BC2_UNORM;
-    case DXGI_FORMAT_BC3_TYPELESS:
-        return DXGI_FORMAT_BC3_UNORM;
-    case DXGI_FORMAT_BC4_TYPELESS:
-        return DXGI_FORMAT_BC4_UNORM;
-    case DXGI_FORMAT_BC5_TYPELESS:
-        return DXGI_FORMAT_BC5_UNORM;
-    case DXGI_FORMAT_B8G8R8A8_TYPELESS:
-        return DXGI_FORMAT_B8G8R8A8_UNORM;
-    case DXGI_FORMAT_B8G8R8X8_TYPELESS:
-        return DXGI_FORMAT_B8G8R8X8_UNORM;
-    case DXGI_FORMAT_BC7_TYPELESS:
-        return DXGI_FORMAT_BC7_UNORM;
-    default:
-        return fmt;
+        CloseHandle(file);
+        return NULL;
     }
+
+    // Read bitmap info
+    if (ReadFile(file, &bmpinfo, sizeof(BITMAPINFOHEADER), &bytesread, NULL) == false)
+    {
+        CloseHandle(file);
+        return NULL;
+    }
+
+    // check if file is actually a bmp
+    if (bmpheader.bfType != 'MB')
+    {
+        CloseHandle(file);
+        return NULL;
+    }
+
+    // get image measurements
+    *width = bmpinfo.biWidth;
+    *height = abs(bmpinfo.biHeight);
+
+    // Check if bmp iuncompressed
+    if (bmpinfo.biCompression != BI_RGB)
+    {
+        CloseHandle(file);
+        return NULL;
+    }
+
+    // Check if we have 24 bit bmp
+    if (bmpinfo.biBitCount != 24)
+    {
+        CloseHandle(file);
+        return NULL;
+    }
+
+    // create buffer to hold the data
+    *size = bmpheader.bfSize - bmpheader.bfOffBits;
+    BYTE* Buffer = new BYTE[*size];
+    // move file pointer to start of bitmap data
+    SetFilePointer(file, bmpheader.bfOffBits, NULL, FILE_BEGIN);
+    // read bmp data
+    if (ReadFile(file, Buffer, *size, &bytesread, NULL) == false)
+    {
+        delete[] Buffer;
+        CloseHandle(file);
+        return NULL;
+    }
+
+    // everything successful here: close file and return buffer
+
+    CloseHandle(file);
+
+    return Buffer;
 }

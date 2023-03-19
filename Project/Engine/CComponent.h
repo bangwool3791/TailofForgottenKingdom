@@ -39,6 +39,7 @@ public :
 	GET_OTHER_COMPONENT(Decal);
 	GET_OTHER_COMPONENT(SkyBox);
 	GET_OTHER_COMPONENT(LandScape);
+	GET_OTHER_COMPONENT(WaveRenderer);
 
 	virtual CComponent* Clone() = 0;
 public :

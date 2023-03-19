@@ -11,7 +11,7 @@
 #include <Engine\CGameObject.h>
 #include <Engine\CLevel.h>
 #include <Engine\CLevelMgr.h>
-
+#include <Engine\CWaveRenderer.h>
 #include <Engine\CCollisionMgr.h>
 
 #include <Script\CPlayerScript.h>
@@ -107,21 +107,7 @@ void CreateTestLelvel()
 	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
 	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
 	pLevel->AddGameObject(pSkyBox, 1);
-
-	// LandScape Ãß°¡
-	CGameObject* pLandScape = new CGameObject;
-	pLandScape->SetName(L"LandScape");
 	
-	pLandScape->AddComponent(new CTransform);
-	pLandScape->AddComponent(new CLandScape);
-	
-	pLandScape->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
-	pLandScape->LandScape()->SetFaceCount(16, 16);
-	pLandScape->LandScape()->SetFrustumCulling(false);
-	
-	pLevel->AddGameObject(pLandScape, 1);
-
-
 	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);
 	CCollisionMgr::GetInst()->CollisionLayerCheck(1, 1);
 	CLevelMgr::GetInst()->ChangeLevel(pLevel);
@@ -132,20 +118,31 @@ void CreateTestLelvel()
 void CreateDefaultObj(CLevel* pLevel)
 {
 	CGameObject* pObject = new CGameObject;
-	pObject->SetName(L"Sphere");
+	//pObject->SetName(L"Sphere");
+	//
+	//pObject->AddComponent(new CTransform);
+	//pObject->AddComponent(new CMeshRender);
+	//pObject->AddComponent(new CCollider3D);
+	//pObject->AddComponent(new CPlayerScript);
+	//
+	//pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
+	//pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
+	//
+	//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"SphereMesh"));
+	//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
+	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
+	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+	//pLevel->AddGameObject(pObject, 1);
+
+	pObject = new CGameObject;
+	pObject->SetName(L"Wave");
 
 	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CMeshRender);
-	pObject->AddComponent(new CCollider3D);
-	pObject->AddComponent(new CPlayerScript);
-
+	pObject->AddComponent(new CWaveRenderer);
+	pObject->WaveRenderer()->Initialize();
 	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 1000.f));
 	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
 
-	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"SphereMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	pLevel->AddGameObject(pObject, 1);
 
 	//DiffuseTargetTex
@@ -159,14 +156,13 @@ void CreateCamera(CLevel* pLevel)
 	
 	pCamObj->AddComponent(new CTransform);
 	pCamObj->AddComponent(new CCamera);
-	pCamObj->AddComponent(new CMeshRender);
-	pCamObj->AddComponent(new CCollider3D);
-	pCamObj->AddComponent(new CFrustumScript);
+	//pCamObj->AddComponent(new CMeshRender);
+	//pCamObj->AddComponent(new CFrustumScript);
 	pCamObj->AddComponent(new CLevelCameraScript);
 	
 	pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
-	pCamObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"FrustumMesh"));
-	pCamObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	//pCamObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"FrustumMesh"));
+	//pCamObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
 	
 	pCamObj->Camera()->SetProjType(PERSPECTIVE);
 	pCamObj->Camera()->SetLayerMask(1);

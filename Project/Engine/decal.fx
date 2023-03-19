@@ -116,13 +116,7 @@ struct PS_OUT2
 	float4 vDecal		: SV_Target0;
 };
 
-/*
-* 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"ColorTargetTex"));
-	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
-	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"DiffuseTargetTex"));
-	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"SpecularTargetTex"));
-	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"DecalTargetTex"));
-*/
+
 PS_OUT2 PS_Decal_Defferd(VS_OUT2 _in)
 {
 	PS_OUT2 output = (PS_OUT2)0.f;

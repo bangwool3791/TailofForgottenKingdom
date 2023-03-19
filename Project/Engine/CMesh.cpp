@@ -56,6 +56,49 @@ int CMesh::Create(void* _pVtxSysmem, size_t _iVtxCount, void* _pIdxSysmem, size_
 
 	return hr;
 }
+#include "Waves.h"
+
+int CMesh::Create(
+    void* _pVtxSysmem, 
+    size_t _iVtxCount,
+    void* _pIdxSysmem, 
+    size_t _iIdxCount, 
+    D3D11_USAGE _usage,
+    UINT cpuflag)
+{
+    m_tVBDesc.ByteWidth = UINT(sizeof(Vtx) * _iVtxCount);
+    m_iVtxCount = (UINT)_iVtxCount;
+    m_tVBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    m_tVBDesc.Usage = _usage;
+    m_tVBDesc.CPUAccessFlags = cpuflag;
+
+    HRESULT hr = DEVICE->CreateBuffer(&m_tVBDesc, 0, m_VB.GetAddressOf());
+    //m_VB->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CComputeShader::m_VB") - 1, "CComputeShader::m_VB");
+
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    m_iIdxCount = (UINT)_iIdxCount;
+    m_tIBDesc.ByteWidth = sizeof(UINT) * (UINT)_iIdxCount;
+    m_tIBDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_INDEX_BUFFER;
+    m_tIBDesc.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+    m_tIBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    D3D11_SUBRESOURCE_DATA tSubData = {};
+
+    tSubData = {};
+    //memset(&tSubData, 0, sizeof(D3D11_SUBRESOURCE_DATA));
+
+    tSubData.pSysMem = _pIdxSysmem;
+
+    hr = DEVICE->CreateBuffer(&m_tIBDesc, &tSubData, &m_IB);
+    //m_IB->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CComputeShader::m_IB") - 1, "CComputeShader::m_IB");
+
+    return hr;
+}
+
 
 void CMesh::UpdateData()
 {
@@ -75,7 +118,7 @@ void CMesh::render()
 void CMesh::render_particle(UINT _iCount)
 {
 	UpdateData();
-	CONTEXT->DrawIndexedInstanced(m_iIdxCount, _iCount, 0, 0, 0);
+	CONTEXT->DrawIndexed(m_iIdxCount, _iCount, 0);
 }
 
 void CMesh::Read()

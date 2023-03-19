@@ -214,7 +214,7 @@ void CImGuiMgr::clear()
 #include "ModelUI.h"
 #include "ModelComUI.h"
 #include "MenuUI.h"
-
+#include "TileMapUI.h"
 #include "CEditor.h"
 
 void CImGuiMgr::CreateUI()
@@ -222,6 +222,9 @@ void CImGuiMgr::CreateUI()
     UI* pUI = nullptr;
 
     pUI = new InspectorUI;
+    m_mapUI.insert(make_pair(pUI->GetName(), pUI));
+
+    pUI = new TileMapUI;
     m_mapUI.insert(make_pair(pUI->GetName(), pUI));
 
     pUI = new OutlinerUI;

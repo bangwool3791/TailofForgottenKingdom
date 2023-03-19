@@ -265,6 +265,24 @@
     <Filter Include="HLSL\Compute\LandScape\RayCast">
       <UniqueIdentifier>{959d2c20-b8ad-4d6c-ae5f-1d7c1ef22401}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\13. Graphics">
+      <UniqueIdentifier>{6a4d9717-46c7-49ed-88a6-184c9ad3df4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\13. Graphics\01. ScreenGrab">
+      <UniqueIdentifier>{3312d2a7-47f5-4fe5-8c7f-f74331d22a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\13. Graphics\02. SaveBMP">
+      <UniqueIdentifier>{f52c7172-2b5e-4e5d-be16-c3608293b50a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\13. Graphics\03. CImage">
+      <UniqueIdentifier>{f5f15d32-8aeb-4b8e-91a6-799856c124d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\13. Graphics\04. Wave">
+      <UniqueIdentifier>{310ed5a0-fc38-4bba-8064-22fbbabc4e4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\02. RenderComponent\WaveRender">
+      <UniqueIdentifier>{ced99cc8-fc1f-41cf-9d97-c602c726b367}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -549,6 +567,21 @@
     <ClInclude Include="d3dx11tex.h">
       <Filter>Engine\00. Header</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenGrab11.h">
+      <Filter>Engine\13. Graphics\01. ScreenGrab</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveBitmapToFile.h">
+      <Filter>Engine\13. Graphics\02. SaveBMP</Filter>
+    </ClInclude>
+    <ClInclude Include="CImage.h">
+      <Filter>Engine\13. Graphics\03. CImage</Filter>
+    </ClInclude>
+    <ClInclude Include="Waves.h">
+      <Filter>Engine\13. Graphics\04. Wave</Filter>
+    </ClInclude>
+    <ClInclude Include="CWaveRenderer.h">
+      <Filter>Engine\06. Component\02. RenderComponent\WaveRender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -779,6 +812,21 @@
     <ClCompile Include="CRaycastShader.cpp">
       <Filter>HLSL\Compute\LandScape\RayCast</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenGrab11.cpp">
+      <Filter>Engine\13. Graphics\01. ScreenGrab</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveBitmapToFile.cpp">
+      <Filter>Engine\13. Graphics\02. SaveBMP</Filter>
+    </ClCompile>
+    <ClCompile Include="CImage.cpp">
+      <Filter>Engine\13. Graphics\03. CImage</Filter>
+    </ClCompile>
+    <ClCompile Include="Wave.cpp">
+      <Filter>Engine\13. Graphics\04. Wave</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaveRenderer.cpp">
+      <Filter>Engine\06. Component\02. RenderComponent\WaveRender</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="register.fx">
@@ -918,6 +966,9 @@
     </FxCompile>
     <FxCompile Include="raycast.fx">
       <Filter>HLSL\Compute\LandScape\RayCast</Filter>
+    </FxCompile>
+    <FxCompile Include="color.fx">
+      <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

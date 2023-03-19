@@ -110,6 +110,9 @@
     <Filter Include="Default\ModuleUI\PopupUI">
       <UniqueIdentifier>{81a3de36-f844-49b2-8ba4-920186de3b9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. UI\10. TileMapUI">
+      <UniqueIdentifier>{8e4e1f42-5dd9-42d0-98ce-9a004faf9531}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -262,6 +265,9 @@
     <ClInclude Include="CBorderScript.h">
       <Filter>01. Editor\EditorScript</Filter>
     </ClInclude>
+    <ClInclude Include="TileMapUI.h">
+      <Filter>03. UI\10. TileMapUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -395,6 +401,9 @@
     </ClCompile>
     <ClCompile Include="CBorderScript.cpp">
       <Filter>01. Editor\EditorScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMapUI.cpp">
+      <Filter>03. UI\10. TileMapUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

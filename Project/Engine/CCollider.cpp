@@ -63,6 +63,9 @@ void CCollider::SetRotationZ(float _fDegree)
 
 void CCollider::SaveToFile(FILE* _File)
 {
+	COMPONENT_TYPE type = GetType();
+	fwrite(&type, sizeof(UINT), 1, _File);
+
 	fwrite(&m_vRot, sizeof(Vec3), 1, _File);
 	fwrite(&m_bIgnorObjectScale, sizeof(bool), 1, _File);
 }

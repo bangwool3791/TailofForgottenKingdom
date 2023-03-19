@@ -216,6 +216,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CFontMgr.h" />
     <ClInclude Include="CFrustum.h" />
     <ClInclude Include="CHeightMapShader.h" />
+    <ClInclude Include="CImage.h" />
     <ClInclude Include="CJpsMgr.h" />
     <ClInclude Include="CLandScape.h" />
     <ClInclude Include="CLight3D.h" />
@@ -288,6 +289,12 @@ call EngineCopy.bat</Command>
     <ClInclude Include="random.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SaveBitmapToFile.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="ScreenGrab11.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="singleton.h" />
     <ClInclude Include="CTexture.h" />
     <ClInclude Include="CTimeMgr.h" />
@@ -305,6 +312,8 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CTerrain.h" />
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />
+    <ClInclude Include="CWaveRenderer.h" />
+    <ClInclude Include="Waves.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="body.cpp">
@@ -328,6 +337,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CFontMgr.cpp" />
     <ClCompile Include="CFrustum.cpp" />
     <ClCompile Include="CHeightMapShader.cpp" />
+    <ClCompile Include="CImage.cpp" />
     <ClCompile Include="CJpsMgr.cpp" />
     <ClCompile Include="CLandScape.cpp" />
     <ClCompile Include="CLandScape_init.cpp" />
@@ -395,11 +405,19 @@ call EngineCopy.bat</Command>
     <ClCompile Include="random.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SaveBitmapToFile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="ScreenGrab11.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="smallobjallocator.cpp" />
     <ClCompile Include="tinystr.cpp" />
     <ClCompile Include="tinyxml.cpp" />
     <ClCompile Include="tinyxmlerror.cpp" />
     <ClCompile Include="tinyxmlparser.cpp" />
+    <ClCompile Include="Wave.cpp" />
+    <ClCompile Include="CWaveRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="bloom.fx" />
@@ -407,6 +425,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="bloom_update.fx" />
     <FxCompile Include="bordermap.fx" />
     <FxCompile Include="building.fx" />
+    <FxCompile Include="color.fx" />
     <FxCompile Include="compute.fx" />
     <FxCompile Include="compute_light.fx">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

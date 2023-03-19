@@ -30,6 +30,7 @@ void CResMgr::init()
 Ptr<CTexture> CResMgr::CreateTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag)
 {
 	Ptr<CTexture> pTex = FindRes<CTexture>(_strKey);
+
 	assert(!pTex.Get());
 
 	pTex = new CTexture(true);
@@ -1086,6 +1087,16 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	AddRes<CGraphicsShader>(L"ReflectionCubeShader", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\color.fx", "VS");
+	pShader->CreatePixelShader(L"shader\\color.fx", "PS");
+	pShader->SetRSType(RS_TYPE::WIRE_FRAME);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
+
+	AddRes<CGraphicsShader>(L"ColorShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1233,6 +1244,10 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ReflectionCubeShader"));
 	AddRes<CMaterial>(L"ReflectionCubeMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ColorShader"));
+	AddRes<CMaterial>(L"ColorMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)

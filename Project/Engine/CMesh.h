@@ -23,6 +23,14 @@ private:
     Vec3                     m_vOrig;
 public :
     int Create(void* _pVtxSysmem, size_t _iVtxCount, void* _pIdxSysmem, size_t _iIdxCount);
+    int Create(
+        void* _pVtxSysmem,
+        size_t _iVtxCount,
+        void* _pIdxSysmem,
+        size_t _iIdxCount,
+        D3D11_USAGE _usage,
+        UINT cpuflag);
+
     void UpdateData();
     void UpdateVertex(Vtx* vtx, size_t size);
     void render();
@@ -38,6 +46,9 @@ public :
     virtual void Save(const wstring& _strRelativePath);
     virtual int Load(const wstring& _strFilePath) override;
     CLONE_ASSERT(CMesh);
+
+public:
+    ComPtr<ID3D11Buffer> GetBuffer() { return m_VB; }
 public:
     CMesh(bool _bEngineRes = false);
     virtual ~CMesh();

@@ -53,3 +53,6 @@
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CPaintShader.cpp"
 
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CParticleSystem.cpp"
+

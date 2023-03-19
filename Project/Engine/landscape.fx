@@ -9,6 +9,7 @@
 // Domain : DOMAIN_DEFERRED
 // =========================
 #define HeightMap g_tex_0
+#define ColorMap  g_tex_1
 
 #define FACE_X  g_int_0
 #define FACE_Z  g_int_1
@@ -134,7 +135,7 @@ DS_OUT DS_LandScape(PatchTess _tessFactor
     vLocalPos.y = HeightMap.SampleLevel(g_sam_0, FullUV, 0).x;
 
     output.vPosition = mul(float4(vLocalPos, 1.f), g_matWVP);
-    output.vUV = vUV;
+    output.vUV = FullUV;
 
     output.vViewPos = mul(float4(vLocalPos, 1.f), g_matWV);
 
@@ -163,22 +164,13 @@ struct PS_OUT
 PS_OUT PS_LandScape(DS_OUT _in)
 {
     PS_OUT output = (PS_OUT)0.f;
-
-    output.vColor = float4(1.f, 0.f, 1.f, 1.f);
+    
+    output.vColor = ColorMap.Sample(g_sam_0, _in.vUV);
     output.vNormal = float4(_in.vViewNormal, 1.f);
     output.vPosition = float4(_in.vViewPos, 1.f);
     output.vData.x = g_float_0;
 
-
     return output;
 }
-
-
-
-
-
-
-
-
 
 #endif

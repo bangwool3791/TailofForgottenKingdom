@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------
 // DirectXTex.h
 //
-// DirectX Texture Library
+// DirectX Texture Lib rary
 //
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.

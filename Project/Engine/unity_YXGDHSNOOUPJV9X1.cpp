@@ -53,3 +53,6 @@
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CHeightMapShader.cpp"
 
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CImage.cpp"
+
