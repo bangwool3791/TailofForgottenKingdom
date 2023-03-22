@@ -11,12 +11,16 @@ class TileMapUI :
     public UI
 {
 private:
-    CGameObject*    m_pLandObj;
-    CLandScape*     m_pLandScape;
+    ImTextureID           m_HeightImage;
+    ImTextureID           m_BrushImage;
+    CGameObject*          m_pLandObj;
+    CLandScape*           m_pLandScape;
     
 private :
     bool                  m_bDialogLoad{};
     bool                  m_bDialogSave{};
+    bool                  m_bDialogBrushLoad{};
+    ImFileDialogInfo      m_fileDialogBrushLoad;
     ImFileDialogInfo      m_fileDialogLoad;
     ImFileDialogInfo      m_fileDialogSave;
     pair<UINT, UINT>      m_tFaceid;
@@ -24,7 +28,9 @@ private :
     int                  m_iXFaceCount;
     int                  m_iZFaceCount;
 private:
-    void LoadTextureFromEdit(const wstring& _path);
+    void FindTexture(const wstring& _path, Ptr<CTexture>& pTex);
+    void LoadHeightMap(const wstring& _path, ImTextureID& _image);
+    void LoadBrushMap(const wstring& _path, ImTextureID& _image);
     void InitializeHeightMap();
 public:
     virtual void begin() override;

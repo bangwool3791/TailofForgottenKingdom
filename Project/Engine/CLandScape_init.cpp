@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CLandScape.h"
 
+#include "CDevice.h"
 #include "CResMgr.h"
 #include "CEventMgr.h"
 
@@ -160,32 +161,54 @@ void CLandScape::Initialize()
 {
 	// 높이맵 텍스쳐	
 
-	if (m_bCreateTex)
-	{
-		DeleteRes(m_pHeightMap.Get(), RES_TYPE::TEXTURE);
+	//if (m_bCreateTex)
+	//{
+	//	DeleteRes(m_pHeightMap.Get(), RES_TYPE::TEXTURE);
 
-		m_pHeightMap = CResMgr::GetInst()->CreateTexture(L"HeightMap1"
-			, 2048, 2048
-			, DXGI_FORMAT_R32_FLOAT
-			, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
-	
-		m_bCreateTex = false;
+	//	m_pHeightMap = CResMgr::GetInst()->CreateTexture(L"HeightMap1"
+	//		, 2048, 2048
+	//		, DXGI_FORMAT_R32_FLOAT
+	//		, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+	//
+	//	m_bCreateTex = false;
+	//}
+	//else
+	//{
+	//	DeleteRes(m_pHeightMap.Get(), RES_TYPE::TEXTURE);
+
+	//	m_pHeightMap = CResMgr::GetInst()->CreateTexture(L"HeightMap"
+	//		, 2048, 2048
+	//		, DXGI_FORMAT_R32_FLOAT
+	//		, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+
+	//	m_bCreateTex = true;
+	//}
+
+	ComPtr<ID3D11Texture2D> tex = m_pHeightMap->GetTex2D();
+	D3D11_TEXTURE2D_DESC desc;
+	tex->GetDesc(&desc);
+
+	ScratchImage image;
+	CaptureTexture(DEVICE, CONTEXT, tex.Get(), image);
+
+	for (size_t i = 0; i < image.GetPixelsSize(); ++i)
+	{
+		image.GetPixels()[i] = 0;
 	}
-	else
+
+	// 원본데이터(밉맵 레벨 0) 를 각 칸에 옮긴다.   
+	for (int i = 0; i < desc.ArraySize; ++i)
 	{
-		DeleteRes(m_pHeightMap.Get(), RES_TYPE::TEXTURE);
+		// GPU 에 데이터 옮기기(밉맵 포함)
+		UINT iSubresIdx = D3D11CalcSubresource(0, i, desc.MipLevels);
 
-		m_pHeightMap = CResMgr::GetInst()->CreateTexture(L"HeightMap"
-			, 2048, 2048
-			, DXGI_FORMAT_R32_FLOAT
-			, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
-
-		m_bCreateTex = true;
+		CONTEXT->UpdateSubresource(tex.Get(), iSubresIdx, nullptr
+			, image.GetImage(0, i, 0)->pixels
+			, image.GetImage(0, i, 0)->rowPitch
+			, image.GetImage(0, i, 0)->slicePitch);
 	}
 
 	Update_HeightMap();
-
-
 }
 
 void CLandScape::SetHeightMap(Ptr<CTexture> _pTex)
@@ -193,6 +216,13 @@ void CLandScape::SetHeightMap(Ptr<CTexture> _pTex)
 	m_pHeightMap = _pTex;
 
 	Update_HeightMap();
+}
+
+void CLandScape::SetBrushMap(Ptr<CTexture> _pTex)
+{
+	m_pBrushTex = _pTex;
+
+	m_pCSHeightMap->SetBrushTex(m_pBrushTex);
 }
 
 void CLandScape::Update_HeightMap()

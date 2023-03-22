@@ -34,11 +34,17 @@ public:
 public:
     virtual void render_Instancing() override {}
 public:
+    void SetBrushMap(Ptr<CTexture> _pTex);
     void SetHeightMap(Ptr<CTexture> _pTex);
     void SetFaceCount(UINT _X, UINT _Z);
     void SaveTexture(const wstring& path);
     void SaveBmpFile(const wstring& path);
     void LoadBmpFile(const wstring& path);
+    pair<UINT, UINT> GetFaceCount() { return pair<UINT, UINT>(m_iXFaceCount, m_iZFaceCount); }
+    template<typename T>
+    void GetHeightTexture(T& t) { t = m_pHeightMap->GetSRV().Get(); }
+    template<typename T>
+    void GetBrushTexture(T& t) { t = m_pBrushTex->GetSRV().Get(); }
 private:
     void CreateMesh();
     void CreateMaterial();

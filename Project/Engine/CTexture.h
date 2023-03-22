@@ -70,7 +70,6 @@ public:
     // »ý¼º
     void Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
     void Create(ComPtr<ID3D11Texture2D> _Tex2D);
-    void Create(ComPtr<ID3D11Texture2D> _Tex2D, D3D11_BIND_FLAG _eflag);
     void CreateCubeTexture(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
     CLONE_ASSERT(CTexture);
 public:

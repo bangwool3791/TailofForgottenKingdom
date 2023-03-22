@@ -18,6 +18,7 @@
 #include "TransformUI.h"
 #include "MeshRenderUI.h"
 #include "ProgressUI.h"
+#include "Func.h"
 
 TileMapUI::TileMapUI()
 	: UI("TileMapUI")
@@ -38,6 +39,17 @@ void TileMapUI::begin()
 {
 	m_pLandObj = CEditor::GetInst()->FindByName(L"EditLandScape");
 	m_pLandScape = m_pLandObj->LandScape();
+
+	Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(L"HeightMap");
+	m_HeightImage = pTex->GetSRV().Get();
+
+	pair<UINT, UINT> result = m_pLandScape->GetFaceCount();
+	m_iXFaceCount = result.first;
+	m_iZFaceCount = result.second;
+
+	m_pLandScape->GetHeightTexture(m_HeightImage);
+
+	m_pLandScape->GetBrushTexture(m_BrushImage);
 }
 
 void TileMapUI::update()
@@ -54,6 +66,8 @@ void TileMapUI::render_update()
 	ImGui::Button("Tile");
 	ImGui::PopStyleColor(3);
 	ImGui::PopID();
+
+	Text(HSV_SKY_GREY, Vec2(65.f, 30.f), "Heigtmap");
 
 	if(ImGui::Button("Save", ImVec2(65.f, 40.f)))
 	{
@@ -77,7 +91,7 @@ void TileMapUI::render_update()
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("LoadHeigtMap", ImVec2(65.f, 40.f)))
+	if (ImGui::Button("Load", ImVec2(65.f, 40.f)))
 	{
 		m_fileDialogLoad.type = ImGuiFileDialogType_OpenFile;
 		m_fileDialogLoad.title = "Open File";
@@ -94,33 +108,46 @@ void TileMapUI::render_update()
 		// Any place in draw loop
 		if (ImGui::FileDialog(&m_bDialogLoad, &m_fileDialogLoad))
 		{
-			LoadTextureFromEdit(m_fileDialogLoad.resultPath);
+			LoadHeightMap(m_fileDialogLoad.resultPath, m_HeightImage);
 		}
 	}
 
-	if (ImGui::Button("Initialize", ImVec2(65.f, 40.f)))
+	ImGui::Image(m_HeightImage, ImVec2(212.f, 212.f), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f));
+
+	Text(HSV_SKY_GREY, Vec2(65.f, 30.f), "Brushmap");
+
+	if (ImGui::Button("Load", ImVec2(65.f, 40.f)))
+	{
+		m_fileDialogBrushLoad.type = ImGuiFileDialogType_OpenFile;
+		m_fileDialogBrushLoad.title = "Open File";
+		m_fileDialogBrushLoad.fileName = "blank.png";
+
+		string path = CPathMgr::GetInst()->GetSingleContentPath();
+		std::filesystem::path _path(path + "\\texture");
+		m_fileDialogBrushLoad.directoryPath = _path;
+		m_bDialogBrushLoad = true;
+	}
+
+	if (m_bDialogBrushLoad)
+	{
+		// Any place in draw loop
+		if (ImGui::FileDialog(&m_bDialogBrushLoad, &m_fileDialogBrushLoad))
+		{
+			LoadBrushMap(m_fileDialogBrushLoad.resultPath, m_BrushImage);
+		}
+	}
+
+	ImGui::Image(m_BrushImage, ImVec2(212.f, 212.f), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f));
+
+	if (ImGui::Button("Init", ImVec2(65.f, 40.f)))
 	{
 		ProgressUI* pProgressUI = dynamic_cast<ProgressUI*>(CImGuiMgr::GetInst()->FindUI("ProgressUI"));
-		
 		assert(nullptr != pProgressUI);
 		pProgressUI->Open();
 		m_pLandScape->Initialize();
 	}
 
-	if (ImGui::Button("Test", ImVec2(65.f, 40.f)))
-	{
-		string path = CPathMgr::GetInst()->GetSingleContentPath();
-		path.append("\\texture\\test.bmp");
-		m_pLandScape->SaveBmpFile(wstring(path.begin(), path.end()));
-	}
-
-	if (ImGui::Button("Test1", ImVec2(65.f, 40.f)))
-	{
-		string path = CPathMgr::GetInst()->GetSingleContentPath();
-		path.append("\\texture\\test.bmp");
-		m_pLandScape->LoadBmpFile(wstring(path.begin(), path.end()));
-	}
-	
+	ImGui::PushItemWidth(150.f);
 	if (ImGui::InputInt("FaceCount X ", &m_iXFaceCount))
 	{
 		if (1 > m_iXFaceCount)
@@ -129,6 +156,7 @@ void TileMapUI::render_update()
 		m_pLandScape->SetFaceCount(m_iXFaceCount, m_iZFaceCount);
 	}
 
+	ImGui::PushItemWidth(150.f);
 	if (ImGui::InputInt("FaceCount Z ", &m_iZFaceCount))
 	{
 		if (1 > m_iZFaceCount)
@@ -139,8 +167,7 @@ void TileMapUI::render_update()
 }
 
 #include <Engine\CTexture.h>
-
-void TileMapUI::LoadTextureFromEdit(const wstring& _path)
+void TileMapUI::FindTexture(const wstring& _path, Ptr<CTexture>& pTex)
 {
 	//Texture 파일 경로 찾기
 	wstring wstrFilePath = CPathMgr::GetInst()->GetContentPath();
@@ -154,10 +181,34 @@ void TileMapUI::LoadTextureFromEdit(const wstring& _path)
 		strFullPath.erase(ind, strFilePath.length()); // erase function takes two parameter, the starting index in the string from where you want to erase characters and total no of characters you want to erase.
 
 		wstring wstrFileName = wstring(strFullPath.begin(), strFullPath.end());
-		Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(wstrFileName.c_str());
-		
-		if(nullptr != pTex)
-			m_pLandScape->SetHeightMap(pTex);
+
+		pTex = CResMgr::GetInst()->FindRes<CTexture>(wstrFileName.c_str());
+	}
+}
+
+void TileMapUI::LoadHeightMap(const wstring& _path, ImTextureID& _image)
+{
+	Ptr<CTexture> pTex = nullptr;
+
+	FindTexture(_path, pTex);
+
+	if (nullptr != pTex)
+	{
+		_image = pTex->GetSRV().Get();
+		m_pLandScape->SetHeightMap(pTex);
+	}
+}
+
+void TileMapUI::LoadBrushMap(const wstring& _path, ImTextureID& _image)
+{
+	Ptr<CTexture> pTex = nullptr;
+
+	FindTexture(_path, pTex);
+
+	if (nullptr != pTex)
+	{
+		_image = pTex->GetSRV().Get();
+		m_pLandScape->SetBrushMap(pTex);
 	}
 }
 

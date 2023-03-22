@@ -187,7 +187,19 @@ inline Ptr<T> CResMgr::Load(const wstring& _strKey, const wstring& _strRelativeP
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 	strFilePath += _strRelativePath;
 
-	if (!lstrcmp(L"texture\\Heightmap3.dds", _strRelativePath.c_str()))
+	static const wstring s2 = L"height";
+	static const wstring s3 = L"Height";
+
+	if (_strRelativePath.find(s2) != std::wstring::npos) 
+	{
+		if (FAILED(pResource->LoadHeightMap(strFilePath)))
+		{
+			MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
+			delete pResource;
+			return nullptr;
+		}
+	}	
+	else if (_strRelativePath.find(s3) != std::wstring::npos)
 	{
 		if (FAILED(pResource->LoadHeightMap(strFilePath)))
 		{

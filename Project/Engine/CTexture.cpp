@@ -123,10 +123,7 @@ int CTexture::LoadHeightMap(const wstring& _strFilePath)
         tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
         hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), &tSRVDesc, m_SRV.GetAddressOf());
         m_SRV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_SRV") - 1, "CTexture::m_SRV");
-        if (FAILED(hr))
-        {
-            int a = 0;
-        }
+
         assert(!FAILED(hr));
     }
 
@@ -336,53 +333,6 @@ void CTexture::Create(ComPtr<ID3D11Texture2D> _Tex2D)
     }
 }
 
-
-void CTexture::Create(ComPtr<ID3D11Texture2D> _Tex2D, D3D11_BIND_FLAG _flag)
-{
-    // m_Tex2D->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_Tex2D") - 1, "CTexture::m_Tex2D");
-    _Tex2D->GetDesc(&m_Desc);
-
-    m_Desc.BindFlags |= _flag;
-
-    HRESULT hr = S_OK;
-
-    hr = DEVICE->CreateTexture2D(&m_Desc, nullptr, m_Tex2D.GetAddressOf());
-
-    if (m_Desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
-    {
-        hr = DEVICE->CreateDepthStencilView(m_Tex2D.Get(), nullptr, m_DSV.GetAddressOf());
-    }
-    else
-    {
-        if (m_Desc.BindFlags & D3D11_BIND_RENDER_TARGET)
-        {
-            hr = DEVICE->CreateRenderTargetView(m_Tex2D.Get(), nullptr, m_RTV.GetAddressOf());
-            assert(!FAILED(hr));
-        }
-
-        if (m_Desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
-        {
-            D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
-            tSRVDesc.Format = m_Desc.Format;
-            tSRVDesc.Texture2D.MipLevels = 1;
-            tSRVDesc.Texture2D.MostDetailedMip = 0;
-            tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
-            hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), nullptr, m_SRV.GetAddressOf());
-            assert(!FAILED(hr));
-        }
-
-        if (m_Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
-        {
-            D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
-            tUAVDesc.Format = m_Desc.Format;
-            tUAVDesc.Texture2D.MipSlice = 0;
-            tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
-            hr = DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), &tUAVDesc, m_UAV.GetAddressOf());
-            assert(!FAILED(hr));
-        }
-    }
-}
-
 void CTexture::UpdateData(UINT _iRegisterNum, UINT _iPipelineStage)
 {
     if ((UINT)PIPELINE_STAGE::VS & _iPipelineStage)
@@ -455,43 +405,8 @@ void CTexture::SaveTexture(const wstring& path)
     ScratchImage image; 
     CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), image);
     SaveToDDSFile(*image.GetImages(), DDS_FLAGS_NONE, path.c_str());
-   //HRESULT hr;
-   // // Write out the render target as a PNG
-  //  D3DX11SaveTextureToFileW(CONTEXT, m_Tex2D.Get(), D3DX11_IFF_PNG, L"D:\Dev\MyEngine\D3D\AssortRockDx112D-master\\SCREENSHOT.PNG");
-   //
-   // // Write out the render target as JPG
-   // hr = SaveWICTextureToFile(context.Get(), backBufferTex.Get(), GUID_ContainerFormatJpeg, L"SCREENSHOT.JPG");
-   //
-   // // Write out the render target as BMP
-   // hr = SaveWICTextureToFile(context.Get(), backBufferTex.Get(), GUID_ContainerFormatBmp, L"SCREENSHOT.BMP");
-   //
-   // // Write out the render target as BMP and explicitly use a 16-bit format
-   // hr = SaveWICTextureToFile(context.Get(), backBufferTex.Get(), GUID_ContainerFormatBmp, L"SCREENSHOT.BMP", &GUID_WICPixelFormat16bppBGR565);
-   //
-   // // Write out the render target as a TIF
-   // hr = SaveWICTextureToFile(context.Get(), backBufferTex.Get(), GUID_ContainerFormatTiff, L"SCREENSHOT.TIF");
-   //
-   // // Write out the render target as a TIF with explicit WIC codec properties
-   // hr = SaveWICTextureToFile(context.Get(), backBufferTex.Get(), GUID_ContainerFormatTiff, L"SCREENSHOT.TIF", nullptr,
-   //     [&](IPropertyBag2* props)
-   //     {
-   //         PROPBAG2 options[2] = { 0, 0 };
-   //         options[0].pstrName = L"CompressionQuality";
-   //         options[1].pstrName = L"TiffCompressionMethod";
-   //
-   //         VARIANT varValues[2];
-   //         varValues[0].vt = VT_R4;
-   //         varValues[0].fltVal = 0.75f;
-   //
-   //         varValues[1].vt = VT_UI1;
-   //         varValues[1].bVal = WICTiffCompressionNone;
-   //
-   //         (void)props->Write(2, options, varValues);
-   //     });
-   //
-   // // Write out the render target as a DDS
-   // hr = SaveDDSTextureToFile(context.Get(), backBufferTex.Get(), L"SCREENSHOT.DDS");
 }
+
 #include "CImage.h"
 
 void CTexture::SaveBmpFile(const wstring& _Path)
