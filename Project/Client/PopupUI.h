@@ -1,11 +1,8 @@
 #pragma once
 #include "UI.h"
-
-class CGameObject;
-#include "pch.h"
 #include "TreeUI.h"
-#include <Engine\Ptr.h>
-#include <Engine\CRes.h>
+
+#include <Engine\CGameObject.h>
 
 class ResUI;
 

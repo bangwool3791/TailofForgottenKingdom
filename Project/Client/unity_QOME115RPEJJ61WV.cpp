@@ -39,6 +39,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ImGuiFileDialog.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ImGuizmo.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\imgui_filedialog.cpp"
 
 

@@ -58,7 +58,91 @@ int CTexture::Load(const wstring& _strFilePath)
     return hr;
 }
 
+int CTexture::LoadHeightMap(const wstring& _strFilePath)
+{
+    HRESULT hr = E_FAIL;
 
+    wchar_t szExt[50] = {};
+    _wsplitpath_s(_strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, 50);
+
+    wstring strExt = szExt;
+    if (strExt == L".dds" || strExt == L".DDS")
+    {
+        hr = LoadFromDDSFile(_strFilePath.c_str(), DDS_FLAGS::DDS_FLAGS_NONE, nullptr, m_Image);
+    }
+
+    else if (strExt == L".tga" || strExt == L".TGA")
+    {
+        hr = LoadFromTGAFile(_strFilePath.c_str(), nullptr, m_Image);
+    }
+
+    else // WIC (png, jpg, jpeg, bmp )
+    {
+        hr = LoadFromWICFile(_strFilePath.c_str(), WIC_FLAGS::WIC_FLAGS_NONE, nullptr, m_Image);
+        m_pPixels = m_Image.GetPixels();
+        m_iPixelSize = m_Image.GetPixelsSize();
+    }
+
+    if (FAILED(hr))
+        return hr;
+
+    m_Desc.Format = m_Image.GetMetadata().format;
+    m_Desc.MipLevels = 1;
+    m_Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+    m_Desc.ArraySize = m_Image.GetMetadata().arraySize;
+    m_Desc.SampleDesc.Count = 1;
+    m_Desc.SampleDesc.Quality = 0;
+    m_Desc.Usage = D3D11_USAGE_DEFAULT;
+    m_Desc.CPUAccessFlags = 0;
+    m_Desc.Width = m_Image.GetMetadata().width;
+    m_Desc.Height = m_Image.GetMetadata().height;
+    hr = DEVICE->CreateTexture2D(&m_Desc, nullptr, m_Tex2D.GetAddressOf());
+
+    if (FAILED(hr))
+        return hr;
+
+    // 원본데이터(밉맵 레벨 0) 를 각 칸에 옮긴다.   
+    for (int i = 0; i < m_Desc.ArraySize; ++i)
+    {
+        // GPU 에 데이터 옮기기(밉맵 포함)
+        UINT iSubresIdx = D3D11CalcSubresource(0, i, m_Desc.MipLevels);
+
+        CONTEXT->UpdateSubresource(m_Tex2D.Get(), iSubresIdx, nullptr
+            , m_Image.GetImage(0, i, 0)->pixels
+            , m_Image.GetImage(0, i, 0)->rowPitch
+            , m_Image.GetImage(0, i, 0)->slicePitch);
+    }
+
+    if (m_Desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+    {
+        D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
+
+        tSRVDesc.Format = m_Desc.Format;
+        tSRVDesc.Texture2D.MipLevels = 1;
+        tSRVDesc.Texture2D.MostDetailedMip = 0;
+        tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+        hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), &tSRVDesc, m_SRV.GetAddressOf());
+        m_SRV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_SRV") - 1, "CTexture::m_SRV");
+        if (FAILED(hr))
+        {
+            int a = 0;
+        }
+        assert(!FAILED(hr));
+    }
+
+    if (m_Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+    {
+        D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
+        tUAVDesc.Format = m_Desc.Format;
+        tUAVDesc.Texture2D.MipSlice = 0;
+        tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+        hr = DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), &tUAVDesc, m_UAV.GetAddressOf());
+        m_UAV->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_UAV") - 1, "CTexture::m_UAV");
+        assert(!FAILED(hr));
+    }
+
+    return hr;
+}
 //MSAA(Multi Sampling Anti Aliasing)쓸꺼냐? 1, 0 이면 안쓴다는 옵션.
 //이미지중에 하나를 추출하는것을 SampleDesc 라고한다.
 /*
@@ -117,6 +201,7 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
         if (_iBindFlag & D3D11_BIND_SHADER_RESOURCE)
         {
             D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
+            
             tSRVDesc.Format = m_Desc.Format;
             tSRVDesc.Texture2D.MipLevels = 1;
             tSRVDesc.Texture2D.MostDetailedMip = 0;
@@ -215,6 +300,53 @@ void CTexture::Create(ComPtr<ID3D11Texture2D> _Tex2D)
     m_Tex2D->GetDesc(&m_Desc);
 
     HRESULT hr = S_OK;
+
+    if (m_Desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+    {
+        hr = DEVICE->CreateDepthStencilView(m_Tex2D.Get(), nullptr, m_DSV.GetAddressOf());
+    }
+    else
+    {
+        if (m_Desc.BindFlags & D3D11_BIND_RENDER_TARGET)
+        {
+            hr = DEVICE->CreateRenderTargetView(m_Tex2D.Get(), nullptr, m_RTV.GetAddressOf());
+            assert(!FAILED(hr));
+        }
+
+        if (m_Desc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+        {
+            D3D11_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
+            tSRVDesc.Format = m_Desc.Format;
+            tSRVDesc.Texture2D.MipLevels = 1;
+            tSRVDesc.Texture2D.MostDetailedMip = 0;
+            tSRVDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+            hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), nullptr, m_SRV.GetAddressOf());
+            assert(!FAILED(hr));
+        }
+
+        if (m_Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+        {
+            D3D11_UNORDERED_ACCESS_VIEW_DESC tUAVDesc = {};
+            tUAVDesc.Format = m_Desc.Format;
+            tUAVDesc.Texture2D.MipSlice = 0;
+            tUAVDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+            hr = DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), &tUAVDesc, m_UAV.GetAddressOf());
+            assert(!FAILED(hr));
+        }
+    }
+}
+
+
+void CTexture::Create(ComPtr<ID3D11Texture2D> _Tex2D, D3D11_BIND_FLAG _flag)
+{
+    // m_Tex2D->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("CTexture::m_Tex2D") - 1, "CTexture::m_Tex2D");
+    _Tex2D->GetDesc(&m_Desc);
+
+    m_Desc.BindFlags |= _flag;
+
+    HRESULT hr = S_OK;
+
+    hr = DEVICE->CreateTexture2D(&m_Desc, nullptr, m_Tex2D.GetAddressOf());
 
     if (m_Desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
     {

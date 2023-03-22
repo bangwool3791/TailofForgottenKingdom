@@ -117,7 +117,7 @@ void CreateTestLelvel()
 
 void CreateDefaultObj(CLevel* pLevel)
 {
-	CGameObject* pObject = new CGameObject;
+	//CGameObject* pObject = new CGameObject;
 	//pObject->SetName(L"Sphere");
 	//
 	//pObject->AddComponent(new CTransform);
@@ -134,18 +134,16 @@ void CreateDefaultObj(CLevel* pLevel)
 	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	//pLevel->AddGameObject(pObject, 1);
 
-	pObject = new CGameObject;
-	pObject->SetName(L"Wave");
-
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CWaveRenderer);
-	pObject->WaveRenderer()->Initialize();
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 1000.f));
-	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
-
-	pLevel->AddGameObject(pObject, 1);
-
-	//DiffuseTargetTex
+	//pObject = new CGameObject;
+	//pObject->SetName(L"Wave");
+	//
+	//pObject->AddComponent(new CTransform);
+	//pObject->AddComponent(new CWaveRenderer);
+	//pObject->WaveRenderer()->Initialize();
+	//pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 1000.f));
+	//pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
+	//
+	//pLevel->AddGameObject(pObject, 1);
 
 }
 

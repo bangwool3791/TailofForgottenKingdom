@@ -168,6 +168,7 @@
     <ClInclude Include="CreateTestLevel.h" />
     <ClInclude Include="ImGuiFileDialog.h" />
     <ClInclude Include="ImGuiFileDialogConfig.h" />
+    <ClInclude Include="ImGuizmo.h" />
     <ClInclude Include="imgui_filedialog.h" />
     <ClInclude Include="MenuUI.h" />
     <ClInclude Include="ComponentUI.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="Collider2DUI.cpp" />
     <ClCompile Include="CreateTestLevel.cpp" />
     <ClCompile Include="ImGuiFileDialog.cpp" />
+    <ClCompile Include="ImGuizmo.cpp" />
     <ClCompile Include="imgui_filedialog.cpp" />
     <ClCompile Include="MenuUI.cpp" />
     <ClCompile Include="ComponentUI.cpp" />

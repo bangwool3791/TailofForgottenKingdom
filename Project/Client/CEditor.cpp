@@ -4,6 +4,8 @@
 
 #include "CGameObjectEx.h"
 
+#include "CImGuiMgr.h"
+
 #include "CCameraScript.h"
 #include "CBorderScript.h"
 
@@ -49,7 +51,6 @@ CEditor::~CEditor()
 	Safe_Delete(m_pCameraObject);
 }
 
-#include "CImGuiMgr.h"
 #include "TileMapUI.h"
 
 void CEditor::init()
@@ -85,6 +86,22 @@ void CEditor::init()
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
 	TileMapUI* pContentUI = (TileMapUI*)CImGuiMgr::GetInst()->FindUI("TileMapUI");
 	pContentUI->begin();
+
+	CGameObjectEx* pObject = new CGameObjectEx;
+	pObject->SetName(L"Sphere");
+	
+	pObject->AddComponent(new CTransform);
+	pObject->AddComponent(new CMeshRender);
+	pObject->AddComponent(new CCollider3D);
+	
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
+	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
+	
+	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
+	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
+	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
 	/*
 	* Component List
 	*/

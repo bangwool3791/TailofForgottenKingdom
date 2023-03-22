@@ -2,12 +2,47 @@
 #include "CImGuiMgr.h"
 
 #include <Engine\CDevice.h>
+#include "CEditor.h"
 
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
+#include "ImGuizmo.h"
+
+#include "CGameObjectEx.h"
+#include <Engine\CTransform.h>
+#include <Engine\CCamera.h>
+
 #include "UI.h"
 #include "PopupUI.h"
 #include "ParamUI.h"
+
+bool useWindow = true;
+int gizmoCount = 1;
+float camDistance = 8.f;
+static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+
+int lastUsing = 0;
+
+float cameraView[16] =
+{ 1.f, 0.f, 0.f, 0.f,
+  0.f, 1.f, 0.f, 0.f,
+  0.f, 0.f, 1.f, 0.f,
+  0.f, 0.f, 0.f, 1.f };
+
+float cameraProjection[16];
+
+float objectMatrix[16] = {
+  100.f, 0.f, 0.f, 0.f,
+    0.f, 100.f, 0.f, 0.f,
+    0.f, 0.f, 100.f, 0.f,
+    0.f, 0.f, 0.f, 1.f 
+};
+
+static const float identityMatrix[16] =
+{ 1.f, 0.f, 0.f, 0.f,
+    0.f, 1.f, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f };
 
 CImGuiMgr::CImGuiMgr()
     : m_NotifyHandle{}
@@ -70,24 +105,126 @@ void CImGuiMgr::init(HWND _hWnd)
    // GUI 주석 끝
 }
 
+// Camera projection
+bool isPerspective = true;
+float fov = 27.f;
+float viewWidth = 10.f; // for orthographic
+float camYAngle = 165.f / 180.f * 3.14159f;
+float camXAngle = 32.f / 180.f * 3.14159f;
+
+bool firstFrame = true;
+
 void CImGuiMgr::progress()
 {
     //알림 확인
     ObserveContent();
-
 
     EDIT_MODE mode = CEditor::GetInst()->GetEditMode();
 
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
+    ImGuizmo::Enable(true);
 
+    Matrix mat;
+    XMFLOAT4X4* t = nullptr;
+    CGameObjectEx* pObj = CEditor::GetInst()->FindByName(L"Sphere");
+    CGameObjectEx* pCam = CEditor::GetInst()->FindByName(L"Editor Camera");
+    Vec3 pos = pObj->Transform()->GetRelativePos();
+    Vec3 rot = pObj->Transform()->GetRelativeRotation();
+    Vec3 sca = pObj->Transform()->GetRelativeScale();
+    XMFLOAT4X4 localMat;
+    XMFLOAT4X4 viewMat;
+    XMFLOAT4X4 projMat;
+    pCam->Camera()->CalcViewMat();
+    pCam->Camera()->CalcProjMat();
+
+    XMStoreFloat4x4(&localMat, pObj->Transform()->GetWorldMat());
+    XMStoreFloat4x4(&viewMat, pCam->Camera()->GetViewMat());
+    XMStoreFloat4x4(&projMat, pCam->Camera()->GetProjMat());
+    static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
+    if (ImGui::IsKeyPressed(ImGuiKey_T))
+        mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+
+    if (ImGui::IsKeyPressed(ImGuiKey_E))
+        mCurrentGizmoOperation = ImGuizmo::ROTATE;
+
+    if (ImGui::IsKeyPressed(ImGuiKey_R)) 
+        mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+    if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+        mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+
+    ImGui::SameLine();
+
+    if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+        mCurrentGizmoOperation = ImGuizmo::ROTATE;
+
+    ImGui::SameLine();
+
+    if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+        mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+    if (ImGui::RadioButton("Universal", mCurrentGizmoOperation == ImGuizmo::UNIVERSAL))
+        mCurrentGizmoOperation = ImGuizmo::UNIVERSAL;
+
+    float translate[3] = { };
+    float rotation[3] = {};
+    float scale[3] = {};
+
+    ImGuizmo::DecomposeMatrixToComponents(*localMat.m, translate, rotation, scale);
+    ImGui::InputFloat3("Tr", translate, "%3.f", 3);
+    ImGui::InputFloat3("Rt", rotation, "%3.f", 3);
+    ImGui::InputFloat3("SC", scale, "%3.f", 3);
+    ImGuizmo::RecomposeMatrixFromComponents(translate, rotation, scale, *localMat.m);
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+    ImGuizmo::Manipulate(*viewMat.m, *projMat.m, mCurrentGizmoOperation, mCurrentGizmoMode, *localMat.m, NULL, NULL);
+   
+    if (ImGuizmo::IsUsing())
+    {
+        mat = XMLoadFloat4x4(&localMat);
+        XMVECTOR vScale;
+        XMVECTOR outRotQuat;
+        XMVECTOR outTrans;
+        XMMatrixDecompose(&vScale, &outRotQuat, &outTrans, mat);
+
+        XMStoreFloat3(&pos, outTrans);
+        XMStoreFloat3(&rot, outRotQuat);
+        XMStoreFloat3(&sca, vScale);
+
+        switch (mCurrentGizmoOperation)
+        {
+        case ImGuizmo::TRANSLATE:
+            pObj->Transform()->SetRelativePos(pos);
+            break;
+        case ImGuizmo::ROTATE:
+            pObj->Transform()->SetRelativeRotation(rot);
+            break;
+        case ImGuizmo::SCALE:
+            pObj->Transform()->SetRelativeScale(sca);
+            break;
+
+        case ImGuizmo::UNIVERSAL:
+            pObj->Transform()->SetRelativeScale(sca);
+            pObj->Transform()->SetRelativeRotation(rot);
+            pObj->Transform()->SetRelativePos(pos);
+            break;
+        default:
+            break;
+        }
+    }
+    
     ParamUI::ParamCount = 0;
 
     {
         bool bTrue = true;
         ImGui::ShowDemoWindow(&bTrue);
-
         
         unordered_map<string, UI*>::iterator iter = m_mapUI.begin();
         for (; iter != m_mapUI.end(); ++iter)
@@ -184,8 +321,8 @@ void CImGuiMgr::progress()
         }
     }
 
-
     ImGui::Render();
+
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
@@ -194,6 +331,7 @@ void CImGuiMgr::progress()
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }
+
 }
 
 void CImGuiMgr::clear()

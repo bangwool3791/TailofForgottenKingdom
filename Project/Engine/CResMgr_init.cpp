@@ -724,6 +724,8 @@ void CResMgr::CreateDefaultTexture()
 	Load<CTexture>(L"texture\\noise\\noise_02.png", L"texture\\noise\\noise_02.png");
 	Load<CTexture>(L"texture\\noise\\noise_03.jpg", L"texture\\noise\\noise_03.jpg");
 
+	Load<CTexture>(L"texture\\Heightmap3.dds", L"texture\\Heightmap3.dds");
+	
 	CreateTexture(L"UAVTex", 1024, 1024, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_SHADER_RESOURCE |
 		D3D11_BIND_UNORDERED_ACCESS);
 

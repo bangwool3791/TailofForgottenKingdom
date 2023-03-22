@@ -42,7 +42,7 @@ public:
     virtual void Save(const wstring& _strRelativePath) = 0;
     // 파일로 부터 로딩
     virtual int Load(const wstring& _strFilePath) = 0;
-
+    virtual int LoadHeightMap(const wstring& _strFilePath) { return 0; }
 protected:
     void SaveKeyPath(FILE* _pFile);
     void LoadKeyPath(FILE* _pFile);

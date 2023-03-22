@@ -156,8 +156,6 @@ void TileMapUI::LoadTextureFromEdit(const wstring& _path)
 		wstring wstrFileName = wstring(strFullPath.begin(), strFullPath.end());
 		Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(wstrFileName.c_str());
 		
-		//pTex->Create(pOri->GetTex2D(), D3D11_BIND_UNORDERED_ACCESS);
-		
 		if(nullptr != pTex)
 			m_pLandScape->SetHeightMap(pTex);
 	}
