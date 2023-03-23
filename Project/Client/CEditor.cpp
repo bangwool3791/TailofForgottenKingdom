@@ -35,6 +35,8 @@
 #include <Engine\CSLight.h>
 
 float g_LandScale = 1000.f;
+float g_BrushScale = 0.3f;
+int g_FaceCount  = 16;
 
 CEditor::CEditor()
 	:m_editmode{ EDIT_MODE::MAPTOOL }
@@ -87,8 +89,9 @@ void CEditor::init()
 	pLandScape->SetName(L"EditLandScape");
 	pLandScape->AddComponent(new CTransform);
 	pLandScape->AddComponent(new CLandScape);
+	g_BrushScale = pLandScape->LandScape()->GetBrushScale().x;
 	pLandScape->Transform()->SetRelativeScale(g_LandScale, g_LandScale, g_LandScale);
-	pLandScape->LandScape()->SetFaceCount(16, 16);
+	pLandScape->LandScape()->SetFaceCount(g_FaceCount, g_FaceCount);
 	pLandScape->LandScape()->SetFrustumCulling(false);
 	pLandScape->finaltick();
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
@@ -100,7 +103,8 @@ void CEditor::init()
 	pObject->AddComponent(new CDecal);
 	pObject->AddComponent(new CBrushScript);
 	pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
-	pObject->Transform()->SetRelativeScale(Vec3(250.f, 250.f, 250.f));
+	float fScale = g_BrushScale * g_LandScale * g_FaceCount;
+	pObject->Transform()->SetRelativeScale(Vec3{ fScale, fScale, fScale });
 	pObject->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
 	//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
 	pObject->Decal()->SetDecalTexture(pLandScape->LandScape()->GetBrushTexture());

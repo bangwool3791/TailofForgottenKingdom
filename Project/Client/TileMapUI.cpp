@@ -43,10 +43,6 @@ void TileMapUI::begin()
 	Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(L"HeightMap");
 	m_HeightImage = pTex->GetSRV().Get();
 
-	pair<UINT, UINT> result = m_pLandScape->GetFaceCount();
-	m_iXFaceCount = result.first;
-	m_iZFaceCount = result.second;
-
 	m_pLandScape->GetHeightTexture(m_HeightImage);
 
 	m_pLandScape->GetBrushSRV(m_BrushImage);
@@ -71,12 +67,12 @@ void TileMapUI::render_update()
 
 	Text(HSV_SKY_GREY, Vec2(65.f, 30.f), "Heigtmap");
 
-	if(ImGui::Button("Save", ImVec2(65.f, 40.f)))
+	if (ImGui::Button("Save", ImVec2(65.f, 40.f)))
 	{
 		m_fileDialogSave.type = ImGuiFileDialogType_SaveFile;
 		m_fileDialogSave.title = "Save File";
 		m_fileDialogSave.fileName = "blank.png";
-		
+
 		string path = CPathMgr::GetInst()->GetSingleContentPath();
 		std::filesystem::path _path(path + "\\texture");
 		m_fileDialogSave.directoryPath = _path;
@@ -150,21 +146,36 @@ void TileMapUI::render_update()
 	}
 
 	ImGui::PushItemWidth(150.f);
-	if (ImGui::InputInt("FaceCount X ", &m_iXFaceCount))
+	if (ImGui::InputFloat("Land Scale", &g_LandScale, 2, 4, "%.3f"))
 	{
-		if (1 > m_iXFaceCount)
-			m_iXFaceCount = 1;
+		if (0 > g_LandScale)
+			g_LandScale = 0;
 
-		m_pLandScape->SetFaceCount(m_iXFaceCount, m_iZFaceCount);
+		m_pLandObj->Transform()->SetRelativeScale({ g_LandScale ,g_LandScale ,g_LandScale });
+		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
+		m_pBrushObj->Transform()->SetRelativeScale(Vec3(fScale, fScale, fScale));
 	}
 
 	ImGui::PushItemWidth(150.f);
-	if (ImGui::InputInt("FaceCount Z ", &m_iZFaceCount))
+	if (ImGui::InputInt("FaceCount ", &g_FaceCount, 1, 2))
 	{
-		if (1 > m_iZFaceCount)
-			m_iZFaceCount = 1;
+		if (0 > g_FaceCount)
+			g_FaceCount = 0;
 
-		m_pLandScape->SetFaceCount(m_iXFaceCount, m_iZFaceCount);
+		m_pLandScape->SetFaceCount(g_FaceCount, g_FaceCount);
+		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
+		m_pBrushObj->Transform()->SetRelativeScale(Vec3(fScale, fScale, fScale));
+	}
+
+	ImGui::PushItemWidth(150.f);
+	if (ImGui::InputFloat("Brush Scale", &g_BrushScale, 0.001, 0.01, "%.3f"))
+	{
+		if (1 < g_BrushScale)
+			g_BrushScale = 1.f;
+
+		m_pLandScape->SetBrushScale(Vec2{ g_BrushScale,g_BrushScale });
+		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
+		m_pBrushObj->Transform()->SetRelativeScale(Vec3(fScale, fScale, fScale));
 	}
 }
 

@@ -7,6 +7,11 @@
 #include <Engine/global.h>
 #include <Engine/CEngine.h>
 
+
+extern float g_LandScale;
+extern float g_BrushScale;
+extern int g_FaceCount;
+
 #ifdef _DEBUG
 #pragma comment(lib, "Engine\\Engine_debug.lib")
 #pragma comment(lib, "Script\\Script_debug.lib")

@@ -155,7 +155,7 @@ void ContentUI::render_update()
 			{
 				CGameObject* pGameObject = m_pTargetPrefab->Instantiate();
 				CGameObjectEx* pObj = new CGameObjectEx(*pGameObject);
-				Vec3 vPos{ tRay.vPos * 100.f };
+				Vec3 vPos{ tRay.vPos * g_LandScale };
 				pObj->Transform()->SetRelativePos(vPos);
 				pObj->SetName(L"Test" + std::to_wstring(cnt));
 				++cnt;

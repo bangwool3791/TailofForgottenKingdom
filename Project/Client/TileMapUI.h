@@ -26,9 +26,6 @@ private :
     ImFileDialogInfo      m_fileDialogSave;
     pair<UINT, UINT>      m_tFaceid;
 
-    int                  m_iXFaceCount;
-    int                  m_iZFaceCount;
-
 private:
     void FindTexture(const wstring& _path, Ptr<CTexture>& pTex);
     void LoadHeightMap(const wstring& _path, ImTextureID& _image);

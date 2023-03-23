@@ -51,6 +51,8 @@ public:
     void SaveBmpFile(const wstring& path);
     void LoadBmpFile(const wstring& path);
     pair<UINT, UINT> GetFaceCount() { return pair<UINT, UINT>(m_iXFaceCount, m_iZFaceCount); }
+    Vec2 GetBrushScale() { return m_vBrushScale; }
+    void SetBrushScale(const Vec2& _vScale) { m_vBrushScale = _vScale; }
     template<typename T>
     void GetHeightTexture(T& t) { t = m_pHeightMap->GetSRV().Get(); }
     template<typename T>
