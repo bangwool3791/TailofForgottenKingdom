@@ -14,6 +14,7 @@ private:
     ImTextureID           m_HeightImage;
     ImTextureID           m_BrushImage;
     CGameObject*          m_pLandObj;
+    CGameObject*          m_pBrushObj;
     CLandScape*           m_pLandScape;
     
 private :
@@ -27,6 +28,7 @@ private :
 
     int                  m_iXFaceCount;
     int                  m_iZFaceCount;
+
 private:
     void FindTexture(const wstring& _path, Ptr<CTexture>& pTex);
     void LoadHeightMap(const wstring& _path, ImTextureID& _image);

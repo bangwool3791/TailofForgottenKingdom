@@ -113,6 +113,9 @@
     <Filter Include="03. UI\10. TileMapUI">
       <UniqueIdentifier>{8e4e1f42-5dd9-42d0-98ce-9a004faf9531}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. UI\11. MaptoolUI">
+      <UniqueIdentifier>{1587f995-a8b6-4b8e-b9ed-0e73f365f572}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -271,6 +274,12 @@
     <ClInclude Include="ImGuizmo.h">
       <Filter>02. ImGui\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="MaptoolUI.h">
+      <Filter>03. UI\11. MaptoolUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CBrushScript.h">
+      <Filter>01. Editor\EditorScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -410,6 +419,12 @@
     </ClCompile>
     <ClCompile Include="ImGuizmo.cpp">
       <Filter>02. ImGui\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="MaptoolUI.cpp">
+      <Filter>03. UI\11. MaptoolUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CBrushScript.cpp">
+      <Filter>01. Editor\EditorScript</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

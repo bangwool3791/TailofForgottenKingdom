@@ -283,6 +283,9 @@
     <Filter Include="Engine\06. Component\02. RenderComponent\WaveRender">
       <UniqueIdentifier>{ced99cc8-fc1f-41cf-9d97-c602c726b367}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Compute\LandScape\WeightMap">
+      <UniqueIdentifier>{3ce7be7e-ea18-466a-a576-e1a9cddae730}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -582,6 +585,9 @@
     <ClInclude Include="CWaveRenderer.h">
       <Filter>Engine\06. Component\02. RenderComponent\WaveRender</Filter>
     </ClInclude>
+    <ClInclude Include="CWeightMapShader.h">
+      <Filter>HLSL\Compute\LandScape\WeightMap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -827,6 +833,9 @@
     <ClCompile Include="CWaveRenderer.cpp">
       <Filter>Engine\06. Component\02. RenderComponent\WaveRender</Filter>
     </ClCompile>
+    <ClCompile Include="CWeightMapShader.cpp">
+      <Filter>HLSL\Compute\LandScape\WeightMap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="register.fx">
@@ -969,6 +978,9 @@
     </FxCompile>
     <FxCompile Include="color.fx">
       <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="weightmap.fx">
+      <Filter>HLSL\Compute\LandScape\WeightMap</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

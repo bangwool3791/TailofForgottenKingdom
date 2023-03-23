@@ -48,7 +48,7 @@ public:
 public:
     virtual void begin();
     virtual void tick();
-    virtual void finaltick() {};
+    virtual void finaltick();
 
     virtual CScript* Clone() = 0;
 public:

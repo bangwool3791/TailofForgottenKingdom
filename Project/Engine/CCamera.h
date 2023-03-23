@@ -49,7 +49,6 @@ private:
     vector<CGameObject* >                    m_vecMask;
     vector<CGameObject*>                     m_vecDecal;
     vector<CGameObject* >                    m_vecTransparent;
-    vector<CGameObject* >                    m_vecSound;
     map<const wstring, vector<CGameObject*>> m_mapOpaqueVec;
     map<const wstring, vector<CGameObject*>> m_mapMaskVec;
     map<const wstring, vector<CGameObject*>> m_mapDecalVec;
@@ -58,9 +57,9 @@ private:
     vector<CGameObject* >                    m_vecPostProcess;
 
     CStructuredBuffer*                       m_pObjectRenderBuffer;
-private:
-    void begin();
+
 private :
+    void begin();
     void SortObject();
     void render_deferred();
     void render_opaque();
@@ -74,27 +73,29 @@ public :
     void InitializeEnvView(Vec3 vEyePos);
     virtual void finaltick();
     void         render();
+    void        EditorRender();
     void         render(MRT_TYPE _eType);
+    void SortObject(const vector<CGameObject*>& vec);
 public:
     void CalcViewMat();
     void CalcProjMat();
     void CalcReflectMat(float height);
 public :
 
-    double        GetOrthographicScale() { return m_fScale; }
-    double&       GetOrthographicScale_() { return m_fScale; }
-    void         SetOrthographicScale(float _fScale) { m_fScale = _fScale; }
+    double          GetOrthographicScale() { return m_fScale; }
+    double&         GetOrthographicScale_() { return m_fScale; }
+    void            SetOrthographicScale(float _fScale) { m_fScale = _fScale; }
 
-    void        SetProjType(PROJ_TYPE _eType) { m_eProjType = _eType; }
-    PROJ_TYPE   GetProjType() { return m_eProjType; }
+    void            SetProjType(PROJ_TYPE _eType) { m_eProjType = _eType; }
+    PROJ_TYPE       GetProjType() { return m_eProjType; }
 
-    void        SetAspectRatio(float _fRatio) { m_fAspectRatio = _fRatio; }
-    float       GetAspectRatio() { return m_fAspectRatio; }
+    void            SetAspectRatio(float _fRatio) { m_fAspectRatio = _fRatio; }
+    float           GetAspectRatio() { return m_fAspectRatio; }
 
-    void        SetNear(double _fNear) { m_fNear = _fNear; }
-    double       GetNear() { return m_fNear; }
-    void        SetFar(double _fFar) { m_fFar = _fFar; }
-    double       GetFar() { return m_fFar; }
+    void            SetNear(double _fNear) { m_fNear = _fNear; }
+    double          GetNear() { return m_fNear; }
+    void            SetFar(double _fFar) { m_fFar = _fFar; }
+    double          GetFar() { return m_fFar; }
 
     void        CalRay();
     const tRay& GetRay() { return m_ray; }

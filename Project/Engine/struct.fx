@@ -113,6 +113,7 @@ struct tTile
 struct tRaycastOut
 {
     float2 vUV;
+    float3 vPos;
     int iDist;
     int success;
 };

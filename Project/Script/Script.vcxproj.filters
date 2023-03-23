@@ -26,6 +26,9 @@
     <Filter Include="Scripts\01. CameraScript\02. SecondCamera">
       <UniqueIdentifier>{44becbde-06a1-44d8-acc2-f093e914803f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\06. TestScript">
+      <UniqueIdentifier>{13ffbc90-9a64-43ed-a529-357786cbf76e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPlayerScript.h">
@@ -49,6 +52,9 @@
     <ClInclude Include="CSecondCameraScript.h">
       <Filter>Scripts\01. CameraScript\02. SecondCamera</Filter>
     </ClInclude>
+    <ClInclude Include="CEngineBrushScript.h">
+      <Filter>Scripts\06. TestScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPlayerScript.cpp">
@@ -71,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="CSecondCameraScript.cpp">
       <Filter>Scripts\01. CameraScript\02. SecondCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="CEngineBrushScript.cpp">
+      <Filter>Scripts\06. TestScript</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

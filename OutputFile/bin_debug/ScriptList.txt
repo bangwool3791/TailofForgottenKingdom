@@ -1,3 +1,4 @@
+CEngineBrushScript
 CFrustumScript
 CLevelCameraScript
 CPlayerScript

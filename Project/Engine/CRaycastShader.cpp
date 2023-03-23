@@ -38,6 +38,13 @@ void CRaycastShader::UpdateData()
 	m_iGroupZ = 1;
 }
 
+const tRaycastOut& CRaycastShader::GetRay()
+{
+	static tRaycastOut tData;
+	m_pOutput->GetData(&tData, sizeof(tRaycastOut));
+	return tData;
+}
+
 void CRaycastShader::Clear()
 {
 	m_pHeightMap->Clear_CS(0);

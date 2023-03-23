@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CScriptMgr.h"
 
+#include "CEngineBrushScript.h"
 #include "CFrustumScript.h"
 #include "CLevelCameraScript.h"
 #include "CPlayerScript.h"
@@ -8,6 +9,7 @@
 
 void CScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 {
+	_vec.push_back(L"CEngineBrushScript");
 	_vec.push_back(L"CFrustumScript");
 	_vec.push_back(L"CLevelCameraScript");
 	_vec.push_back(L"CPlayerScript");
@@ -17,6 +19,7 @@ void CScriptMgr::GetScriptInfo(vector<wstring>& _vec)
 
 void CScriptMgr::GetScriptInfo(vector<string>& _vec)
 {
+	_vec.push_back("CEngineBrushScript");
 	_vec.push_back("CFrustumScript");
 	_vec.push_back("CLevelCameraScript");
 	_vec.push_back("CPlayerScript");
@@ -25,6 +28,8 @@ void CScriptMgr::GetScriptInfo(vector<string>& _vec)
 
 CScript * CScriptMgr::GetScript(const wstring& _strScriptName)
 {
+	if (L"CEngineBrushScript" == _strScriptName)
+		return new CEngineBrushScript;
 	if (L"CFrustumScript" == _strScriptName)
 		return new CFrustumScript;
 	if (L"CLevelCameraScript" == _strScriptName)
@@ -38,6 +43,8 @@ CScript * CScriptMgr::GetScript(const wstring& _strScriptName)
 
 CScript * CScriptMgr::GetScript(const string& _strScriptName)
 {
+	if ("CEngineBrushScript" == _strScriptName)
+		return new CEngineBrushScript;
 	if ("CFrustumScript" == _strScriptName)
 		return new CFrustumScript;
 	if ("CLevelCameraScript" == _strScriptName)
@@ -53,6 +60,9 @@ CScript * CScriptMgr::GetScript(UINT _iScriptType)
 {
 	switch (_iScriptType)
 	{
+	case (UINT)SCRIPT_TYPE::ENGINEBRUSHSCRIPT:
+		return new CEngineBrushScript;
+		break;
 	case (UINT)SCRIPT_TYPE::FRUSTUMSCRIPT:
 		return new CFrustumScript;
 		break;
@@ -73,6 +83,10 @@ const wchar_t * CScriptMgr::GetScriptWName(CScript * _pScript)
 {
 	switch ((SCRIPT_TYPE)_pScript->GetScriptType())
 	{
+	case SCRIPT_TYPE::ENGINEBRUSHSCRIPT:
+		return L"CEngineBrushScript";
+		break;
+
 	case SCRIPT_TYPE::FRUSTUMSCRIPT:
 		return L"CFrustumScript";
 		break;
@@ -97,6 +111,10 @@ const char* CScriptMgr::GetScriptName(CScript * _pScript)
 {
 	switch ((SCRIPT_TYPE)_pScript->GetScriptType())
 	{
+	case SCRIPT_TYPE::ENGINEBRUSHSCRIPT:
+		return "CEngineBrushScript";
+		break;
+
 	case SCRIPT_TYPE::FRUSTUMSCRIPT:
 		return "CFrustumScript";
 		break;

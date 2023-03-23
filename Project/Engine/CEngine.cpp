@@ -66,7 +66,6 @@ void CEngine::progress()
 {
 	tick();
 	finaltick();
-	render();
 }
 
 void CEngine::tick()

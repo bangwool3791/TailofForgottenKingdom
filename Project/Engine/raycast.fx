@@ -102,6 +102,7 @@ void CS_Raycast(int3 _iThreadID : SV_DispatchThreadID)
         * 충돌 위치 구조화 버퍼 전달
         */
         OUTPUT[0].vUV = float2(saturate(vCrossPoint.x / (float)FACE_X), saturate(1.f - vCrossPoint.z / (float)FACE_Z));
+        OUTPUT[0].vPos = vCrossPoint;
         OUTPUT[0].success = 1;
     }
 }

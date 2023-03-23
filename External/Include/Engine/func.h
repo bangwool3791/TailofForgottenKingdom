@@ -171,7 +171,6 @@ void LoadWStringFromFile(wstring& _str, FILE* _pFile);
 
 // Relative Path 가져오기
 wstring GetRelativePath(const wstring& _strBase, const wstring& _strPath);
-const Ray& GetRay();
 
 #include "CResMgr.h"
 #include "Ptr.h"

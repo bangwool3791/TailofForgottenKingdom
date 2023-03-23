@@ -24,3 +24,8 @@ void CScript::begin()
 void CScript::tick()
 {
 }
+
+void CScript::finaltick()
+{
+
+}

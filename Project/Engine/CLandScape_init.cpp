@@ -5,6 +5,7 @@
 #include "CResMgr.h"
 #include "CEventMgr.h"
 
+#include "CStructuredBuffer.h"
 
 void CLandScape::CreateMesh()
 {
@@ -87,7 +88,6 @@ void CLandScape::CreateMaterial()
 
 	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
-	pShader->SetRSType(RS_TYPE::CULL_BACK);
 	pShader->SetBSType(BS_TYPE::DEFAULT);
 	pShader->SetDSType(DS_TYPE::LESS);
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE);
@@ -95,7 +95,6 @@ void CLandScape::CreateMaterial()
 	pShader->AddScalarParam(INT_0, "Tess");
 	pShader->AddScalarParam(VEC4_0, "Camera Distance");
 	pShader->AddTexureParam(TEX_0, "HeightMap");
-	pShader->AddTexureParam(TEX_1, "texture\\MaterialAlb_Slice_18_.png");
 
 	tEvent evn = {};
 
@@ -106,7 +105,6 @@ void CLandScape::CreateMaterial()
 	Ptr<CMaterial> pMtrl = new CMaterial(true);
 	pMtrl->SetShader(pShader);
 	pMtrl->SetKey(L"LandScapeMtrl");
-	pMtrl->SetTexParam(TEX_1,CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MaterialAlb_Slice_18_.png"));
 	SetSharedMaterial(pMtrl);
 
 	// 추가
@@ -135,6 +133,17 @@ void CLandScape::CreateMaterial()
 		m_pCSHeightMap->SetKey(L"HeightMapShader");
 		AddRes(m_pCSHeightMap.Get(), RES_TYPE::COMPUTE_SHADER);
 	}
+
+	// =======================
+	// 가중치 수정 컴퓨트 쉐이더
+	// =======================
+	m_pCSWeightMap = (CWeightMapShader*)CResMgr::GetInst()->FindRes<CComputeShader>(L"WeightMapShader").Get();
+	if (nullptr == m_pCSWeightMap)
+	{
+		m_pCSWeightMap = new CWeightMapShader;
+		m_pCSWeightMap->CreateComputeShader(L"shader\\weightmap.fx", "CS_WeightMap");
+		AddRes(m_pCSWeightMap.Get(), RES_TYPE::COMPUTE_SHADER);
+	}
 }
 
 void CLandScape::CreateTexture()
@@ -152,9 +161,14 @@ void CLandScape::CreateTexture()
 
 	Update_HeightMap();
 
-	m_pBrushTex = CResMgr::GetInst()->FindRes<CTexture>(L"texture\\brush\\Brush_02.png");
+	m_pBrushTex = CResMgr::GetInst()->FindRes<CTexture>(L"texture\\brush\\Brush_01.png");
 
-	m_bCreateTex = true;
+	// 가중치 버퍼
+	m_iWeightWidth = 1024;
+	m_iWeightHeight = 1024;
+
+	m_pWeightMapBuffer = new CStructuredBuffer;
+	m_pWeightMapBuffer->Create(sizeof(tWeight_4), m_iWeightWidth * m_iWeightHeight, SB_TYPE::UAV_INC, nullptr, false);
 }
 
 void CLandScape::Initialize()

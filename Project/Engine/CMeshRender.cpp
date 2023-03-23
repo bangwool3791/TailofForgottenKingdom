@@ -114,3 +114,17 @@ void CMeshRender::render_Instancing()
 	g_vecInfoObject.push_back(tObjectInfo);
 }
 
+void CMeshRender::SaveToFile(FILE* _File)
+{
+	COMPONENT_TYPE eType = GetType();
+
+	fwrite(&eType, sizeof(COMPONENT_TYPE), 1, _File);
+
+	__super::SaveToFile(_File);
+}
+
+void CMeshRender::LoadFromFile(FILE* _File)
+{
+	__super::LoadFromFile(_File);
+}
+

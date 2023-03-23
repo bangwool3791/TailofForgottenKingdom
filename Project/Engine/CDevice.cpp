@@ -214,6 +214,7 @@ int CDevice::CreateSampler()
 	desc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
 	desc.Filter = D3D11_FILTER_ANISOTROPIC;
+	desc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());
 

@@ -14,6 +14,7 @@ public:
 private:
 	void tick();
 	void finaltick();
+public:
 	void render();
 
 private:

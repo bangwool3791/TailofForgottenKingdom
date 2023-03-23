@@ -67,7 +67,7 @@ void CCollider3D::SaveToFile(FILE* _File)
 	COMPONENT_TYPE type = GetType();
 	fwrite(&type, sizeof(UINT), 1, _File);
 
-	__super::SaveToFile(_File);
+	//__super::SaveToFile(_File);
 	
 	fwrite(&m_vOffsetPos, sizeof(Vec3), 1, _File);
 	fwrite(&m_vScale, sizeof(Vec3), 1, _File);
@@ -76,7 +76,7 @@ void CCollider3D::SaveToFile(FILE* _File)
 
 void CCollider3D::LoadFromFile(FILE* _File)
 {
-	__super::LoadFromFile(_File);
+	//__super::LoadFromFile(_File);
 
 	fread(&m_vOffsetPos, sizeof(Vec3), 1, _File);
 	fread(&m_vScale, sizeof(Vec3), 1, _File);

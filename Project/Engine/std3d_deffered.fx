@@ -68,6 +68,9 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in) : SV_Target
 	if (g_btex_1)
 	{
 		vNormal = g_tex_1.Sample(g_sam_0, _in.vUV);
+		/*
+		* Normal map -1 ~ 1
+		*/
 		vNormal = (vNormal * 2.f) - 1.f;
 
 		float3x3 matTBN =

@@ -140,6 +140,8 @@ PS_OUT2 PS_Decal_Defferd(VS_OUT2 _in)
 	float2 vDecalUV = float2(vLocalPos.x + 0.5f, 1.f - (vLocalPos.y + 0.5f));
 	float4 vDecalColor = g_tex_1.Sample(g_sam_0, vDecalUV);
 
+	vDecalColor.r = 1.f;
+
 	output.vDecal = vDecalColor;
 
 	return output;

@@ -242,7 +242,6 @@ void CCamera::CalcProjMat()
 
 void CCamera::render()
 {
-
 	g_transform.matView = m_matView;
 	g_transform.matViewInv = m_matViewInv;
 	g_transform.matProj = m_matProj;
@@ -268,6 +267,53 @@ void CCamera::render()
 	m_LightCS->Execute();
 	m_LightCS->Clear();
 
+	static Ptr<CMaterial> pMergeMtrl;
+	static Ptr<CMesh> pRectMesh;
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+
+	render_opaque();
+	render_mask();
+
+	render_transparent();
+	render_postprocess();
+
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+}
+
+void CCamera::EditorRender()
+{
+	g_transform.matView = m_matView;
+	g_transform.matViewInv = m_matViewInv;
+	g_transform.matProj = m_matProj;
+	g_transform.matProjInv = m_matProjInv;
+	g_transform.matReflect = m_matReflect;
+	/*
+	* 여기서 행렬 세팅 -> render transform 업데이트
+	*/
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
+	render_deferred();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
+	render_decal();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
+	const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
+
+	for (size_t i = 0; i < vecLight3D.size(); ++i)
+		vecLight3D[i]->render();
+
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
+	m_LightCS->Execute();
+	m_LightCS->Clear();
 
 	static Ptr<CMaterial> pMergeMtrl;
 	static Ptr<CMesh> pRectMesh;
@@ -285,56 +331,56 @@ void CCamera::render()
 	render_transparent();
 	render_postprocess();
 
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
-	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
 }
 
 void CCamera::render(MRT_TYPE _eType)
 {
-	//g_transform.matView = m_matView;
-	//g_transform.matViewInv = m_matViewInv;
-	//g_transform.matProj = m_matProj;
-	//g_transform.matProjInv = m_matProjInv;
-	//g_transform.matReflect = m_matReflect;
-	///*
-	//* 여기서 행렬 세팅 -> render transform 업데이트
-	//*/
-	//SortObject();
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
-	//render_deferred();
-	//
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
-	//render_decal();
-	//
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
-	//
-	//const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
-	//
-	//for (size_t i = 0; i < vecLight3D.size(); ++i)
-	//	vecLight3D[i]->render();
-	//
-	//CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
-	//m_LightCS->Execute();
-	//m_LightCS->Clear();
-	//
-	//
-	//static Ptr<CMaterial> pMergeMtrl;
-	//static Ptr<CMesh> pRectMesh;
-	//
-	//CRenderMgr::GetInst()->GetMRT(_eType)->OMSet();
-	//pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
-	//pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
-	//pMergeMtrl->UpdateData();
-	//pRectMesh->render();
-	//CMaterial::Clear();
-	//
-	//render_opaque();
-	//render_mask();
-	//
-	//render_transparent();
-	//render_postprocess();
-	//
+	g_transform.matView = m_matView;
+	g_transform.matViewInv = m_matViewInv;
+	g_transform.matProj = m_matProj;
+	g_transform.matProjInv = m_matProjInv;
+	g_transform.matReflect = m_matReflect;
+	/*
+	* 여기서 행렬 세팅 -> render transform 업데이트
+	*/
+	SortObject();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
+	render_deferred();
+	
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DECAL)->OMSet();
+	render_decal();
+	
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMSet();
+	
+	const vector<CLight3D*>& vecLight3D = CRenderMgr::GetInst()->GetLight3D();
+	
+	for (size_t i = 0; i < vecLight3D.size(); ++i)
+		vecLight3D[i]->render();
+	
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->OMClear();
+	m_LightCS->Execute();
+	m_LightCS->Clear();
+	
+	
+	static Ptr<CMaterial> pMergeMtrl;
+	static Ptr<CMesh> pRectMesh;
+	
+	CRenderMgr::GetInst()->GetMRT(_eType)->OMSet();
+	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
+	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
+	pMergeMtrl->UpdateData();
+	pRectMesh->render();
+	CMaterial::Clear();
+	
+	render_opaque();
+	render_mask();
+	
+	render_transparent();
+	render_postprocess();
+	
 	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
 	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
 	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
@@ -514,9 +560,6 @@ void CCamera::SetLayerMask(int _iLayerIdx)
 	}
 }
 
-/*
-* Object Render
-*/
 void CCamera::SortObject()
 {
 	m_vecDeferred.clear();
@@ -659,6 +702,107 @@ void CCamera::SortObject()
 					break;
 				}
 			}
+		}
+	}
+}
+
+void CCamera::SortObject(const vector<CGameObject*>& vec)
+{
+	m_vecDeferred.clear();
+	m_vecOpaque.clear();
+	m_vecMask.clear();
+	m_vecDecal.clear();
+	m_vecTransparent.clear();
+	Clear_VecOfMap(m_mapOpaqueVec);
+	Clear_VecOfMap(m_mapMaskVec);
+	Clear_VecOfMap(m_mapDecalVec);
+	Clear_VecOfMap(m_mapTransparentVec);
+	m_vecPostProcess.clear();
+
+	for (size_t j{ 0 }; j < (size_t)vec.size(); ++j)
+	{
+		CRenderComponent* RenderCompoent = vec[j]->GetRenderComponent();
+		CTransform* pTransform = vec[j]->Transform();
+
+		if (RenderCompoent == nullptr ||
+			RenderCompoent->GetCurMaterial() == nullptr ||
+			RenderCompoent->GetCurMaterial()->GetShader() == nullptr ||
+			RenderCompoent->GetMesh() == nullptr)
+		{
+			continue;
+		}
+
+		Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial()->GetShader();
+
+		SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();
+
+		auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
+
+		switch (eDomain)
+		{
+		case SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE:
+		case SHADER_DOMAIN::DOMAIN_DEFERRED_MASK:
+			m_vecDeferred.push_back(vec[j]);
+			break;
+		case SHADER_DOMAIN::DOMAIN_OPAQUE:
+		{
+
+			if (INSTANCING_TYPE::NONE == Type)
+			{
+				m_vecOpaque.push_back(vec[j]);
+			}
+			else
+			{
+				m_mapOpaqueVec[vec[j]->GetName()].push_back(vec[j]);
+			}
+		}
+		break;
+		case SHADER_DOMAIN::DOMAIN_MASK:
+		{
+			auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
+
+			if (INSTANCING_TYPE::NONE == Type)
+			{
+				m_vecMask.push_back(vec[j]);
+			}
+			else
+			{
+				m_mapMaskVec[vec[j]->GetName()].push_back(vec[j]);
+			}
+		}
+		break;
+		case SHADER_DOMAIN::DOMAIN_DEFERRED_DECAL:
+		case SHADER_DOMAIN::DOMAIN_DECAL:
+		{
+			auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
+
+			if (INSTANCING_TYPE::NONE == Type)
+			{
+				m_vecDecal.push_back(vec[j]);
+			}
+			else
+			{
+				m_mapDecalVec[vec[j]->GetName()].push_back(vec[j]);
+			}
+		}
+		break;
+		case SHADER_DOMAIN::DOMAIN_TRANSPARENT:
+		{
+			auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
+
+			if (INSTANCING_TYPE::NONE == Type)
+			{
+				m_vecTransparent.push_back(vec[j]);
+			}
+			else
+			{
+				m_mapTransparentVec[vec[j]->GetName()].push_back(vec[j]);
+			}
+		}
+		break;
+		case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
+			m_vecPostProcess.push_back(vec[j]);
+			break;
 		}
 	}
 }

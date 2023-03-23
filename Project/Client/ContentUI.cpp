@@ -17,6 +17,7 @@
 #include <Engine\CDevice.h>
 #include <Engine\CKeyMgr.h>
 #include <Engine\CTransform.h>
+#include <Engine\CLandScape.h>
 #include <Engine/CCamera.h>
 #include <Engine\CPathMgr.h>
 #include <Engine\CLevel.h>
@@ -35,15 +36,16 @@ ContentUI::ContentUI()
 
 	m_Tree->AddDynamic_LBtn_Selected(this, (FUNC_1)&ContentUI::SetResourceToInspector);
 	m_Tree->AddDynamic_DragDrop_World(this, (FUNC_1)&ContentUI::SetDragObject);
-
-	m_pLevelMouseObject = CLevelMgr::GetInst()->GetCurLevel()->FindParentObjectByName(L"MouseObject");
-	m_pLevelTerrain  = CLevelMgr::GetInst()->GetCurLevel()->FindParentObjectByName(L"LevelTerrain");
-	m_pLevelCamera = CLevelMgr::GetInst()->GetCurLevel()->FindParentObjectByName(L"MainCamera");
 }
 
 ContentUI::~ContentUI()
 {
 
+}
+
+void ContentUI::begin()
+{
+	m_pLandScape = CEditor::GetInst()->FindByName(L"EditLandScape");
 }
 
 void ContentUI::update()
@@ -138,58 +140,28 @@ void ContentUI::render_update()
 
 	if (ImGui::Button("Load", Vec2(100.f, 50.f)))
 	{
-		CSaveLoadMgr::GetInst()->LoadPrefab(L"prefab\\prefab.dat");
+		//CSaveLoadMgr::GetInst()->LoadPrefab(L"prefab\\prefab.dat");
 		m_pTargetPrefab = nullptr;
 		ResetContent();
 	}
 
+	static int cnt = 0;
 	if (m_bDragEvent && nullptr != m_pTargetPrefab && bActive)
 	{
 		if (KEY_RELEASE(KEY::LBTN))
 		{
-			//Ray ray{};
-
-			//Vec2 p = CKeyMgr::GetInst()->GetMousePos();
-			//Vec2 vResolution = CDevice::GetInst()->GetRenderResolution();
-			////float fScale = m_pCameraObejct->Camera()->GetOrthographicScale();
-			////vResolution = vResolution * fScale;
-
-			//p.x = (2.0f * p.x) / vResolution.x - 1.0f;
-			//p.y = 1.0f - (2.0f * p.y) / vResolution.y;
-
-			//XMVECTOR det; //Determinant, needed for matrix inverse function call
-			//Vector3 origin = Vector3(p.x, p.y, -1);
-			//Vector3 faraway = Vector3(p.x, p.y, 1);
-
-			//const Matrix& matView = m_pLevelCamera->Camera()->GetViewMat();
-			//const Matrix& matProj = m_pLevelCamera->Camera()->GetProjMat();
-			//XMMATRIX invViewProj = XMMatrixInverse(&det, matView * matProj);
-			//Vector3 rayorigin = XMVector3Transform(origin, invViewProj);
-			//Vector3 rayend = XMVector3Transform(faraway, invViewProj);
-			//Vector3 raydirection = rayend - rayorigin;
-			//raydirection.Normalize();
-			//ray.position = rayorigin;
-			//ray.direction = raydirection;
-
-			//Vec3 vMousePos{};
-			//Vec3 vCameraPos = m_pLevelCamera->Transform()->GetRelativePos();
-
-			//BoundingFrustum fr(m_pLevelCamera->Camera()->GetProjMat());
-
-			//if (m_pLevelTerrain->Terrain()->GetMesh()->GetPosition(ray, vMousePos))
-			//{
-			//	Vec2 vRes = CDevice::GetInst()->GetRenderResolution();
-
-			//	float fDelta = m_pLevelCamera->Camera()->GetFar() - m_pLevelCamera->Camera()->GetNear();
-			//	BoundingBox box(vMousePos - vCameraPos, Vec3(vRes.x, vRes.y, fDelta));
-			//	BoundingFrustum fr(m_pLevelCamera->Camera()->GetProjMat());
-
-			//	if (fr.Contains(box))
-			//	{
-			//		CGameObject* pGameObject = m_pTargetPrefab->Instantiate();
-			//		Instantiate(pGameObject, vMousePos, iLayer);
-			//	}
-			//}
+			const tRaycastOut& tRay = m_pLandScape->LandScape()->GetRay();
+			if (tRay.bSuccess)
+			{
+				CGameObject* pGameObject = m_pTargetPrefab->Instantiate();
+				CGameObjectEx* pObj = new CGameObjectEx(*pGameObject);
+				Vec3 vPos{ tRay.vPos * 100.f };
+				pObj->Transform()->SetRelativePos(vPos);
+				pObj->SetName(L"Test" + std::to_wstring(cnt));
+				++cnt;
+				CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObj);
+				delete pGameObject;
+			}
 		}
 	}
 }

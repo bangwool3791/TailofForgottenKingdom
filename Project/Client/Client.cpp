@@ -89,7 +89,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             CEngine::GetInst()->progress();
             //GUI 주석
             CEditor::GetInst()->progress();
-
+            
+            CEngine::GetInst()->render();
             CImGuiMgr::GetInst()->progress();
             // 주석 끝
             // Present(SwapChain)

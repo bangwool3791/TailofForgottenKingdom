@@ -11,5 +11,6 @@ public :
 	CLONE(CGameObjectEx);
 public :
 	CGameObjectEx();
+	CGameObjectEx(const CGameObject& rhs);
 	virtual ~CGameObjectEx();
 };

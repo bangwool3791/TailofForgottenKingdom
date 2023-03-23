@@ -1,9 +1,11 @@
 #pragma once
 
+#include "pch.h"
+
 class CComponent;
 class CGameObjectEx;
 class MemPool;
-#include "pch.h"
+class CSLight;
 /*
 * 카메라 마우스 항상 동작
 * Editor Object 변경
@@ -12,6 +14,23 @@ class MemPool;
 class CEditor
 	: public CSingleton<CEditor>
 {
+	//render
+private:
+	CSLight*											m_LightCS;
+	vector<CGameObject*>								m_vecDeferred;
+	vector<CGameObject*>								m_vecOpaque;
+	vector<CGameObject*>								m_vecMask;
+	vector<CGameObject*>								m_vecDecal;
+	vector<CGameObject*>								m_vecTransparent;
+	vector<CGameObject* >								m_vecPostProcess;
+private:
+	void SortObject();
+	void render_deferred();
+	void render_opaque();
+	void render_mask();
+	void render_decal();
+	void render_transparent();
+	void render_postprocess();
 private:
 	EDIT_MODE											m_editmode;
 	/*
@@ -33,6 +52,10 @@ private:
 	void tick();
 	void render();
 	void debug_render();
+private:
+	void tickObj();
+	void finaltickObj();
+	void picking();
 private:
 	void CreateDebugDrawObject();
 	void DebugDraw(tDebugShapeInfo& _info);

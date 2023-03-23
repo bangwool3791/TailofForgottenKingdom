@@ -185,26 +185,3 @@ wstring StringToWString(const string& _str)
 {
 	return wstring(_str.begin(), _str.end());
 }
-
-const Ray& GetRay()
-{
-	Vec2 p = CKeyMgr::GetInst()->GetMousePos();
-	Vec2 vResolution = CDevice::GetInst()->GetRenderResolution();
-
-	p.x = (2.0f * p.x) / vResolution.x - 1.0f;
-	p.y = 1.0f - (2.0f * p.y) / vResolution.y;
-
-	XMVECTOR det; //Determinant, needed for matrix inverse function call
-	Vector3 origin = Vector3(p.x, p.y, 0);
-	Vector3 faraway = Vector3(p.x, p.y, 1);
-
-	XMMATRIX invViewProj = XMMatrixInverse(&det, g_transform.matView * g_transform.matProj);
-	Vector3 rayorigin = XMVector3Transform(origin, invViewProj);
-	Vector3 rayend = XMVector3Transform(faraway, invViewProj);
-	Vector3 raydirection = rayend - rayorigin;
-	raydirection.Normalize();
-	static Ray ray;
-	ray.position = rayorigin;
-	ray.direction = raydirection;
-	return ray;
-}

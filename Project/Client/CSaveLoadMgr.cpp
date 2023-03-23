@@ -191,14 +191,26 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 		case COMPONENT_TYPE::COLLIDER2D:
 			pComponent = new CCollider2D;
 			break;
+		case COMPONENT_TYPE::COLLIDER3D:
+			pComponent = new CCollider3D;
+			break;
 		case COMPONENT_TYPE::ANIMATOR2D:
 			pComponent = new CAnimator2D;
+			break;
+		case COMPONENT_TYPE::ANIMATOR3D:
+			//pComponent = new CAnimator3D;
 			break;
 		case COMPONENT_TYPE::LIGHT2D:
 			pComponent = new CLight2D;
 			break;
+		case COMPONENT_TYPE::LIGHT3D:
+			pComponent = new CLight3D;
+			break;
 		case COMPONENT_TYPE::MESHRENDER:
 			pComponent = new CMeshRender;
+			break;
+		case COMPONENT_TYPE::TERRAIN:
+			pComponent = new CTerrain;
 			break;
 		case COMPONENT_TYPE::TILEMAP:
 			pComponent = new CTileMap;
@@ -206,23 +218,19 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 		case COMPONENT_TYPE::PARTICLESYSTEM:
 			pComponent = new CParticleSystem;
 			break;
-		case COMPONENT_TYPE::TERRAIN:
-			pComponent = new CTerrain;
-			break;
-		case COMPONENT_TYPE::LIGHT3D:
-			pComponent = new CLight3D;
-			break;
-		case COMPONENT_TYPE::COLLIDER3D:
-			break;
-		case COMPONENT_TYPE::ANIMATOR3D:
-			break;
 		case COMPONENT_TYPE::SKYBOX:
+			pComponent = new CSkyBox;
 			break;
 		case COMPONENT_TYPE::DECAL:
+			pComponent = new CDecal;
 			break;
 		case COMPONENT_TYPE::LANDSCAPE:
+			pComponent = new CLandScape;
 			break;
-		case COMPONENT_TYPE::END:
+		case COMPONENT_TYPE::WAVERENDERER:
+			pComponent = new CWaveRenderer;
+			break;
+		default:
 			bProgess = false;
 			break;
 		}
@@ -290,7 +298,7 @@ void CSaveLoadMgr::SavePrefab(wstring _strRelativePath)
 			wchar_t sz_data[255] = { L"prefab\\" };
 			wstring temp = lstrcat(sz_data, iter->second->GetKey().data());
 			lstrcpy(sz_data, temp.data());
-			wstring wstrRelativePath = lstrcat(sz_data, L".dat");
+			wstring wstrRelativePath = lstrcat(sz_data, L".pref");
 			iter->second->Save(wstrRelativePath);
 		}
 	}

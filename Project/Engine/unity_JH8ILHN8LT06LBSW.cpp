@@ -9,6 +9,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CUIMgr.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CWeightMapShader.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\debug_renderer.cpp"
 
 

@@ -250,10 +250,15 @@ struct tRay
 struct tRaycastOut
 {
 	Vec2 vUV;
+	Vec3 vPos;
 	int  iDist;
 	int  bSuccess;
 };
 
+struct tWeight_4
+{
+	float arrWeight[4];
+};
 
 extern tGlobalData g_global;
 extern  tTransform g_transform;

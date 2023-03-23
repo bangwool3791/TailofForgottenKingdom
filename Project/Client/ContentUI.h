@@ -8,9 +8,8 @@ class ContentUI :
     public UI
 {
 private:
-    CGameObject*     m_pLevelTerrain;
-    CGameObject*     m_pLevelCamera;
-    CGameObject*     m_pLevelMouseObject;
+    CGameObjectEx*     m_pLandScape;
+
     CPrefab*         m_pTargetPrefab;
     TreeUI*          m_Tree;
     bool             m_bDragEvent;
@@ -21,7 +20,8 @@ public:
     // Content 폴더 밑에 파일들을 메모리에 불러옴
     void ReloadContent();
 
-private:
+public:
+    virtual void begin() override;
     virtual void update() override;
     virtual void render_update() override;
 private:

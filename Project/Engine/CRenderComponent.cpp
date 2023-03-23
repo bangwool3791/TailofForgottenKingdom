@@ -54,9 +54,6 @@ Ptr<CMaterial> CRenderComponent::GetDynamicMaterial()
 
 void CRenderComponent::SaveToFile(FILE* _File)
 {
-	COMPONENT_TYPE type = GetType();
-	fwrite(&type, sizeof(COMPONENT_TYPE), 1, _File);
-
 	fwrite(&m_eInsType, sizeof(INSTANCING_TYPE), 1, _File);
 	SaveResourceRef(m_pMesh, _File);
 	SaveResourceRef(m_pSharedMtrl, _File);

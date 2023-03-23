@@ -170,87 +170,7 @@ void CTransform::LoadFromFile(FILE* _File)
 	fread(&m_blgnParentScale, sizeof(bool), 1, _File);
 }
 
-Vec3 CTransform::Picking(Ray _ray)
-{
-	m_vecPoint.clear();
-	m_vecPoint.shrink_to_fit();
-
-	Ptr<CMesh> pMesh = GetOwner()->MeshRender()->GetMesh();
-	Vec3 vResult{-1.f, -1.f, -1.f};
-	size_t verts;
-	Vtx* vertices = pMesh->GetVertices(verts);
-
-	finaltick();
-
-	for (size_t i{}; i < verts; ++i)
-	{
-		Vec3 vPos = XMVector3TransformCoord(vertices[i].vPos, m_matWorld);
-		m_vecPoint.push_back(vPos);
-	}
-
-	for (UINT i = 0; i < verts; i += 4)
-	{
-		float fDist;
-		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 1], m_vecPoint[i + 2], fDist))
-		{
-			vResult = _ray.direction * fDist + _ray.position;
-			return vResult;
-		}
-
-		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 2], m_vecPoint[i + 3], fDist))
-		{
-			vResult = _ray.direction * fDist + _ray.position;
-			return vResult;
-		}
-	}
-
-	return vResult;
-}
-
-bool CTransform::Picking(Ray _ray, Vec3& _vPos)
-{
-	float fDist = 0.f;
-
-	m_vecPoint.clear();
-	m_vecPoint.shrink_to_fit();
-
-	Ptr<CMesh> pMesh = GetOwner()->MeshRender()->GetMesh();
-	Vec3 vResult{ -1.f, -1.f, -1.f };
-	size_t verts;
-	Vtx* vertices = pMesh->GetVertices(verts);
-
-
-	finaltick();
-
-	Vec3 vPos{};
-
-	for (size_t i{}; i < verts; ++i)
-	{
-		vPos = XMVector3TransformCoord(vertices[i].vPos, m_matWorld);
-		m_vecPoint.push_back(vPos);
-	}
-
-	for (UINT i = 0; i < verts; i += 4)
-	{
-		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 1], m_vecPoint[i + 2], fDist))
-		{
-			vResult = _ray.direction * fDist + _ray.position;
-			_vPos = vResult;
-			return true;
-		}
-
-		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 2], m_vecPoint[i + 3], fDist))
-		{
-			vResult = _ray.direction * fDist + _ray.position;
-			_vPos = vResult;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool CTransform::Picking(Ray _ray, float& _fDist)
+bool CTransform::Picking(const Ray& _ray, Vec3& _vPos)
 {
 	float fDist = 0.f;
 
@@ -272,87 +192,15 @@ bool CTransform::Picking(Ray _ray, float& _fDist)
 		m_vecPoint.push_back(vPos);
 	}
 
-	for (UINT i = 0; i < verts; i += 4)
+	for (UINT i = 0; i < verts; i += 3)
 	{
 		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 1], m_vecPoint[i + 2], fDist))
 		{
-			_fDist = fDist;
-			return true;
-		}
-
-		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 2], m_vecPoint[i + 3], fDist))
-		{
-			_fDist = fDist;
+			vResult = _ray.direction * fDist + _ray.position;
+			_vPos = vResult;
 			return true;
 		}
 	}
-
-	return false;
-}
-
-bool CTransform::Picking(Vec3& _vPos)
-{
-	//float fDist = 0.f;
-
-	//m_vecPoint.clear();
-	//m_vecPoint.shrink_to_fit();
-
-	//Vec2 p = CKeyMgr::GetInst()->GetMousePos();
-	//Vec2 vResolution = CDevice::GetInst()->GetRenderResolution();
-	////float fScale = m_pCameraObejct->Camera()->GetOrthographicScale();
-	////vResolution = vResolution * fScale;
-
-	//p.x = (2.0f * p.x) / vResolution.x - 1.0f;
-	//p.y = 1.0f - (2.0f * p.y) / vResolution.y;
-
-	//XMVECTOR det; //Determinant, needed for matrix inverse function call
-	//Vector3 origin = Vector3(p.x, p.y, 0.f);
-	//Vector3 faraway = Vector3(p.x, p.y, 1.f);
-
-	//CGameObject* m_pCamera = CLevelMgr::GetInst()->GetCurLevel()->FindParentObjectByName(L"MainCamera");
-
-	//const Matrix& matView = m_pCamera->Camera()->GetViewMat();
-	//const Matrix& matProj = m_pCamera->Camera()->GetProjMat();
-	//XMMATRIX invViewProj = XMMatrixInverse(&det, matView * matProj);
-	//Vector3 rayorigin = XMVector3Transform(origin, invViewProj);
-	//Vector3 rayend = XMVector3Transform(faraway, invViewProj);
-	//Vector3 raydirection = rayend - rayorigin;
-	//raydirection.Normalize();
-	//Ray _ray{};
-	//_ray.position = rayorigin;
-	//_ray.direction = raydirection;
-
-	//Ptr<CMesh> pMesh = GetOwner()->MeshRender()->GetMesh();
-	//Vec3 vResult{ -1.f, -1.f, -1.f };
-	//size_t verts;
-	//Vtx* vertices = pMesh->GetVertices(verts);
-
-	//finaltick();
-
-	//Vec3 vPos{};
-
-	//for (size_t i{}; i < verts; ++i)
-	//{
-	//	vPos = XMVector3TransformCoord(vertices[i].vPos, m_matWorld);
-	//	m_vecPoint.push_back(vPos);
-	//}
-
-	//for (UINT i = 0; i < verts; i += 4)
-	//{
-	//	if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 1], m_vecPoint[i + 2], fDist))
-	//	{
-	//		vResult = _ray.direction * fDist + _ray.position;
-	//		_vPos = vResult;
-	//		return true;
-	//	}
-
-	//	if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 2], m_vecPoint[i + 3], fDist))
-	//	{
-	//		vResult = _ray.direction * fDist + _ray.position;
-	//		_vPos = vResult;
-	//		return true;
-	//	}
-	//}
 
 	return false;
 }

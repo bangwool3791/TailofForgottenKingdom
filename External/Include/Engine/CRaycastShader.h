@@ -24,6 +24,7 @@ public:
     void SetFaceCount(UINT _x, UINT _z) { m_iXFace = _x; m_iZFace = _z; }
     void SetCameraRay(const tRay& _ray) { m_ray = _ray; }
     void SetOuputBuffer(CStructuredBuffer* _pOutputBuffer) { m_pOutput = _pOutputBuffer; }
+    const tRaycastOut& GetRay();
     void SetHeightMap(Ptr<CTexture> _ptex) { m_pHeightMap = _ptex; }
 
 protected:

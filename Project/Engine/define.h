@@ -401,6 +401,14 @@ enum class MRT_TYPE
 	END,
 };
 
+enum class LANDSCAPE_MOD
+{
+	HEIGHT_MAP,
+	SPLAT,
+	NONE,
+};
+
+
 extern const char* COMPONENT_TYPE_CHAR[(UINT)COMPONENT_TYPE::END];
 extern const wchar_t* COMPONENT_TYPE_WCHAR[(UINT)COMPONENT_TYPE::END];
 

@@ -176,6 +176,7 @@ call CodeGen.exe</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CEngineBrushScript.h" />
     <ClInclude Include="CFrustumScript.h" />
     <ClInclude Include="CLevelCameraScript.h" />
     <ClInclude Include="CPlayerScript.h" />
@@ -185,6 +186,7 @@ call CodeGen.exe</Command>
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CEngineBrushScript.cpp" />
     <ClCompile Include="CFrustumScript.cpp" />
     <ClCompile Include="CLevelCameraScript.cpp" />
     <ClCompile Include="CPlayerScript.cpp" />

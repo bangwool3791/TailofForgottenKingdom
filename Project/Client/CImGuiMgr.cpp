@@ -16,34 +16,6 @@
 #include "PopupUI.h"
 #include "ParamUI.h"
 
-bool useWindow = true;
-int gizmoCount = 1;
-float camDistance = 8.f;
-static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-
-int lastUsing = 0;
-
-float cameraView[16] =
-{ 1.f, 0.f, 0.f, 0.f,
-  0.f, 1.f, 0.f, 0.f,
-  0.f, 0.f, 1.f, 0.f,
-  0.f, 0.f, 0.f, 1.f };
-
-float cameraProjection[16];
-
-float objectMatrix[16] = {
-  100.f, 0.f, 0.f, 0.f,
-    0.f, 100.f, 0.f, 0.f,
-    0.f, 0.f, 100.f, 0.f,
-    0.f, 0.f, 0.f, 1.f 
-};
-
-static const float identityMatrix[16] =
-{ 1.f, 0.f, 0.f, 0.f,
-    0.f, 1.f, 0.f, 0.f,
-    0.f, 0.f, 1.f, 0.f,
-    0.f, 0.f, 0.f, 1.f };
-
 CImGuiMgr::CImGuiMgr()
     : m_NotifyHandle{}
 {
@@ -114,6 +86,107 @@ float camXAngle = 32.f / 180.f * 3.14159f;
 
 bool firstFrame = true;
 
+void CImGuiMgr::Guizmo()
+{
+    ImGuizmo::BeginFrame();
+    ImGuizmo::Enable(true);
+
+    static Matrix mat{};
+    static XMFLOAT4X4* t = nullptr;
+    static XMFLOAT4X4 localMat{};
+    static XMFLOAT4X4 viewMat{};
+    static XMFLOAT4X4 projMat{};
+
+    if (nullptr != m_pSelectedObj)
+    {
+        CGameObjectEx* pCam = CEditor::GetInst()->FindByName(L"Editor Camera");
+        Vec3 pos = m_pSelectedObj->Transform()->GetRelativePos();
+        Vec3 rot = m_pSelectedObj->Transform()->GetRelativeRotation();
+        Vec3 sca = m_pSelectedObj->Transform()->GetRelativeScale();
+        pCam->Camera()->CalcViewMat();
+        pCam->Camera()->CalcProjMat();
+
+        XMStoreFloat4x4(&localMat, m_pSelectedObj->Transform()->GetWorldMat());
+        XMStoreFloat4x4(&viewMat, pCam->Camera()->GetViewMat());
+        XMStoreFloat4x4(&projMat, pCam->Camera()->GetProjMat());
+        static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+        static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
+        if (ImGui::IsKeyPressed(ImGuiKey_T))
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+
+        if (ImGui::IsKeyPressed(ImGuiKey_E))
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+
+        if (ImGui::IsKeyPressed(ImGuiKey_R))
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+        if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+
+        ImGui::SameLine();
+
+        if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+
+        ImGui::SameLine();
+
+        if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+        if (ImGui::RadioButton("Universal", mCurrentGizmoOperation == ImGuizmo::UNIVERSAL))
+            mCurrentGizmoOperation = ImGuizmo::UNIVERSAL;
+
+        float translate[3] = { };
+        float rotation[3] = {};
+        float scale[3] = {};
+
+        ImGuizmo::DecomposeMatrixToComponents(*localMat.m, translate, rotation, scale);
+        ImGui::InputFloat3("Tr", translate, "%3.f", 3);
+        ImGui::InputFloat3("Rt", rotation, "%3.f", 3);
+        ImGui::InputFloat3("SC", scale, "%3.f", 3);
+        ImGuizmo::RecomposeMatrixFromComponents(translate, rotation, scale, *localMat.m);
+
+        ImGuiIO& io = ImGui::GetIO();
+        ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+        ImGuizmo::Manipulate(*viewMat.m, *projMat.m, mCurrentGizmoOperation, mCurrentGizmoMode, *localMat.m, NULL, NULL);
+        ImGuizmo::DecomposeMatrixToComponents(*localMat.m, translate, rotation, scale);
+
+        if (ImGuizmo::IsUsing())
+        {
+            mat = XMLoadFloat4x4(&localMat);
+            XMVECTOR vScale = { scale[0],scale[1], scale[2] };
+            XMVECTOR outRotQuat = { rotation[0], rotation[1], rotation[2] };
+            XMVECTOR outTrans = { translate[0],translate[1], translate[2] };
+
+            XMStoreFloat3(&pos, outTrans);
+            XMStoreFloat3(&rot, outRotQuat);
+            XMStoreFloat3(&sca, vScale);
+
+            switch (mCurrentGizmoOperation)
+            {
+            case ImGuizmo::TRANSLATE:
+                m_pSelectedObj->Transform()->SetRelativePos(pos);
+                break;
+            case ImGuizmo::ROTATE:
+                m_pSelectedObj->Transform()->SetRelativeRotation(rot / 180.f * XM_PI);
+                break;
+            case ImGuizmo::SCALE:
+                m_pSelectedObj->Transform()->SetRelativeScale(sca);
+                break;
+
+            case ImGuizmo::UNIVERSAL:
+                m_pSelectedObj->Transform()->SetRelativeScale(sca);
+                m_pSelectedObj->Transform()->SetRelativeRotation(rot);
+                m_pSelectedObj->Transform()->SetRelativePos(pos);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
 void CImGuiMgr::progress()
 {
     //알림 확인
@@ -124,102 +197,9 @@ void CImGuiMgr::progress()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    ImGuizmo::BeginFrame();
-    ImGuizmo::Enable(true);
-
-    Matrix mat;
-    XMFLOAT4X4* t = nullptr;
-    CGameObjectEx* pObj = CEditor::GetInst()->FindByName(L"Sphere");
-    CGameObjectEx* pCam = CEditor::GetInst()->FindByName(L"Editor Camera");
-    Vec3 pos = pObj->Transform()->GetRelativePos();
-    Vec3 rot = pObj->Transform()->GetRelativeRotation();
-    Vec3 sca = pObj->Transform()->GetRelativeScale();
-    XMFLOAT4X4 localMat;
-    XMFLOAT4X4 viewMat;
-    XMFLOAT4X4 projMat;
-    pCam->Camera()->CalcViewMat();
-    pCam->Camera()->CalcProjMat();
-
-    XMStoreFloat4x4(&localMat, pObj->Transform()->GetWorldMat());
-    XMStoreFloat4x4(&viewMat, pCam->Camera()->GetViewMat());
-    XMStoreFloat4x4(&projMat, pCam->Camera()->GetProjMat());
-    static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-    static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
-
-    if (ImGui::IsKeyPressed(ImGuiKey_T))
-        mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-
-    if (ImGui::IsKeyPressed(ImGuiKey_E))
-        mCurrentGizmoOperation = ImGuizmo::ROTATE;
-
-    if (ImGui::IsKeyPressed(ImGuiKey_R)) 
-        mCurrentGizmoOperation = ImGuizmo::SCALE;
-
-    if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
-        mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-
-    ImGui::SameLine();
-
-    if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
-        mCurrentGizmoOperation = ImGuizmo::ROTATE;
-
-    ImGui::SameLine();
-
-    if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
-        mCurrentGizmoOperation = ImGuizmo::SCALE;
-
-    if (ImGui::RadioButton("Universal", mCurrentGizmoOperation == ImGuizmo::UNIVERSAL))
-        mCurrentGizmoOperation = ImGuizmo::UNIVERSAL;
-
-    float translate[3] = { };
-    float rotation[3] = {};
-    float scale[3] = {};
-
-    ImGuizmo::DecomposeMatrixToComponents(*localMat.m, translate, rotation, scale);
-    ImGui::InputFloat3("Tr", translate, "%3.f", 3);
-    ImGui::InputFloat3("Rt", rotation, "%3.f", 3);
-    ImGui::InputFloat3("SC", scale, "%3.f", 3);
-    ImGuizmo::RecomposeMatrixFromComponents(translate, rotation, scale, *localMat.m);
-
-    ImGuiIO& io = ImGui::GetIO();
-    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-
-    ImGuizmo::Manipulate(*viewMat.m, *projMat.m, mCurrentGizmoOperation, mCurrentGizmoMode, *localMat.m, NULL, NULL);
-   
-    if (ImGuizmo::IsUsing())
-    {
-        mat = XMLoadFloat4x4(&localMat);
-        XMVECTOR vScale;
-        XMVECTOR outRotQuat;
-        XMVECTOR outTrans;
-        XMMatrixDecompose(&vScale, &outRotQuat, &outTrans, mat);
-
-        XMStoreFloat3(&pos, outTrans);
-        XMStoreFloat3(&rot, outRotQuat);
-        XMStoreFloat3(&sca, vScale);
-
-        switch (mCurrentGizmoOperation)
-        {
-        case ImGuizmo::TRANSLATE:
-            pObj->Transform()->SetRelativePos(pos);
-            break;
-        case ImGuizmo::ROTATE:
-            pObj->Transform()->SetRelativeRotation(rot);
-            break;
-        case ImGuizmo::SCALE:
-            pObj->Transform()->SetRelativeScale(sca);
-            break;
-
-        case ImGuizmo::UNIVERSAL:
-            pObj->Transform()->SetRelativeScale(sca);
-            pObj->Transform()->SetRelativeRotation(rot);
-            pObj->Transform()->SetRelativePos(pos);
-            break;
-        default:
-            break;
-        }
-    }
     
+    Guizmo();
+
     ParamUI::ParamCount = 0;
 
     {
@@ -246,9 +226,15 @@ void CImGuiMgr::progress()
             case EDIT_MODE::MAPTOOL:
                 if ("TileMapUI" == iter->first)
                     iter->second->update();
-                if ("##MenuUI" == iter->first)
+                else if ("##MenuUI" == iter->first)
                     iter->second->update();
-                if ("ProgressUI" == iter->first)
+                else if ("ProgressUI" == iter->first)
+                    iter->second->update();
+                else if ("Outliner" == iter->first)
+                    iter->second->update();
+                else if ("Inspector" == iter->first)
+                    iter->second->update();
+                else if ("ContentUI" == iter->first)
                     iter->second->update();
                 break;
             case EDIT_MODE::OBJECT:
@@ -263,6 +249,8 @@ void CImGuiMgr::progress()
                 if ("ModelComUI" == iter->first)
                     iter->second->update();
                 if ("ListUI" == iter->first)
+                    iter->second->update();
+                if ("ContentUI" == iter->first)
                     iter->second->update();
                 break;
             case EDIT_MODE::END:
@@ -298,19 +286,27 @@ void CImGuiMgr::progress()
                     iter->second->render();
                 else if ("ProgressUI" == iter->first)
                     iter->second->render();
+                else if ("Outliner" == iter->first)
+                    iter->second->render();
+                else if ("Inspector" == iter->first)
+                    iter->second->render();
+                else if ("ContentUI" == iter->first)
+                    iter->second->render();
                 break;
             case EDIT_MODE::OBJECT:
                 if ("Outliner" == iter->first)
                     iter->second->render();
                 else if ("Inspector" == iter->first)
                     iter->second->render();
-                else if ("ContentUI" == iter->first)
-                    iter->second->render();
+                //else if ("ContentUI" == iter->first)
+                //    iter->second->render();
                 else if ("##MenuUI" == iter->first)
                     iter->second->render();
                 else if ("ModelComUI" == iter->first)
                     iter->second->render();
                 else if ("ListUI" == iter->first)
+                    iter->second->render();
+                else if ("ContentUI" == iter->first)
                     iter->second->render();
                 break;
             case EDIT_MODE::END:

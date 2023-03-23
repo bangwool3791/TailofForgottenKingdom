@@ -61,7 +61,7 @@ Ptr<CTexture> CResMgr::CreateCubeTexture(const wstring& _strKey, UINT _iWidth, U
 
 	pTex = new CTexture(true);
 
-	pTex->CreateCubeTexture(_iWidth, _iHeight, _eFormat, _iBindFlag);
+	//pTex->CreateCubeTexture(_iWidth, _iHeight, _eFormat, _iBindFlag);
 
 	AddRes<CTexture>(_strKey, pTex.Get());
 	return pTex;

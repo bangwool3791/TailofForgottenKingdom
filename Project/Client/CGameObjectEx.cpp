@@ -8,6 +8,12 @@ CGameObjectEx::CGameObjectEx()
 {
 }
 
+CGameObjectEx::CGameObjectEx(const CGameObject& rhs)
+	:CGameObject(rhs)
+{
+
+}
+
 CGameObjectEx::~CGameObjectEx()
 {
 }

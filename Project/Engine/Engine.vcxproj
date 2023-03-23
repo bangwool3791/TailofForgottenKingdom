@@ -260,6 +260,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CStructuredBuffer.h" />
     <ClInclude Include="CTileMap.h" />
     <ClInclude Include="CUIMgr.h" />
+    <ClInclude Include="CWeightMapShader.h" />
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx11.h" />
     <ClInclude Include="d3dx11core.h" />
@@ -382,6 +383,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CTimeMgr.cpp" />
     <ClCompile Include="CTransform.cpp" />
     <ClCompile Include="CUIMgr.cpp" />
+    <ClCompile Include="CWeightMapShader.cpp" />
     <ClCompile Include="debug_renderer.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="func.cpp" />
@@ -475,6 +477,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="tilemap.fx" />
     <FxCompile Include="ui.fx" />
     <FxCompile Include="wave.fx" />
+    <FxCompile Include="weightmap.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

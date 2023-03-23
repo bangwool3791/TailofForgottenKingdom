@@ -49,7 +49,9 @@ void TileMapUI::begin()
 
 	m_pLandScape->GetHeightTexture(m_HeightImage);
 
-	m_pLandScape->GetBrushTexture(m_BrushImage);
+	m_pLandScape->GetBrushSRV(m_BrushImage);
+
+	m_pBrushObj = CEditor::GetInst()->FindByName(L"BrushObject");
 }
 
 void TileMapUI::update()
@@ -91,7 +93,7 @@ void TileMapUI::render_update()
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("Load", ImVec2(65.f, 40.f)))
+	if (ImGui::Button("Load##1", ImVec2(65.f, 40.f)))
 	{
 		m_fileDialogLoad.type = ImGuiFileDialogType_OpenFile;
 		m_fileDialogLoad.title = "Open File";
@@ -116,7 +118,7 @@ void TileMapUI::render_update()
 
 	Text(HSV_SKY_GREY, Vec2(65.f, 30.f), "Brushmap");
 
-	if (ImGui::Button("Load", ImVec2(65.f, 40.f)))
+	if (ImGui::Button("Load##2", ImVec2(65.f, 40.f)))
 	{
 		m_fileDialogBrushLoad.type = ImGuiFileDialogType_OpenFile;
 		m_fileDialogBrushLoad.title = "Open File";
@@ -209,6 +211,7 @@ void TileMapUI::LoadBrushMap(const wstring& _path, ImTextureID& _image)
 	{
 		_image = pTex->GetSRV().Get();
 		m_pLandScape->SetBrushMap(pTex);
+		m_pBrushObj->Decal()->SetDecalTexture(m_pLandScape->LandScape()->GetBrushTexture());
 	}
 }
 

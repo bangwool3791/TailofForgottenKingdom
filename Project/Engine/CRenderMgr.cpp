@@ -83,6 +83,8 @@ void CRenderMgr::clear()
 	pGlobalCB->UpdateData_CS();
 }
 
+#include "CLevelMgr.h"
+
 void CRenderMgr::render_game()
 {
 	static bool bCheck = false;
@@ -118,12 +120,28 @@ void CRenderMgr::render_game()
 				(*elem)->render(MRT_TYPE::DOWN);
 			}
 		}
-
-		CResMgr::GetInst()->CreateCubeTexture(L"EnvCubeTexture"
-			, 256.f, 256.f
-			, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
-
 		
+		//텍스쳐 6장을 읽는다.
+		vector<Ptr<CTexture>> vecTex{};
+		wstring str[6] = { L"FrontTargetTex", L"BackTargetTex", L"LeftTargetTex", L"RightTargetTex",L"UpTargetTex", L"DownTargetTex" };
+		for (size_t i = 0; i < 6; ++i)
+		{
+			vecTex.push_back(CResMgr::GetInst()->FindRes<CTexture>(str[i]));
+		}
+
+		wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
+		strFilePath += L"texture\\cube1.dds";
+
+		Ptr<CTexture> tex = new CTexture(true);
+		tex->CreateArrayTexture(vecTex, 1);
+		//스크래치 이미지 
+		ScratchImage image;
+		CaptureTexture(DEVICE, CONTEXT, tex->GetTex2D().Get(), image);
+
+		TexMetadata mdata = image.GetMetadata();
+		//6장 Save
+		HRESULT hr = SaveToDDSFile(image.GetImages(), 6, mdata, DDS_FLAGS_NONE, strFilePath.c_str());
+
 		bCheck = true;
 	}
 
@@ -163,7 +181,7 @@ void CRenderMgr::render_game()
 void CRenderMgr::render_editor()
 {
 	assert(m_EditorCam);
-	m_EditorCam->render();
+	m_EditorCam->EditorRender();
 }
 
 void CRenderMgr::UpdateNoiseTexture()
