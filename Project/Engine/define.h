@@ -406,6 +406,7 @@ enum class LANDSCAPE_MOD
 	HEIGHT_MAP,
 	SPLAT,
 	NONE,
+	SPLAT_CLEAR,
 };
 
 

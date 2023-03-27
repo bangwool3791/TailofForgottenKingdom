@@ -11,6 +11,8 @@ private:
     UI*             m_DBCInst;
     FUNC_1          m_DBCFunc;
 
+    FUNC_1          m_DBCRightFunc;
+
 public:
     void SetItemList(const vector<string>& _inList);
     void SetItemList(const vector<wstring>& _inList);
@@ -21,6 +23,11 @@ public:
         m_DBCFunc = _Func;
     }
 
+    void AddDynamicDBRightClicked(UI* _Inst, FUNC_1 _Func)
+    {
+        m_DBCInst = _Inst;
+        m_DBCRightFunc = _Func;
+    }
 
 public:
     virtual void render_update() override;

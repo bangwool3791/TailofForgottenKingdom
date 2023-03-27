@@ -33,6 +33,8 @@ private:
     UINT                    m_iWeightIdx;		// 증가 시킬 가중치 부위
 
     LANDSCAPE_MOD           m_eMod; 	        // 지형 툴모드에서 상태값
+    
+    CGameObject*            m_pCameraObj;
 private:
     void Update_HeightMap();
 public:
@@ -47,6 +49,7 @@ public:
     void SetBrushMap(Ptr<CTexture> _pTex);
     void SetHeightMap(Ptr<CTexture> _pTex);
     void SetFaceCount(UINT _X, UINT _Z);
+    void SetCameraObj(CGameObject* _pObj) { m_pCameraObj = _pObj; }
     void SaveTexture(const wstring& path);
     void SaveBmpFile(const wstring& path);
     void LoadBmpFile(const wstring& path);
@@ -59,6 +62,9 @@ public:
     void GetBrushSRV(T& t) { t = m_pBrushTex->GetSRV().Get(); }
     Ptr<CTexture> GetBrushTexture() {return m_pBrushTex;}
     const tRaycastOut& GetRay();
+
+    LANDSCAPE_MOD GetMode() { return m_eMod; }
+    void SetMode(LANDSCAPE_MOD eType) { m_eMod = eType; }
 private:
     void CreateMesh();
     void CreateMaterial();
@@ -66,7 +72,9 @@ private:
 public:
     void CreateTexture();
     void Initialize();
+    void SetHeightmapOffset(float _offset);
     void SetTexArr(Ptr<CTexture> _ptr);
+    void SetDir(int _Dir) { m_pCSHeightMap->SetDir(_Dir); }
     CLONE(CLandScape);
 public:
     CLandScape();

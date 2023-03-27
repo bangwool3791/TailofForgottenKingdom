@@ -177,6 +177,9 @@ bool CTransform::Picking(const Ray& _ray, Vec3& _vPos)
 	m_vecPoint.clear();
 	m_vecPoint.shrink_to_fit();
 
+	if (nullptr == GetOwner()->MeshRender() || nullptr == GetOwner()->MeshRender()->GetMesh())
+		return false;
+
 	Ptr<CMesh> pMesh = GetOwner()->MeshRender()->GetMesh();
 	Vec3 vResult{ -1.f, -1.f, -1.f };
 	size_t verts;

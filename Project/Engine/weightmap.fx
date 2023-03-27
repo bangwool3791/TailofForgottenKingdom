@@ -16,10 +16,11 @@ StructuredBuffer<tRaycastOut> LOCATION : register(t16); // 브러쉬 위치(좌상단 기
 #define HEIGHT      g_int_1
 
 //#define BRUSH_TEX   g_texarr_0
-#define BRUSH_TEX   g_tex_0
-#define SCALE       g_vec2_0   // 브러쉬 크기
-#define BRUSH_IDX   g_int_2    // 브러쉬 인덱스
-#define WEIGHT_IDX  g_int_3    // 올릴 가중치 위치
+#define BRUSH_TEX     g_tex_0
+#define SCALE         g_vec2_0   // 브러쉬 크기
+#define BRUSH_IDX     g_int_2    // 브러쉬 인덱스
+#define WEIGHT_IDX    g_int_3    // 올릴 가중치 위치
+#define WEIGHT_CLEAR  g_float_0    // 가중치 클리어 여부
 
 [numthreads(32, 32, 1)]
 void CS_WeightMap(int3 _iThreadID : SV_DispatchThreadID)
@@ -83,7 +84,13 @@ void CS_WeightMap(int3 _iThreadID : SV_DispatchThreadID)
     }
 
     // 버퍼에 출력
-    WEIGHT_MAP[iIdx].arrWeight = arrWeight;
+    if(0 == WEIGHT_CLEAR)
+        WEIGHT_MAP[iIdx].arrWeight = arrWeight;
+    else if (1 == WEIGHT_CLEAR)
+    {
+        arrWeight[0] = 0; arrWeight[1] = 0; arrWeight[2] = 0; arrWeight[3] = 0;
+        WEIGHT_MAP[iIdx].arrWeight = arrWeight;
+    }
 }
 
 #endif

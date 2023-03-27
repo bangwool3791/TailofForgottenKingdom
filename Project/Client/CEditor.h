@@ -16,22 +16,6 @@ class CEditor
 {
 	//render
 private:
-	CSLight*											m_LightCS;
-	vector<CGameObject*>								m_vecDeferred;
-	vector<CGameObject*>								m_vecOpaque;
-	vector<CGameObject*>								m_vecMask;
-	vector<CGameObject*>								m_vecDecal;
-	vector<CGameObject*>								m_vecTransparent;
-	vector<CGameObject* >								m_vecPostProcess;
-private:
-	void SortObject();
-	void render_deferred();
-	void render_opaque();
-	void render_mask();
-	void render_decal();
-	void render_transparent();
-	void render_postprocess();
-private:
 	EDIT_MODE											m_editmode;
 	/*
 	* °´Ã¼ ´Ã¾î³ª¸é map<vector>Ã³¸®
@@ -66,6 +50,7 @@ public:
 	array<CComponent*, (UINT)COMPONENT_TYPE::END>& GetArrComponents() { return m_arrCom; }
 	CComponent* GetArrComponent(COMPONENT_TYPE _eType) { return m_arrCom[(UINT)_eType]; }
 	CGameObjectEx* FindByName(const wstring& _strky);
+	const map<const wchar_t*, CGameObjectEx*> GetEdiotrObj(EDIT_MODE _eType) { return m_EditorObj[(UINT)_eType]; }
 	void PopByName(const wstring& _strky);
 private:
 	CEditor();

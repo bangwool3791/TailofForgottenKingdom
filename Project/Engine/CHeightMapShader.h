@@ -9,6 +9,7 @@ private:
     Ptr<CTexture>       m_pBrushTex;
     Vec2                m_vScale; // 높이 Brush 크기
     int                 m_iBrushIdx;
+    int                 m_iDir = 1;
     CStructuredBuffer* m_pInput; // Ray 충돌 위치    
 
 
@@ -18,7 +19,7 @@ public:
     void SetBrushScale(Vec2 _vScale) { m_vScale = _vScale; }
     void SetBrushIndex(int _iIdx) { m_iBrushIdx = _iIdx; }
     void SetInputBuffer(CStructuredBuffer* _pInput) { m_pInput = _pInput; }
-
+    void SetDir(int _iDir) { m_iDir = _iDir; }
 
 public:
     virtual void UpdateData();

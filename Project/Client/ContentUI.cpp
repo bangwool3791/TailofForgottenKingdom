@@ -151,11 +151,60 @@ void ContentUI::render_update()
 		if (KEY_RELEASE(KEY::LBTN))
 		{
 			const tRaycastOut& tRay = m_pLandScape->LandScape()->GetRay();
+			bool bLand = true;
+			CGameObjectEx* pTargetObj = nullptr;
+
+			Vec3 vPos{ tRay.vPos * g_LandScale };
+
+			Ray ray{};
+			Vec3 vTarget{};
+			Vec3 LengthObj{};
+			Vec3 LengthLandscape{};
+			CGameObjectEx* pObj{};
+			CGameObject* pGameObject{};
+
 			if (tRay.bSuccess)
 			{
-				CGameObject* pGameObject = m_pTargetPrefab->Instantiate();
-				CGameObjectEx* pObj = new CGameObjectEx(*pGameObject);
-				Vec3 vPos{ tRay.vPos * g_LandScale };
+				ray.direction =  CEditor::GetInst()->FindByName(L"Editor Camera")->Camera()->GetRay().vDir;
+				ray.position = CEditor::GetInst()->FindByName(L"Editor Camera")->Camera()->GetRay().vStart;
+
+				const map<const wchar_t*, CGameObjectEx*>  map = CEditor::GetInst()->GetEdiotrObj(CEditor::GetInst()->GetEditMode());
+
+				for (auto iter{ map.begin() }; iter != map.end(); ++iter)
+				{
+					//.f (OBJ_TYPE::EDIT == iter->second->GetType())
+					//.	continue;
+
+					if (!iter->second->Transform())
+						continue;
+
+					if (iter->second->Transform()->Picking(ray, vTarget))
+					{
+						LengthObj = vTarget - ray.position;
+						LengthLandscape = vPos - ray.position;
+
+						if (LengthObj.Length() < LengthLandscape.Length())
+						{
+							bLand = false;
+							pTargetObj = iter->second;
+						}
+					}
+				}
+
+				if (bLand)
+				{
+					pGameObject = m_pTargetPrefab->Instantiate();
+					pObj = new CGameObjectEx(*pGameObject);
+					vPos.y += pGameObject->Transform()->GetRelativeScale().y * 0.5f;
+				}
+				else
+				{
+					pGameObject = m_pTargetPrefab->Instantiate();
+					pObj = new CGameObjectEx(*pGameObject);
+					vPos = pTargetObj->Transform()->GetRelativePos();
+					vPos.y += pTargetObj->Transform()->GetRelativeScale().y * 0.5f;
+				}
+
 				pObj->Transform()->SetRelativePos(vPos);
 				pObj->SetName(L"Test" + std::to_wstring(cnt));
 				++cnt;

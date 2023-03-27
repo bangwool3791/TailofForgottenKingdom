@@ -72,7 +72,7 @@ private:
 private:
 	void CreateCylinder(float bottomRadius, float topRadius, float height, UINT sliceCount, UINT stackCount, vector<Vtx>& Vertcies, vector<UINT>& Indices);
 	void BuildCylinderTopCap(float bottomRadius, float topRadius, float height, UINT sliceCount, UINT stackCount, vector<Vtx>& Vertcies, vector<UINT>& Indices);
-	void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height,UINT sliceCount, UINT stackCount, vector<Vtx>& Vertcies, vector<UINT>& Indices);
+	void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, UINT sliceCount, UINT stackCount, vector<Vtx>& Vertcies, vector<UINT>& Indices);
 private:
 	CResMgr();
 	virtual ~CResMgr();
@@ -158,7 +158,18 @@ inline Ptr<T> CResMgr::Load(const wstring& _strRelativePath)
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 	strFilePath += _strRelativePath;
 
-	if (FAILED(pResource->Load(strFilePath)))
+	static const wstring s3 = L"HeightMap";
+
+	if (_strRelativePath.find(s3) != std::wstring::npos)
+	{
+		if (FAILED(pResource->LoadHeightMap(strFilePath)))
+		{
+			MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
+			delete pResource;
+			return nullptr;
+		}
+	}
+	else if (FAILED(pResource->Load(strFilePath)))
 	{
 		MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
 		delete pResource;
@@ -187,19 +198,9 @@ inline Ptr<T> CResMgr::Load(const wstring& _strKey, const wstring& _strRelativeP
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 	strFilePath += _strRelativePath;
 
-	static const wstring s2 = L"height";
-	static const wstring s3 = L"Height";
+	static const wstring s3 = L"HeightMap";
 
-	if (_strRelativePath.find(s2) != std::wstring::npos) 
-	{
-		if (FAILED(pResource->LoadHeightMap(strFilePath)))
-		{
-			MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
-			delete pResource;
-			return nullptr;
-		}
-	}	
-	else if (_strRelativePath.find(s3) != std::wstring::npos)
+	if (_strRelativePath.find(s3) != std::wstring::npos)
 	{
 		if (FAILED(pResource->LoadHeightMap(strFilePath)))
 		{

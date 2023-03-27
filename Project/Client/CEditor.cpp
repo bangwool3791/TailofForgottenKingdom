@@ -36,7 +36,7 @@
 
 float g_LandScale = 1000.f;
 float g_BrushScale = 0.3f;
-int g_FaceCount  = 16;
+int g_FaceCount = 16;
 
 CEditor::CEditor()
 	:m_editmode{ EDIT_MODE::MAPTOOL }
@@ -80,9 +80,8 @@ void CEditor::init()
 	m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
 	m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
 	m_pCameraObject->Camera()->SetLayerMask(1);
+//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
 	CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
-
-	m_LightCS = dynamic_cast<CSLight*>(CResMgr::GetInst()->FindRes<CComputeShader>(L"CSLight").Get());
 
 	// LandScape 추가
 	CGameObjectEx* pLandScape = new CGameObjectEx;
@@ -93,7 +92,9 @@ void CEditor::init()
 	pLandScape->Transform()->SetRelativeScale(g_LandScale, g_LandScale, g_LandScale);
 	pLandScape->LandScape()->SetFaceCount(g_FaceCount, g_FaceCount);
 	pLandScape->LandScape()->SetFrustumCulling(false);
+	pLandScape->LandScape()->SetCameraObj((CGameObject*)m_pCameraObject);
 	pLandScape->finaltick();
+	//pLandScape->SetType(OBJ_TYPE::EDIT);
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
 
 	pObject = new CGameObjectEx;
@@ -109,6 +110,7 @@ void CEditor::init()
 	//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
 	pObject->Decal()->SetDecalTexture(pLandScape->LandScape()->GetBrushTexture());
 	pObject->Decal()->SetDefaultLit(true);
+	//pObject->SetType(OBJ_TYPE::EDIT);
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"BrushObject", pObject);
 
 	TileMapUI* pLandScapeUI = (TileMapUI*)CImGuiMgr::GetInst()->FindUI("TileMapUI");
@@ -130,6 +132,7 @@ void CEditor::init()
 	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
 	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
 	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+	//pDirLight->SetType(OBJ_TYPE::EDIT);
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
 
 	pObject = new CGameObjectEx;
@@ -137,10 +140,10 @@ void CEditor::init()
 	pObject->AddComponent(new CTransform);
 	pObject->AddComponent(new CMeshRender);
 	pObject->AddComponent(new CCollider3D);
-	
+
 	pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
 	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
-	
+
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
 	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
 	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
@@ -184,7 +187,8 @@ void CEditor::tickObj()
 {
 	for (auto iter{ m_EditorObj[(UINT)m_editmode].begin() }; iter != m_EditorObj[(UINT)m_editmode].end(); ++iter)
 	{
-		iter->second->tick();
+		if (L"EditLandScape" != iter->first)
+			iter->second->tick();
 	}
 
 	switch (m_editmode)
@@ -256,7 +260,7 @@ void CEditor::picking()
 	{
 		Vec3 vPos{};
 		const tRay& ray = m_pCameraObject->Camera()->GetRay();
-		
+
 		float fMaximum = 987654321.0f;
 		raycast.direction = ray.vDir;
 		raycast.position = ray.vStart;
@@ -505,137 +509,3 @@ void CEditor::SetEditMode(EDIT_MODE _editmode)
 		break;
 	}
 }
-
-void CEditor::SortObject()
-{
-	m_vecDeferred.clear();
-	m_vecOpaque.clear();
-	m_vecMask.clear();
-	m_vecDecal.clear();
-	m_vecTransparent.clear();
-
-	for (auto iter{ m_EditorObj[(UINT)m_editmode].begin()}; iter != m_EditorObj[(UINT)m_editmode].end(); ++iter)
-	{
-		CRenderComponent* RenderCompoent = iter->second->GetRenderComponent();
-		CTransform* pTransform = iter->second->Transform();
-
-		if (RenderCompoent == nullptr ||
-			RenderCompoent->GetCurMaterial() == nullptr ||
-			RenderCompoent->GetCurMaterial()->GetShader() == nullptr ||
-			RenderCompoent->GetMesh() == nullptr)
-		{
-			continue;
-		}
-
-		Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial()->GetShader();
-
-		SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();
-
-		auto Type = iter->second->GetRenderComponent()->GetInstancingType();
-
-		switch (eDomain)
-		{
-		case SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE:
-		case SHADER_DOMAIN::DOMAIN_DEFERRED_MASK:
-			m_vecDeferred.push_back(iter->second);
-			break;
-		case SHADER_DOMAIN::DOMAIN_OPAQUE:
-		{
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecOpaque.push_back(iter->second);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_MASK:
-		{
-			auto Type = iter->second->GetRenderComponent()->GetInstancingType();
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecMask.push_back(iter->second);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_DEFERRED_DECAL:
-		case SHADER_DOMAIN::DOMAIN_DECAL:
-		{
-			auto Type = iter->second->GetRenderComponent()->GetInstancingType();
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecDecal.push_back(iter->second);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_TRANSPARENT:
-		{
-			auto Type = iter->second->GetRenderComponent()->GetInstancingType();
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecTransparent.push_back(iter->second);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
-			m_vecPostProcess.push_back(iter->second);
-			break;
-		}
-	}
-}
-
-
-void CEditor::render_deferred()
-{
-	for (auto iter{ m_vecDeferred.begin() }; iter != m_vecDeferred.end(); ++iter)
-	{
-		(*iter)->render();
-	}
-}
-/*
-* 랜더가 아닌 벡터안에 정보를 집어 넣는 과정 후 Shader 돌리는 코드가 들어가야한다.
-*/
-void CEditor::render_opaque()
-{
-	for (auto iter{ m_vecOpaque.begin() }; iter != m_vecOpaque.end(); ++iter)
-	{
-		(*iter)->render();
-	}
-}
-
-void CEditor::render_mask()
-{
-
-	for (auto iter{ m_vecMask.begin() }; iter != m_vecMask.end(); ++iter)
-	{
-		(*iter)->render();
-	}
-}
-
-void CEditor::render_decal()
-{
-	for (auto iter{ m_vecDecal.begin() }; iter != m_vecDecal.end(); ++iter)
-	{
-		(*iter)->render();
-	}
-}
-
-void CEditor::render_transparent()
-{
-	for (auto iter{ m_vecTransparent.begin() }; iter != m_vecTransparent.end(); ++iter)
-	{
-		(*iter)->render();
-	}
-}
-
-void CEditor::render_postprocess()
-{
-	for (auto iter{ m_vecPostProcess.begin() }; iter != m_vecPostProcess.end(); ++iter)
-	{
-		CRenderMgr::GetInst()->CopyRenderTarget();
-		(*iter)->render();
-	}
-}
-

@@ -15,7 +15,7 @@ private:
     Vec2                m_vBrushScale;
     int                 m_iBrushIdx;
     int                 m_iWeightIdx; // 가중치 수정할 위치
-
+    float               m_iWeightClear;
     int                 m_iWidth;
     int                 m_iHeight;
 
@@ -52,7 +52,14 @@ public:
         m_iWeightIdx = _iIdx;
     }
 
+    void SetWeightClear(float _iIdx)
+    {
+        m_iWeightClear = _iIdx;
+    }
 
+    int GetWidth() { return m_iWidth; }
+    int GetHeight() { return m_iHeight; }
+    float GetWeightClear() { return m_iWeightClear; }
 
 public:
     virtual void UpdateData();

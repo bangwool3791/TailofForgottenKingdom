@@ -269,6 +269,20 @@ float GetTessFactor(float3 _vPos, int _iMinLevel, int _iMaxLevel, float _MinDist
     return fLevel;
 }
 
+float GetCameraTessFactor(float3 vViewPos, float3 _vPos, int _iMinLevel, int _iMaxLevel, float _MinDistance, float _MaxDistance)
+{
+    float fDistance = length(_vPos - vViewPos);
+
+    if (_MaxDistance < fDistance)
+        return _iMinLevel;
+    if (fDistance < _MinDistance)
+        return _iMaxLevel;
+
+    float fLevel = _iMaxLevel - (_iMaxLevel - _iMinLevel) * ((fDistance - _MinDistance) / (_MaxDistance - _MinDistance));
+
+    return fLevel;
+}
+
 // 0 ~ 1 사이 값을 반환
 float Random(int key)
 {

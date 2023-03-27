@@ -141,6 +141,8 @@ PS_OUT2 PS_Decal_Defferd(VS_OUT2 _in)
 	float4 vDecalColor = g_tex_1.Sample(g_sam_0, vDecalUV);
 
 	vDecalColor.r = 1.f;
+	vDecalColor.g = 1.f;
+	vDecalColor.z = 1.f;
 
 	output.vDecal = vDecalColor;
 

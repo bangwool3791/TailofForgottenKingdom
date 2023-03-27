@@ -22,6 +22,7 @@ void CHeightMapShader::UpdateData()
 	m_Param.iArr[0] = (int)m_pHeightMap->GetWidth();
 	m_Param.iArr[1] = (int)m_pHeightMap->GetHeight();
 	m_Param.iArr[2] = m_iBrushIdx;
+	m_Param.iArr[3] = m_iDir;
 	m_Param.v2Arr[0] = m_vScale;
 
 	// ≥Ù¿Ã∏ 

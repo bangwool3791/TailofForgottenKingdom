@@ -56,13 +56,6 @@ void CLandScape::finaltick()
 {
 	Raycasting();
 
-	if (KEY_TAP(KEY::NUM_0))
-		m_eMod = LANDSCAPE_MOD::NONE;
-	else if (KEY_TAP(KEY::NUM_1))
-		m_eMod = LANDSCAPE_MOD::HEIGHT_MAP;
-	else if (KEY_TAP(KEY::NUM_2))
-		m_eMod = LANDSCAPE_MOD::SPLAT;
-
 	if (LANDSCAPE_MOD::NONE == m_eMod)
 	{
 		return;
@@ -94,6 +87,19 @@ void CLandScape::finaltick()
 			m_pCSWeightMap->SetInputBuffer(m_pCrossBuffer); // 레이 캐스트 위치
 			m_pCSWeightMap->SetBrushArrTex(m_pBrushTex);
 			m_pCSWeightMap->SetBrushIndex(0);
+			m_pCSWeightMap->SetWeightClear(0.f);
+			m_pCSWeightMap->SetBrushScale(m_vBrushScale); // 브러쉬 크기
+			m_pCSWeightMap->SetWeightMap(m_pWeightMapBuffer, m_iWeightWidth, m_iWeightHeight); // 가중치맵, 가로 세로 개수			
+			m_pCSWeightMap->SetWeightIdx(m_iWeightIdx);
+			m_pCSWeightMap->Execute();
+		}
+		else if (LANDSCAPE_MOD::SPLAT_CLEAR == m_eMod)
+		{
+			// 교점 위치정보를 가중치를 수정함	
+			m_pCSWeightMap->SetInputBuffer(m_pCrossBuffer); // 레이 캐스트 위치
+			m_pCSWeightMap->SetBrushArrTex(m_pBrushTex);
+			m_pCSWeightMap->SetBrushIndex(0);
+			m_pCSWeightMap->SetWeightClear(1.f);
 			m_pCSWeightMap->SetBrushScale(m_vBrushScale); // 브러쉬 크기
 			m_pCSWeightMap->SetWeightMap(m_pWeightMapBuffer, m_iWeightWidth, m_iWeightHeight); // 가중치맵, 가로 세로 개수			
 			m_pCSWeightMap->SetWeightIdx(m_iWeightIdx);
@@ -137,6 +143,10 @@ void CLandScape::render()
 		// 타일 배열 개수 전달
 		float m_fTileCount = float(m_pTileArrTex->GetArraySize() / 2); // 색상, 노말 합쳐져있어서 나누기 2 해줌
 		GetCurMaterial()->SetScalarParam(SCALAR_PARAM::FLOAT_1, &m_fTileCount);
+
+		Vec3 vPos = m_pCameraObj->Transform()->GetRelativePos();
+		Vec4 temp = Vec4{ vPos, 1.f };
+		GetCurMaterial()->SetScalarParam(SCALAR_PARAM::VEC4_0, &temp);
 
 		// 타일 텍스쳐 전달
 		GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_ARR_0, m_pTileArrTex);
@@ -208,15 +218,64 @@ void CLandScape::SaveToFile(FILE* _File)
 {
 	COMPONENT_TYPE type = GetType();
 	fwrite(&type, sizeof(UINT), 1, _File);
-
+	
 	fwrite(&m_iXFaceCount, sizeof(UINT), 1, _File);
 	fwrite(&m_iZFaceCount, sizeof(UINT), 1, _File);
+	SaveResourceRef(m_pHeightMap, _File);
+	SaveResourceRef(m_pTileArrTex, _File);
+
+	UINT iElemCnt = m_pWeightMapBuffer->GetElementsCount();
+	UINT iElemSize = m_pWeightMapBuffer->GetElementsSize();
+
+	fwrite(&iElemCnt, sizeof(UINT), 1, _File);
+	fwrite(&iElemSize, sizeof(UINT), 1, _File);
+
+	tWeight_4* arr = new tWeight_4[iElemCnt];
+
+	m_pWeightMapBuffer->GetData(arr, 0);
+
+	for (size_t i = 0; i < iElemCnt; ++i)
+		for(size_t j = 0; j < 4; ++j)
+			fwrite(&arr[i].arrWeight[j], sizeof(float), 1, _File);
+
+	delete arr;
+	/*
+	* m_pHeightMap
+	* m_pTileArrTex
+	* m_pCSWeightMap//m_pWeightMapBuffer
+	* m_iWeightWidth//m_iWeightHeight
+	*/
 }
 
 void CLandScape::LoadFromFile(FILE* _File)
 {
+	COMPONENT_TYPE type = GetType();
+	fread(&type, sizeof(UINT), 1, _File);
+
 	fread(&m_iXFaceCount, sizeof(UINT), 1, _File);
 	fread(&m_iZFaceCount, sizeof(UINT), 1, _File);
+
+	LoadResourceRef(m_pHeightMap, _File);
+	Update_HeightMap();
+
+	LoadResourceRef(m_pTileArrTex, _File);
+//	m_pTileArrTex->GenerateMip(8);
+
+	UINT iElemCnt = 0;
+	UINT iElemSize = 0;
+
+	fread(&iElemCnt, sizeof(UINT), 1, _File);
+	fread(&iElemSize, sizeof(UINT), 1, _File);
+
+	tWeight_4* arr = new tWeight_4[iElemCnt];
+
+	for (size_t i = 0; i < iElemCnt; ++i)
+		for (size_t j = 0; j < 4; ++j)
+			fread(&arr[i].arrWeight[j], sizeof(float), 1, _File);
+
+	m_pWeightMapBuffer->SetData(arr, iElemCnt);
+
+	delete arr;
 }
 
 const tRaycastOut& CLandScape::GetRay()

@@ -59,10 +59,10 @@ public:
     static void Clear_CS(UINT _iRegisterNum);
     static void Clear_CS(UINT _iRegisterNum, bool _bShaderRes);
 
+    virtual int Load(const wstring& _strFilePath);
 private:
     // 파일로 부터 로딩
     virtual void Save(const wstring& _strRelativePath) {}
-    virtual int Load(const wstring& _strFilePath);
     int Load(const wstring& _strFilePath, int _iMipLevel);
     virtual int LoadHeightMap(const wstring& _strFilePath);
     void SaveBitmapToFile(BYTE* pBitmapBits,
@@ -75,6 +75,7 @@ private:
 
 public:
     void SaveTexture(const wstring& _path);
+    void SaveTextureArray(const wstring& path);
     void SaveBmpFile(const wstring& _strRelativePath);
     void LoadBmpFile(const wstring& _Path);
 public:

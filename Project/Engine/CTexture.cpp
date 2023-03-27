@@ -323,6 +323,7 @@ int CTexture::CreateArrayTexture(const vector<Ptr<CTexture>>& _vecTex, int _iMap
     for (int i = 0; i < _vecTex.size(); ++i)
     {
         UINT iOffset = D3D11CalcSubresource(0, i, _iMapLevel);
+
         CONTEXT->UpdateSubresource(m_Tex2D.Get(), iOffset, nullptr, _vecTex[i]->GetSysMem()
             , _vecTex[i]->GetRowPitch(), _vecTex[i]->GetSlicePitch());
     }
@@ -549,8 +550,16 @@ void CTexture::Clear_CS(UINT _iRegisterNum, bool _bShaderRes)
 void CTexture::SaveTexture(const wstring& path)
 {
     CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), m_Image);
+ 
     SaveToDDSFile(*m_Image.GetImages(), DDS_FLAGS_NONE, path.c_str());
 }
+
+void CTexture::SaveTextureArray(const wstring& path)
+{
+    CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), m_Image);
+    SaveToDDSFile(m_Image.GetImages(), 6, m_Image.GetMetadata(), DDS_FLAGS_NONE, path.c_str());
+}
+
 
 void CTexture::SaveBmpFile(const wstring& _Path)
 {

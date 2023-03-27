@@ -236,6 +236,8 @@ void CImGuiMgr::progress()
                     iter->second->update();
                 else if ("ContentUI" == iter->first)
                     iter->second->update();
+                else if ("ListUI" == iter->first)
+                    iter->second->update();
                 break;
             case EDIT_MODE::OBJECT:
                 if ("Outliner" == iter->first)
@@ -291,6 +293,8 @@ void CImGuiMgr::progress()
                 else if ("Inspector" == iter->first)
                     iter->second->render();
                 else if ("ContentUI" == iter->first)
+                    iter->second->render();
+                else if ("ListUI" == iter->first)
                     iter->second->render();
                 break;
             case EDIT_MODE::OBJECT:

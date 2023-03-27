@@ -53,6 +53,16 @@ void ListUI::render_update()
 				}
 				Close();
 			}
+
+			// 해당 아이템이 더블클릭 되었다.
+			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+			{
+				if (m_DBCInst && m_DBCRightFunc)
+				{
+					(m_DBCInst->*m_DBCRightFunc)((DWORD_PTR)m_ItemList[i].c_str());
+				}
+				Close();
+			}
 		}		
 
 		ImGui::EndListBox();

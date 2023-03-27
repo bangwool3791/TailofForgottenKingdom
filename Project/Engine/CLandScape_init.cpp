@@ -168,7 +168,7 @@ void CLandScape::CreateTexture()
 	m_iWeightHeight = 1024;
 
 	m_pWeightMapBuffer = new CStructuredBuffer;
-	m_pWeightMapBuffer->Create(sizeof(tWeight_4), m_iWeightWidth * m_iWeightHeight, SB_TYPE::UAV_INC, nullptr, false);
+	m_pWeightMapBuffer->Create(sizeof(tWeight_4), m_iWeightWidth * m_iWeightHeight, SB_TYPE::UAV_INC, nullptr, true);
 }
 
 void CLandScape::Initialize()
@@ -209,6 +209,39 @@ void CLandScape::Initialize()
 	{
 		image.GetPixels()[i] = 0;
 	}
+
+	// 원본데이터(밉맵 레벨 0) 를 각 칸에 옮긴다.   
+	for (int i = 0; i < desc.ArraySize; ++i)
+	{
+		// GPU 에 데이터 옮기기(밉맵 포함)
+		UINT iSubresIdx = D3D11CalcSubresource(0, i, desc.MipLevels);
+
+		CONTEXT->UpdateSubresource(tex.Get(), iSubresIdx, nullptr
+			, image.GetImage(0, i, 0)->pixels
+			, image.GetImage(0, i, 0)->rowPitch
+			, image.GetImage(0, i, 0)->slicePitch);
+	}
+
+	Update_HeightMap();
+}
+
+void CLandScape::SetHeightmapOffset(float _offset)
+{
+	static float foffset = 0;
+
+	ComPtr<ID3D11Texture2D> tex = m_pHeightMap->GetTex2D();
+	D3D11_TEXTURE2D_DESC desc;
+	tex->GetDesc(&desc);
+
+	ScratchImage image;
+	CaptureTexture(DEVICE, CONTEXT, tex.Get(), image);
+
+	for (size_t i = 0; i < image.GetPixelsSize(); ++i)
+	{
+		image.GetPixels()[i] += (_offset - foffset);
+	}
+
+	foffset = _offset;
 
 	// 원본데이터(밉맵 레벨 0) 를 각 칸에 옮긴다.   
 	for (int i = 0; i < desc.ArraySize; ++i)

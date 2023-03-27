@@ -4,7 +4,7 @@
 
 CCameraScript::CCameraScript()
 	:CScript(-1)
-	, m_fSpeed(200.f)
+	, m_fSpeed(400.f)
 {
 }
 
