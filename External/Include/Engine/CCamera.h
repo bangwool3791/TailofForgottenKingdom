@@ -9,7 +9,7 @@ class CStructuredBuffer;
 enum PROJ_TYPE
 {
     PERSPECTIVE,
-    ORTHOGRAHPICS,
+    ORTHOGRAHPIC,
 };
 
 class CCamera :
@@ -18,7 +18,7 @@ class CCamera :
 {
 private:
     tRay                    m_ray;      // 마우스 방향을 향하는 직선
-    CSLight*                m_LightCS;
+    CSLight* m_LightCS;
     CFrustum                m_Frustum;
 
     Matrix                  m_matView;
@@ -33,7 +33,8 @@ private:
     D3D11_VIEWPORT			m_tEnvViewPort[1];			// 환경맵용 
     D3D11_VIEWPORT          m_tViewPort;
     PROJ_TYPE               m_eProjType;
-    float                   m_fAspectRatio;
+    float                   m_fWidth;       // 투영 가로길이
+    float                   m_fAspectRatio; // 종횡 비 (가로길이 / 세로길이)
 
     float                   m_FOV;          // 시야각
 
@@ -49,6 +50,7 @@ private:
     vector<CGameObject* >                    m_vecMask;
     vector<CGameObject*>                     m_vecDecal;
     vector<CGameObject* >                    m_vecTransparent;
+    vector<CGameObject*>                     m_vecDynamicShadow;     // 동적 그림자 물체
     map<const wstring, vector<CGameObject*>> m_mapOpaqueVec;
     map<const wstring, vector<CGameObject*>> m_mapMaskVec;
     map<const wstring, vector<CGameObject*>> m_mapDecalVec;
@@ -56,9 +58,9 @@ private:
     map<const wstring, vector<CGameObject*>> m_mapTransparentVec;
     vector<CGameObject* >                    m_vecPostProcess;
 
-    CStructuredBuffer*                       m_pObjectRenderBuffer;
+    CStructuredBuffer* m_pObjectRenderBuffer;
 
-private :
+private:
     void begin();
     void SortObject();
     void render_deferred();
@@ -69,21 +71,25 @@ private :
     void render_postprocess();
     void render_ui() {}
     //void update_render(Ptr<CMesh> p);
-public :
-    void InitializeEnvView(Vec3 vEyePos);
-    virtual void finaltick();
-    void         render();
-    void        EditorRender();
-    void         render(MRT_TYPE _eType);
-    void SortObject(const vector<CGameObject*>& vec);
+public:
+    void            InitializeEnvView(Vec3 vEyePos);
+    virtual void    finaltick();
+    virtual void    finaltick_module();
+    void            render();
+    void            EditorRender();
+    void            render(MRT_TYPE _eType);
+    void            SortObject(const vector<CGameObject*>& vec);
+    void            SortShadowObject();
+    void            SortShadowObject(const vector<CGameObject*>& vec);
+    void            render_depthmap();
 public:
     void CalcViewMat();
     void CalcProjMat();
     void CalcReflectMat(float height);
-public :
+public:
 
     double          GetOrthographicScale() { return m_fScale; }
-    double&         GetOrthographicScale_() { return m_fScale; }
+    double& GetOrthographicScale_() { return m_fScale; }
     void            SetOrthographicScale(float _fScale) { m_fScale = _fScale; }
 
     void            SetProjType(PROJ_TYPE _eType) { m_eProjType = _eType; }
@@ -101,6 +107,7 @@ public :
     const tRay& GetRay() { return m_ray; }
     float GetFOV() { return m_FOV; }
     void SetFOV(float _fov) { m_FOV = _fov; }
+    void SetWidth(float _fWidth) { m_fWidth = _fWidth; }
     /*
     * Matrix객체는 const ref로 return
     */
@@ -113,13 +120,13 @@ public :
     void SetLayerMaskAll() { m_iLayerMask = 0xffffffff; }
     void SetLayerMaskZero() { m_iLayerMask = 0; }
     CFrustum* GetFrustum() { return &m_Frustum; }
-public :
+public:
     CLONE(CCamera);
 
 public:
     virtual void SaveToFile(FILE* _File);
     virtual void LoadFromFile(FILE* _File);
-public :
+public:
     CCamera();
     CCamera(const CCamera& rhs);
     ~CCamera();

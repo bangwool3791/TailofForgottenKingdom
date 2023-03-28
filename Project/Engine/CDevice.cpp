@@ -228,6 +228,13 @@ int CDevice::CreateSampler()
 	desc.Filter = D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
 	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
 
+
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_BORDER;
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_BORDER;
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_BORDER;
+
+	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
 	//desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	//desc.MipLODBias = 0.0f;
 	//desc.MaxAnisotropy = 1;
@@ -263,6 +270,12 @@ int CDevice::CreateSampler()
 	CONTEXT->PSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
 	CONTEXT->CSSetSamplers((UINT)SAMPLER_TYPE::BLUR, 1, m_arrSampler[(UINT)SAMPLER_TYPE::BLUR].GetAddressOf());
 
+	CONTEXT->VSSetSamplers((UINT)SAMPLER_TYPE::SHADOW, 1, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
+	CONTEXT->HSSetSamplers((UINT)SAMPLER_TYPE::SHADOW, 1, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
+	CONTEXT->DSSetSamplers((UINT)SAMPLER_TYPE::SHADOW, 1, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
+	CONTEXT->GSSetSamplers((UINT)SAMPLER_TYPE::SHADOW, 1, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
+	CONTEXT->PSSetSamplers((UINT)SAMPLER_TYPE::SHADOW, 1, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
+	CONTEXT->CSSetSamplers((UINT)SAMPLER_TYPE::SHADOW, 1, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
 	return hr;
 }
 
@@ -385,9 +398,6 @@ int CDevice::CreateBlendState()
 	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 
 	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-
-
 
 	hr = DEVICE->CreateBlendState(&desc, m_arrBS[(UINT)BS_TYPE::ALPHABLEND].GetAddressOf());
 

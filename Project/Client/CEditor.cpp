@@ -83,6 +83,7 @@ void CEditor::init()
 //	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
 	CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
 
+
 	// LandScape Ãß°¡
 	CGameObjectEx* pLandScape = new CGameObjectEx;
 	pLandScape->SetName(L"EditLandScape");
@@ -110,7 +111,6 @@ void CEditor::init()
 	//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
 	pObject->Decal()->SetDecalTexture(pLandScape->LandScape()->GetBrushTexture());
 	pObject->Decal()->SetDefaultLit(true);
-	//pObject->SetType(OBJ_TYPE::EDIT);
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"BrushObject", pObject);
 
 	TileMapUI* pLandScapeUI = (TileMapUI*)CImGuiMgr::GetInst()->FindUI("TileMapUI");
@@ -125,13 +125,14 @@ void CEditor::init()
 	pDirLight->AddComponent(new CTransform);
 	pDirLight->AddComponent(new CLight3D);
 
-	pDirLight->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-	pDirLight->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
+	pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
+	pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
 
 	pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
 	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
 	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+	pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
 	//pDirLight->SetType(OBJ_TYPE::EDIT);
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
 

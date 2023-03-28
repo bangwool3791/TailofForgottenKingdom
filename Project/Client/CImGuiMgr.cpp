@@ -198,7 +198,8 @@ void CImGuiMgr::progress()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     
-    Guizmo();
+    if(EDIT_MODE::MAPTOOL == CEditor::GetInst()->GetEditMode())
+        Guizmo();
 
     ParamUI::ParamCount = 0;
 

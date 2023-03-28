@@ -164,6 +164,32 @@ void CGameObject::finaltick()
 	pLayer->RegisterObject(this);
 }
 
+void CGameObject::finaltick_module()
+{
+	// Component
+	for (UINT i = 0; i < (UINT)COMPONENT_TYPE::END; ++i)
+	{
+		if (nullptr != m_arrCom[i])
+			m_arrCom[i]->finaltick_module();
+	}
+
+	// Child Object
+	vector<CGameObject*>::iterator iter = m_vecChild.begin();
+	for (; iter != m_vecChild.end();)
+	{
+		(*iter)->finaltick_module();
+
+		if ((*iter)->IsDead())
+		{
+			iter = m_vecChild.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
 void CGameObject::render()
 {
 	if (nullptr == m_pRenderComponent)

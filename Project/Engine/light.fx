@@ -14,7 +14,20 @@
 // g_tex_0 : Position Target Tex
 // g_tex_1 : Normal Target Tex
 // g_tex_2 : Data Target Tex
-// =================
+
+#define DepthMap        g_tex_3
+#define LightVP         g_mat_0
+
+SamplerComparisonState samShadow
+{
+    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+    AddressU = BORDER;
+    AddressV = BORDER;
+    AddressW = BORDER;
+    BorderColor = float4(1.f, 1.f, 1.f, 1.f);
+
+    ComparisonFunc = LESS;
+};
 
 struct VS_IN
 {
@@ -69,16 +82,57 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
 	tLightColor lightcolor = (tLightColor)0.f;
 	CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
 
-	float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
+    // 그림자 판정
+    // ViewPos -> WorldPos
+    float3 vWorldPos = mul(float4(vViewPos.xyz, 1.f), g_matViewInv).xyz;
 
-	output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
-	//빛 반사광 * 재질 반사 계수
-	output.vSpecular = lightcolor.vSpec * SpecCoef;
+    // WorldPos -> Light 투영
+    float4 vLightProj = mul(float4(vWorldPos, 1.f), LightVP);
 
-	output.vDiffuse.a = 1.f;
-	output.vSpecular.a = 1.f;
+    // w로 나눠서 실제 xy 투영좌표를 구함
+    vLightProj.xyz /= vLightProj.w;
 
-	return output;
+    // w 로 나눠서 실제 xy 투영좌표를 구함
+    vLightProj.xyz /= vLightProj.w;
+
+    float percentLit = 0.0f;
+
+    // 샘플링을 하기 위해서 투영좌표계를 UV 좌표계로 변환
+    float2 vDepthMapUV = float2((vLightProj.x / 2.f) + 0.5f, -(vLightProj.y / 2.f) + 0.5f);
+    float fDepth = DepthMap.Sample(g_sam_0, vDepthMapUV).r;
+    float fShadowPow = 0.f;
+
+    {
+        // Depth in NDC space.
+        float depth = vLightProj.z;
+
+        // Texel size.
+        const float dx = SMAP_DX;
+
+        const float2 offsets[9] =
+        {
+            float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
+            float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+            float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
+        };
+
+        [unroll]
+        for (int i = 0; i < 9; ++i)
+        {
+            percentLit += DepthMap.SampleCmpLevelZero(samShadow,
+                vDepthMapUV.xy + offsets[i], depth).r;
+        }
+        //그림자에 가려진 정도
+        percentLit *= 5.f;
+    }
+    output.vDiffuse = lightcolor.vDiff * percentLit + lightcolor.vAmb;
+    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
+    output.vSpecular = lightcolor.vSpec * SpecCoef * percentLit;
+
+    output.vDiffuse.a = 1.f;
+    output.vSpecular.a = 1.f;
+
+    return output;
 }
 
 // =================
@@ -207,4 +261,41 @@ PS_OUT PS_SpotLightShader(VS_OUT _in)
 
     return output;
 }
+
+
+// ===============
+// DepthMap Shader
+// MRT : ShadowMap MRT
+// RS : CULL_BACK
+// BS : Default
+// DS : Less
+// ===============
+struct VS_DEPTH_IN
+{
+    float3 vPos : POSITION;
+};
+
+struct VS_DEPTH_OUT
+{
+    float4 vPosition : SV_Position;
+    float4 vProjPos : POSITION;
+};
+
+VS_DEPTH_OUT VS_DepthMap(VS_DEPTH_IN _in)
+{
+    VS_DEPTH_OUT output = (VS_DEPTH_OUT)0.f;
+
+    output.vPosition = mul(float4(_in.vPos, 1.f), g_matWVP);
+    output.vProjPos = output.vPosition;
+
+    return output;
+}
+
+float PS_DepthMap(VS_DEPTH_OUT _in) : SV_Target
+{
+    float fOut = 0.f;
+    fOut = _in.vProjPos.z / _in.vProjPos.w;
+    return fOut;
+}
+
 #endif

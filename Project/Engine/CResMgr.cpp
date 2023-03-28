@@ -103,6 +103,10 @@ void CResMgr::AddRes(const wstring& _strKey, RES_TYPE _type, CRes* _pRes)
 {
     Ptr<CRes> pRes = FindRes(_strKey, _type);
 
+    if (nullptr != pRes)
+    {
+        int a = 0;
+    }
     assert(!pRes.Get());
 
     _pRes->SetKey(_strKey);

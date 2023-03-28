@@ -22,3 +22,8 @@ CComponent::~CComponent()
 {
 
 }
+
+void CComponent::finaltick_module()
+{
+	finaltick();
+}

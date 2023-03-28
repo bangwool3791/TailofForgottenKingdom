@@ -216,7 +216,7 @@ void CLevelCameraScript::Move()
 		{
 			if (fdt > 0.5f)
 			{
-				Camera()->SetProjType(PROJ_TYPE::ORTHOGRAHPICS);
+				Camera()->SetProjType(PROJ_TYPE::ORTHOGRAHPIC);
 				Camera()->SetOrthographicScale(m_fScale);
 				Transform()->SetRelativeRotation(Vec3(XM_PI * 0.25f, 0.f, 0.f));
 				fdt = 0.f;

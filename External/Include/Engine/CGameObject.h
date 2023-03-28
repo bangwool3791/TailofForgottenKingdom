@@ -53,6 +53,7 @@ public:
 	virtual void begin();
 	virtual void tick();
 	virtual void finaltick();
+	virtual void finaltick_module();    // 레벨에 포함되지 않고 사용 하는 경우
 	virtual void render();
 public:
 	CRenderComponent* GetRenderComponent() { return m_pRenderComponent; }
@@ -84,6 +85,9 @@ public:
 	GET_COMPONENT(SkyBox, SKYBOX);
 	GET_COMPONENT(LandScape, LANDSCAPE);
 	GET_COMPONENT(WaveRenderer, WAVERENDERER);
+
+
+	CGameObject* GetParent() { return m_pParent; }
 
 	template<typename T>
 	T* GetScript();

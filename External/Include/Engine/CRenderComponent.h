@@ -24,6 +24,7 @@ private:
 	Ptr<CMaterial>			m_pDynamicMtrl;
 	Ptr<CMaterial>			m_pCurMtrl;
 	bool                    m_bUseFrustumCulling;
+	bool                    m_bDynamicShadow;
 public:
 	void SetMesh(Ptr<CMesh> _pMesh) { m_pMesh = _pMesh; }
 	Ptr<CMesh> GetMesh() { return m_pMesh; }
@@ -50,10 +51,13 @@ protected:
 public:
 	void SetInstancingType(INSTANCING_TYPE _eType) { m_eInsType = _eType; }
 	INSTANCING_TYPE GetInstancingType() { return m_eInsType; }
+	void SetDynamicShadow(bool _bSet) { m_bDynamicShadow = _bSet; }
+	bool IsDynamicShadow() { return m_bDynamicShadow; }
 public:
 	virtual void SaveToFile(FILE* _File) override;
 	virtual void LoadFromFile(FILE* _File) override;
 public:
 	virtual void render() = 0;
+	virtual void render_depthmap();
 	virtual void render_Instancing() = 0;
 };

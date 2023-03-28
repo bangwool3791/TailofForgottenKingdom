@@ -102,3 +102,20 @@ void CEngine::render()
 	CEventMgr::GetInst()->tick();
 }
 
+void CEngine::render(const vector<CGameObject*>& obj)
+{
+	CRenderMgr::GetInst()->render(obj);
+
+	CTimeMgr::GetInst()->render();
+	/*
+	* 1 Tick
+	* Present
+	* 백버퍼 프론트 버퍼 전환이 일어난다.
+	* [클라이언트] 그리드를 그린다.
+	* 2 Tick
+	* Target 클리어가 일어난다.
+	*/
+
+	CEventMgr::GetInst()->tick();
+}
+

@@ -17,6 +17,8 @@ private:
     Ptr<CMaterial>  m_pLightMtrl;
 
     int             m_iLightIdx;    // 광원 버퍼에서의 인덱스
+
+    CGameObject*    m_pLightCam;    // 광원 시점용 카메라
 public:
     const tLightInfo& GetLightInfo() { return m_Info; }
 
@@ -24,19 +26,21 @@ public:
     void SetLightSpecular(Vec3 _vSpec) { m_Info.vSpec = _vSpec; }
     void SetLightAmbient(Vec3 _vAmb) { m_Info.vAmb = _vAmb; }
     void SetLightType(LIGHT_TYPE _eType);
+    void SetLightDirection(Vec3 _vDir);
 
     void SetRadius(float _fRadius) { m_Info.fRadius = _fRadius; }
     void SetAngle(float _fAngle) { m_Info.fAngle = _fAngle; }
 
     Vec3 GetLightColor() { return m_Info.vDiff; }
-    LIGHT_TYPE GetLightType(LIGHT_TYPE _eType) { return m_Info.iLightType; }
+    LIGHT_TYPE GetLightType() { return m_Info.iLightType; }
     float GetRadius(float _fRadius) { return m_Info.fRadius; }
     float GetAngle(float _fAngle) { return m_Info.fAngle; }
-
 
 public:
     virtual void finaltick() override;
     void render();
+    void render_depthmap();
+    void render_depthmap(const vector<CGameObject*>& obj);
 public:
     virtual void SaveToFile(FILE* _File) override;
     virtual void LoadFromFile(FILE* _File) override;
@@ -44,6 +48,7 @@ public:
     CLONE(CLight3D);
 public:
     CLight3D();
+    CLight3D(const CLight3D& _origin);
     ~CLight3D();
 };
 

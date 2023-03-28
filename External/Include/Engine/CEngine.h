@@ -16,7 +16,7 @@ private:
 	void finaltick();
 public:
 	void render();
-
+	void render(const vector<CGameObject*>& obj);
 private:
 	CEngine();
 	virtual ~CEngine();

@@ -63,7 +63,24 @@ void CRenderMgr::render()
 		render_editor();
 	}
 	//GUI 주석 끝
+}
 
+void CRenderMgr::render(const vector<CGameObject*>& obj)
+{
+	clear();
+	//render_game();
+	//GUI 주석
+	CLevel* pLevel = CLevelMgr::GetInst()->GetCurLevel();
+
+	if (LEVEL_STATE::PLAY == pLevel->GetState())
+	{
+		render_game();
+	}
+	else
+	{
+		render_editor(obj);
+	}
+	//GUI 주석 끝
 }
 
 void CRenderMgr::clear()
@@ -87,102 +104,55 @@ void CRenderMgr::clear()
 
 void CRenderMgr::render_game()
 {
-	static bool bCheck = false;
-
-	if (!bCheck)
-	{
-		for (auto elem{ m_vecCam.begin() }; elem != m_vecCam.end(); ++elem)
-		{
-			const wstring& wstr = (*elem)->GetOwner()->GetName();
-
-			if (!lstrcmp(wstr.c_str(), L"FrontCamera"))
-			{
-				(*elem)->render(MRT_TYPE::FRONT);
-			}
-			else if (!lstrcmp(wstr.c_str(), L"BackCamera"))
-			{
-				(*elem)->render(MRT_TYPE::BACK);
-			}
-			else if (!lstrcmp(wstr.c_str(), L"LeftCamera"))
-			{
-				(*elem)->render(MRT_TYPE::LEFT);
-			}
-			else if (!lstrcmp(wstr.c_str(), L"RightCamera"))
-			{
-				(*elem)->render(MRT_TYPE::RIGHT);
-			}
-			else if (!lstrcmp(wstr.c_str(), L"UpCamera"))
-			{
-				(*elem)->render(MRT_TYPE::UP);
-			}
-			else if (!lstrcmp(wstr.c_str(), L"DownCamera"))
-			{
-				(*elem)->render(MRT_TYPE::DOWN);
-			}
-		}
-		
-		//텍스쳐 6장을 읽는다.
-		vector<Ptr<CTexture>> vecTex{};
-		wstring str[6] = { L"FrontTargetTex", L"BackTargetTex", L"LeftTargetTex", L"RightTargetTex",L"UpTargetTex", L"DownTargetTex" };
-		for (size_t i = 0; i < 6; ++i)
-		{
-			vecTex.push_back(CResMgr::GetInst()->FindRes<CTexture>(str[i]));
-		}
-
-		wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
-		strFilePath += L"texture\\cube1.dds";
-
-		Ptr<CTexture> tex = new CTexture(true);
-		tex->CreateArrayTexture(vecTex, 1);
-		//스크래치 이미지 
-		ScratchImage image;
-		CaptureTexture(DEVICE, CONTEXT, tex->GetTex2D().Get(), image);
-
-		TexMetadata mdata = image.GetMetadata();
-		//6장 Save
-		HRESULT hr = SaveToDDSFile(image.GetImages(), 6, mdata, DDS_FLAGS_NONE, strFilePath.c_str());
-
-		bCheck = true;
-	}
+	render_dynamic_shadowdepth();
 
 	for (auto elem{ m_vecCam.begin() }; elem != m_vecCam.end(); ++elem)
 	{
 		const wstring& wstr = (*elem)->GetOwner()->GetName();
 
-		if (!lstrcmp(wstr.c_str(), L"FrontCamera"))
-		{
-			continue;
-		}
-		else if (!lstrcmp(wstr.c_str(), L"BackCamera"))
-		{
-			continue;
-		}
-		else if (!lstrcmp(wstr.c_str(), L"LeftCamera"))
-		{
-			continue;
-		}
-		else if (!lstrcmp(wstr.c_str(), L"RightCamera"))
-		{
-			continue;
-		}
-		else if (!lstrcmp(wstr.c_str(), L"UpCamera"))
-		{
-			continue;
-		}
-		else if (!lstrcmp(wstr.c_str(), L"DownCamera"))
-		{
-			continue;
-		}
-
 		(*elem)->render();
+	}
+}
+
+
+void CRenderMgr::render_dynamic_shadowdepth()
+{
+	m_arrMRT[(UINT)MRT_TYPE::SHADOW]->OMSet();
+
+	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
+	{
+		if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
+			m_vecLight3D[i]->render_depthmap();
+	}
+}
+
+void CRenderMgr::render_dynamic_shadowdepth(const vector<CGameObject*>& obj)
+{
+	m_arrMRT[(UINT)MRT_TYPE::SHADOW]->OMSet();
+
+	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
+	{
+		if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
+			m_vecLight3D[i]->render_depthmap(obj);
 	}
 }
 
 void CRenderMgr::render_editor()
 {
 	assert(m_EditorCam);
+	render_dynamic_shadowdepth();
+
 	m_EditorCam->EditorRender();
 }
+
+void CRenderMgr::render_editor(const vector<CGameObject*>& obj)
+{
+	assert(m_EditorCam);
+	render_dynamic_shadowdepth(obj);
+
+	m_EditorCam->EditorRender();
+}
+
 
 void CRenderMgr::UpdateNoiseTexture()
 {

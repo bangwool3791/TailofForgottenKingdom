@@ -31,7 +31,9 @@ Ptr<CTexture> CResMgr::CreateTexture(const wstring& _strKey, UINT _iWidth, UINT 
 {
 	Ptr<CTexture> pTex = FindRes<CTexture>(_strKey);
 
-	assert(!pTex.Get());
+	if(nullptr != pTex)
+		return pTex;
+	//assert(!pTex.Get());
 
 	pTex = new CTexture(true);
 
@@ -1099,6 +1101,18 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
 
 	AddRes<CGraphicsShader>(L"ColorShader", pShader);
+
+	// DepthmapShader
+	pShader = new CGraphicsShader;
+	pShader->SetDomain(SHADER_DOMAIN::NONE);
+	pShader->CreateVertexShader(L"Shader\\light.fx", "VS_DepthMap");
+	pShader->CreatePixelShader(L"Shader\\light.fx", "PS_DepthMap");
+
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+
+	AddRes<CGraphicsShader>(L"DepthMapShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1250,6 +1264,11 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ColorShader"));
 	AddRes<CMaterial>(L"ColorMtrl", pMaterial);
+
+	// DepthMap Material
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"DepthMapShader"));
+	AddRes<CMaterial>(L"DepthMapMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)

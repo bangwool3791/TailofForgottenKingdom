@@ -209,19 +209,43 @@ void OutlinerUI::render_update()
 void OutlinerUI::ResetLevel()
 {
 	m_Tree->Clear();
+	CLevel* pCurLevel;
+	TreeNode* pRootNode{};
+	static string strLevelName;
 
-	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurLevel();
-	string strLevelName = string(pCurLevel->GetName().begin(), pCurLevel->GetName().end());
-
-	TreeNode* pRootNode = m_Tree->AddItem(nullptr, strLevelName, 0, true);
-
-	for (UINT i{}; i < MAX_LAYER; ++i)
+	if (EDIT_MODE::OBJECT == CEditor::GetInst()->GetEditMode())
 	{
-		const vector<CGameObject*>& vecObejct = pCurLevel->GetLayer(i)->GetParentObjects();
+		pCurLevel = CLevelMgr::GetInst()->GetCurLevel();
+		strLevelName = string(pCurLevel->GetName().begin(), pCurLevel->GetName().end());
+
+		pRootNode = m_Tree->AddItem(nullptr, strLevelName, 0, true);
+
+		for (UINT i{}; i < MAX_LAYER; ++i)
+		{
+			const vector<CGameObject*>& vecObejct = pCurLevel->GetLayer(i)->GetParentObjects();
+
+			for (size_t j{}; j < vecObejct.size(); ++j)
+			{
+				AddGameObjectToTree(pRootNode, vecObejct[j]);
+			}
+		}
+	}
+	else if (EDIT_MODE::MAPTOOL == CEditor::GetInst()->GetEditMode())
+	{
+		strLevelName = "map object";
+		pRootNode = m_Tree->AddItem(nullptr, strLevelName, 0, true);
+
+		auto map = CEditor::GetInst()->GetEdiotrObj(EDIT_MODE::MAPTOOL);
+		vector<CGameObjectEx*> vecObejct;
+
+		for (auto iter = map.begin(); iter != map.end(); ++iter)
+		{
+			vecObejct.push_back(iter->second);
+		}
 
 		for (size_t j{}; j < vecObejct.size(); ++j)
 		{
-			AddGameObjectToTree(pRootNode, vecObejct[j]);
+			AddGameObjectToTree(pRootNode, (CGameObject*)vecObejct[j]);
 		}
 	}
 

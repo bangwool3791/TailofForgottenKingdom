@@ -259,7 +259,7 @@ void CLandScape::LoadFromFile(FILE* _File)
 	Update_HeightMap();
 
 	LoadResourceRef(m_pTileArrTex, _File);
-//	m_pTileArrTex->GenerateMip(8);
+	m_pTileArrTex->GenerateMip(8);
 
 	UINT iElemCnt = 0;
 	UINT iElemSize = 0;

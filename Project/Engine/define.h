@@ -69,7 +69,7 @@ enum class SAMPLER_TYPE
 	ANISOTROPIC, // �̹漺
 	POINT,
 	BLUR,
-
+	SHADOW,
 	END,
 };
 

@@ -7,6 +7,7 @@
 CMRT::CMRT()
 	: m_arrTarget{}
 	, m_RTCount{}
+	, m_tViewPort{}
 {
 
 }
@@ -59,6 +60,7 @@ void CMRT::Clear()
 	{
 		CONTEXT->ClearDepthStencilView(m_DSTex->GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.f, 0.f);
 	}
+
 }
 
 //Output merge RenderTargetView, Depth Stencil View
@@ -75,6 +77,10 @@ void CMRT::OMSet()
 		CONTEXT->OMSetRenderTargets(m_RTCount, arrRTV, m_DSTex->GetDSV().Get());
 	else
 		CONTEXT->OMSetRenderTargets(m_RTCount, arrRTV, nullptr);
+
+	//카메라 여러대 일 때는 뷰포트 설청을 따로해야한다.
+	// ViewPort 설정
+	CONTEXT->RSSetViewports(1, &m_tViewPort);
 }
 
 void CMRT::OMClear()

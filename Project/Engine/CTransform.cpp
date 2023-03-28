@@ -42,16 +42,16 @@ void CTransform::finaltick()
 
 	Matrix		matPos = XMMatrixTranslation(m_vRelativePos.x, m_vRelativePos.y, m_vRelativePos.z);
 	//Degree 단위로 저장 된 회전 x,y,z 정보를 행렬에 담는다.
-	Matrix		matRot = XMMatrixRotationX(m_vRelativeRotation.x);
-	matRot *= XMMatrixRotationY(m_vRelativeRotation.y);
-	matRot *= XMMatrixRotationZ(m_vRelativeRotation.z);
+	m_matRelativeRot = XMMatrixRotationX(m_vRelativeRotation.x);
+	m_matRelativeRot *= XMMatrixRotationY(m_vRelativeRotation.y);
+	m_matRelativeRot *= XMMatrixRotationZ(m_vRelativeRotation.z);
 
 	//행렬에 담긴 x,y,z축에 대한 회전 정보(Vector3)를 담는다.
-	m_vRelativeDir[(UINT)DIR::RIGHT] = m_vWorldDir[(UINT)DIR::RIGHT] = XMVector3TransformNormal(Vec3{1.f, 0.f, 0.f}, matRot);
-	m_vRelativeDir[(UINT)DIR::UP] = m_vWorldDir[(UINT)DIR::UP] = XMVector3TransformNormal(Vec3{ 0.f, 1.f, 0.f }, matRot);
-	m_vRelativeDir[(UINT)DIR::FRONT] = m_vWorldDir[(UINT)DIR::FRONT] = XMVector3TransformNormal(Vec3{ 0.f, 0.f, 1.f }, matRot);
+	m_vRelativeDir[(UINT)DIR::RIGHT] = m_vWorldDir[(UINT)DIR::RIGHT] = XMVector3TransformNormal(Vec3{1.f, 0.f, 0.f}, m_matRelativeRot);
+	m_vRelativeDir[(UINT)DIR::UP] = m_vWorldDir[(UINT)DIR::UP] = XMVector3TransformNormal(Vec3{ 0.f, 1.f, 0.f }, m_matRelativeRot);
+	m_vRelativeDir[(UINT)DIR::FRONT] = m_vWorldDir[(UINT)DIR::FRONT] = XMVector3TransformNormal(Vec3{ 0.f, 0.f, 1.f }, m_matRelativeRot);
 
-	m_matWorld = matScail * matRot * matPos ;
+	m_matWorld = matScail * m_matRelativeRot * matPos ;
 
 	if (GetOwner()->Get_Parent())
 	{
@@ -149,6 +149,20 @@ Vec3 CTransform::GetWorldScale()
 	return vWorldScale;
 }
 
+Matrix CTransform::GetWorldRotation()
+{
+	Matrix matWorldRot = m_matRelativeRot;
+
+	CGameObject* pParent = GetOwner()->GetParent();
+
+	while (pParent)
+	{
+		matWorldRot *= pParent->Transform()->m_matRelativeRot;
+		pParent = pParent->GetParent();
+	}
+
+	return matWorldRot;
+}
 
 void CTransform::SaveToFile(FILE* _File)
 {

@@ -6,6 +6,7 @@
 #include "CSaveLoadMgr.h"
 #include "CEditor.h"
 #include "CImGuiMgr.h"
+#include "OutlinerUI.h"
 
 #include <Engine\CGameObject.h>
 #include <Engine\CEventMgr.h>
@@ -49,6 +50,8 @@ void MenuUI::render()
             {
                 CEditor::GetInst()->SetEditMode(EDIT_MODE::MAPTOOL);
                 m_eEditMode = EDIT_MODE::MAPTOOL;
+                OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+                pUI->ResetLevel();
             }
 
             ImGui::EndMenu();
@@ -114,6 +117,9 @@ void MenuUI::render()
                 evn.wParam = (DWORD_PTR)LEVEL_STATE::PLAY;
                 CEditor::GetInst()->SetEditMode(EDIT_MODE::OBJECT);
                 CEventMgr::GetInst()->AddEvent(evn);
+
+                OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+                pUI->ResetLevel();
             }
 
             if (ImGui::MenuItem("Pause", nullptr, nullptr, PauseEnable))

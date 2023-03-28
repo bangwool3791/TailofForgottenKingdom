@@ -70,6 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 기본 메시지 루프입니다:
 
     //g_Hook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, hInstance, NULL);
+    vector<CGameObject*> vec{};
 
     while (true)
     {
@@ -90,7 +91,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             //GUI 주석
             CEditor::GetInst()->progress();
             
-            CEngine::GetInst()->render();
+            auto map = CEditor::GetInst()->GetEdiotrObj(EDIT_MODE::MAPTOOL);
+
+            for (auto iter = map.begin(); iter != map.end(); ++iter)
+            {
+                vec.push_back((CGameObject*)iter->second);
+            }
+            CEngine::GetInst()->render(vec);
+
+            vec.clear();
+
             CImGuiMgr::GetInst()->progress();
             // 주석 끝
             // Present(SwapChain)

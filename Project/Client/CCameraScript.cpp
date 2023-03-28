@@ -61,7 +61,7 @@ void CCameraScript::Move()
 
 		if (KEY_PRESSED(KEY::SPACE))
 		{
-			Camera()->SetProjType(PROJ_TYPE::ORTHOGRAHPICS);
+			Camera()->SetProjType(PROJ_TYPE::ORTHOGRAHPIC);
 		}
 	}
 

@@ -16,7 +16,7 @@
 
 #include <Script\CPlayerScript.h>
 #include <Script\CFrustumScript.h>
-
+ 
 #include <Script\CLevelCameraScript.h>
 #include <Script\CSecondCameraScript.h>
 #include <Script\CEngineBrushScript.h>
@@ -107,6 +107,7 @@ void CreateTestLelvel()
 	pSkyBox->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
 	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
 	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
+	pSkyBox->SkyBox()->SetDynamicShadow(false);
 	pLevel->AddGameObject(pSkyBox, 1);
 	
 	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);
@@ -239,12 +240,15 @@ void CreateLight(CLevel* pLevel)
 	pDirLight->AddComponent(new CTransform);
 	pDirLight->AddComponent(new CLight3D);
 
-	pDirLight->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-	pDirLight->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
+	pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
+	pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
+
+	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+	pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
+
 	pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
 	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
-	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
 
 	pLevel->AddGameObject(pDirLight, 1);
 

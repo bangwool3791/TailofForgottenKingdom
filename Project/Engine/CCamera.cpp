@@ -44,8 +44,8 @@ CCamera::CCamera()
     , m_Frustum(this)
 	, m_FOV{ XM_2PI / 6.f }
 {
-	Vec2 vRenderResolution = CDevice::GetInst()->GetRenderResolution();
-	m_fAspectRatio = vRenderResolution.x / vRenderResolution.y;
+	m_fWidth = CDevice::GetInst()->GetRenderResolution().x;
+	m_fAspectRatio = CDevice::GetInst()->GetRenderResolution().x / CDevice::GetInst()->GetRenderResolution().y;
 
 	m_LightCS = dynamic_cast<CSLight*>(CResMgr::GetInst()->FindRes<CComputeShader>(L"CSLight").Get());
 
@@ -54,8 +54,8 @@ CCamera::CCamera()
 
 	m_tViewPort.TopLeftX = 0;
 	m_tViewPort.TopLeftY = 0;
-	m_tViewPort.Width = vRenderResolution.x;
-	m_tViewPort.Height = vRenderResolution.y;
+	m_tViewPort.Width = m_fWidth;
+	m_tViewPort.Height = CDevice::GetInst()->GetRenderResolution().y;
 	m_tViewPort.MinDepth = 0.f;
 	m_tViewPort.MaxDepth = 1.f;
 
@@ -152,6 +152,21 @@ void CCamera::finaltick()
 	CRenderMgr::GetInst()->RegisterCamera(this);
 }
 
+void CCamera::finaltick_module()
+{
+	// 뷰행렬 계산
+	CalcViewMat();
+
+	// 투영행렬 계산
+	CalcProjMat();
+
+	// Frustum 구성
+	m_Frustum.finaltick();
+
+	// 마우스방향 직선 계산
+	CalRay();
+}
+
 void CCamera::CalcViewMat()
 {
 	//역행렬을 구하는 과정
@@ -227,16 +242,15 @@ void CCamera::CalcProjMat()
 {
 	Vec2 vRenderResolution = CDevice::GetInst()->GetRenderResolution();
 
-	switch (m_eProjType)
+	if (m_eProjType == PERSPECTIVE)
 	{
-	case PERSPECTIVE:
 		m_matProj = XMMatrixPerspectiveFovLH(m_FOV, m_fAspectRatio, m_fNear, m_fFar);
-		break;
-	case ORTHOGRAHPICS:
-		m_matProj = XMMatrixOrthographicLH(vRenderResolution.x * m_fScale, vRenderResolution.y * m_fScale, 1.f, m_fFar);
-		break;
 	}
-
+	else if (m_eProjType == ORTHOGRAHPIC)
+	{
+		float fHeight = m_fWidth / m_fAspectRatio;
+		m_matProj = XMMatrixOrthographicLH(m_fWidth * m_fScale, fHeight * m_fScale, 1.f, m_fFar);
+	}
 	m_matProjInv = XMMatrixInverse(nullptr, m_matProj);
 }
 
@@ -803,6 +817,57 @@ void CCamera::SortObject(const vector<CGameObject*>& vec)
 		case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
 			m_vecPostProcess.push_back(vec[j]);
 			break;
+		}
+	}
+}
+
+void CCamera::render_depthmap()
+{
+	// 광원 카메라의 View, Proj 세팅
+	g_transform.matView = m_matView;
+	g_transform.matViewInv = m_matViewInv;
+	g_transform.matProj = m_matProj;
+
+	for (size_t i = 0; i < m_vecDynamicShadow.size(); ++i)
+	{
+		m_vecDynamicShadow[i]->GetRenderComponent()->render_depthmap();
+	}
+}
+
+void CCamera::SortShadowObject()
+{
+	m_vecDynamicShadow.clear();
+
+	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurLevel();
+
+	for (UINT i = 0; i < MAX_LAYER; ++i)
+	{
+		CLayer* pLayer = pCurLevel->GetLayer(i);
+		const vector<CGameObject*>& vecObj = pLayer->GetObjects();
+
+		for (size_t j = 0; j < vecObj.size(); ++j)
+		{
+			CRenderComponent* pRenderCom = vecObj[j]->GetRenderComponent();
+
+			if (pRenderCom && pRenderCom->IsDynamicShadow())
+			{
+				m_vecDynamicShadow.push_back(vecObj[j]);
+			}
+		}
+	}
+}
+
+void CCamera::SortShadowObject(const vector<CGameObject*>& obj)
+{
+	m_vecDynamicShadow.clear();
+
+	for (size_t j = 0; j < obj.size(); ++j)
+	{
+		CRenderComponent* pRenderCom = obj[j]->GetRenderComponent();
+
+		if (pRenderCom && pRenderCom->IsDynamicShadow())
+		{
+			m_vecDynamicShadow.push_back(obj[j]);
 		}
 	}
 }

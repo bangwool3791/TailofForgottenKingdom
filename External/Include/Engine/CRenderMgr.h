@@ -28,8 +28,8 @@ private:
 	vector<CLight2D*>			m_vecLight2D;		// 현재 레벨에 있는 모든 2D 광원
 	vector<CLight3D*>			m_vecLight3D;		// 현재 레벨에 있는 모든 2D 광원
 
-	CStructuredBuffer* m_pLight2DBuffer;
-	CStructuredBuffer* m_pLight3DBuffer;
+	CStructuredBuffer*			m_pLight2DBuffer;
+	CStructuredBuffer*			m_pLight3DBuffer;
 	vector<tDebugShapeInfo>		m_DebugDrawInfo;	// 현재 레벨에 있는 모든 카메라
 
 	Ptr<CTexture>				m_RTCopyTex;
@@ -65,11 +65,13 @@ public:
 	void init();
 	void tick();
 	void render();
-
+	void render(const vector<CGameObject*>& obj);
 	void clear();
 	void render_game();
 	void render_editor();
-
+	void render_editor(const vector<CGameObject*>& obj);
+	void render_dynamic_shadowdepth();
+	void render_dynamic_shadowdepth(const vector<CGameObject*>& obj);
 	void CreateMRT();
 	void CreateMRT(const wstring& wstr, MRT_TYPE eType);
 	void ClearMRT();

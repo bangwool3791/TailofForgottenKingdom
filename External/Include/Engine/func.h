@@ -227,3 +227,7 @@ void DebugDrawSphere(Vec4 _vColor, Vec3 _vPosition, float _fRadius, float _fDura
 void DebugDrawCone(Vec4 _vColor, Vec3 _vPosition, Vec3 _vScale, Vec3 _vRotation, float _fDuration = 0.f);
 void DebugDrawFrustum(Vec4 _vColor, Vec3 _vPosition,Vec3 _vRotation, float _fDuration = 0.f);
 #endif
+
+bool closeEnough(const float& a, const float& b
+	, const float& epsilon = std::numeric_limits<float>::epsilon());
+Vec3 DecomposeRotMat(const Matrix& _matRot);

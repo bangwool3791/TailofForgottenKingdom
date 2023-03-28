@@ -156,7 +156,7 @@ void CMesh::Read()
     else
     {
         memcpy(m_vertices.get(), msV.pData, nVerts * sizeof(Vtx));
-       cout << m_VB.Get() << endl; //Current Buffer veing processed
+       //cout << m_VB.Get() << endl; //Current Buffer veing processed
         //for (size_t i = 0; i < nVerts; i++)
         //{
         //   cout << m_vertices[i].vPos.x << ", "

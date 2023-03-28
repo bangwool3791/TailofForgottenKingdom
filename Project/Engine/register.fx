@@ -175,6 +175,9 @@ Texture2D g_RTCopyTex : register(t60);
 SamplerState g_sam_0 : register(s0); // anisotropic sampler
 SamplerState g_sam_1 : register(s1); // point sampler
 SamplerState g_sam_2 : register(s2); // linear sampler
+SamplerState g_sam_3 : register(s3); // shadow sampler
 
+static const float SMAP_SIZE = 4096.f;
+static const float SMAP_DX = 1.0f / SMAP_SIZE;
 #endif
 

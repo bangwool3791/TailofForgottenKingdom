@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "CRenderComponent.h"
 
+#include "CTransform.h"
+
 CRenderComponent::CRenderComponent(COMPONENT_TYPE _eComponentType)
 	:CComponent(_eComponentType)
+	, m_bUseFrustumCulling(true)
+	, m_bDynamicShadow(true)
 
 {
 	SetName(L"CRenderComponent");
@@ -14,6 +18,8 @@ CRenderComponent::CRenderComponent(const CRenderComponent& _origin)
 	, m_pSharedMtrl(_origin.m_pSharedMtrl)
 	, m_pDynamicMtrl(nullptr)
 	, m_pCurMtrl(nullptr)
+	, m_bUseFrustumCulling(_origin.m_bUseFrustumCulling)
+	, m_bDynamicShadow(_origin.m_bDynamicShadow)
 {
 	if (_origin.m_pCurMtrl == _origin.m_pSharedMtrl)
 	{
@@ -51,6 +57,16 @@ Ptr<CMaterial> CRenderComponent::GetDynamicMaterial()
 	return m_pCurMtrl;
 }
 
+void CRenderComponent::render_depthmap()
+{
+	Transform()->UpdateData();
+
+	Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DepthMapMtrl");
+
+	pMtrl->UpdateData();
+
+	m_pMesh->render();
+}
 
 void CRenderComponent::SaveToFile(FILE* _File)
 {
