@@ -8,30 +8,37 @@
 #include "CTransform.h"
 
 CParticleSystem::CParticleSystem()
-	:CRenderComponent(COMPONENT_TYPE::PARTICLESYSTEM)
-	, m_iMaxCount(10)
-	, m_ParticleBuffer{}
-	, m_ParticleShare{}
-	, m_arrParticle{}
-	, m_fAccTime{}
-
+	: CRenderComponent(COMPONENT_TYPE::PARTICLESYSTEM)
+	, m_iMaxCount(1000)
+	, m_iAliveCount(0)
+	, m_vStartScale(Vec4(50.f, 50.f, 1.f, 0.f))
+	, m_vEndScale(Vec4(10.f, 10.f, 1.f, 0.f))
+	, m_vStartColor(Vec4(0.24f, 0.28f, 0.8f, 1.f))
+	, m_vEndColor(Vec4(0.78f, 0.74f, 0.9f, 1.f))
+	, m_vMinMaxSpeed(Vec2(100.f, 300.f))
+	, m_vMinMaxLifeTime(Vec2(0.2f, 1.f))
+	, m_fSpawnRange(200.f)
+	, m_Frequency(5.f)
+	, m_fAccTime(0.f)
+	, m_ParticleBuffer(nullptr)
+	, m_ParticleShare(nullptr)
+	, m_WorldSpawn(1)
 {
-	//SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"PointMesh"));
+	SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"PointMesh"));
+	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ParticleRenderMtrl"), 0);
+	m_UpdateCS = (CParticleUpdateShader*)CResMgr::GetInst()->FindRes<CComputeShader>(L"ParticleUpdateShader").Get();
 
+	//GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\particle\\smokeparticle.png"));
+	//GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\particle\\CartoonSmoke.png"));	
+	GetCurMaterial(0)->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\particle\\Bubbles50px.png"));
+
+
+	// 구조화버퍼 생성
 	m_ParticleBuffer = new CStructuredBuffer;
-
-	tParticle arr[10] = {};
-	for (UINT i{ 0 }; i < 10; ++i)
-	{
-		m_arrParticle[i].fSpeed = arr[i].fSpeed = 200.f;
-		m_arrParticle[i].vDir   = arr[i].vDir   = Vec2(cosf(XM_PI * i / 5), sinf(XM_PI * i / 5));
-	}
-
-	m_ParticleBuffer->Create(sizeof(tParticle), m_iMaxCount, SB_TYPE::UAV_INC, &arr);
+	m_ParticleBuffer->Create(sizeof(tParticle), m_iMaxCount, SB_TYPE::UAV_INC, nullptr);
 
 	m_ParticleShare = new CStructuredBuffer;
 	m_ParticleShare->Create(sizeof(tParticleShare), 1, SB_TYPE::UAV_INC, nullptr, true);
-
 }
 
 CParticleSystem::CParticleSystem(COMPONENT_TYPE _type)
@@ -72,7 +79,7 @@ CParticleSystem::CParticleSystem(const CParticleSystem& _Rhs)
 	memcpy(&m_arrParticle, _Rhs.m_arrParticle, sizeof(_Rhs.m_arrParticle) / sizeof(tParticle));
 
 	SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"PointMesh"));
-	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ParticleRenderMtrl"));
+	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ParticleRenderMtrl"), 0);
 
 	m_ParticleBuffer = new CStructuredBuffer;
 	m_ParticleBuffer->Create(sizeof(tParticle), m_iMaxCount, SB_TYPE::UAV_INC, const_cast<tParticle*>(m_arrParticle));
@@ -119,15 +126,25 @@ void CParticleSystem::finaltick()
 
 void CParticleSystem::render()
 {
+	// 위치정보 업데이트
 	Transform()->UpdateData();
-	m_ParticleBuffer->UpdateData(17, PIPELINE_STAGE::VS | PIPELINE_STAGE::GS | PIPELINE_STAGE::PS);
+	m_ParticleBuffer->UpdateData(16, PIPELINE_STAGE::VS | PIPELINE_STAGE::GS | PIPELINE_STAGE::PS);
 
-	GetCurMaterial()->SetScalarParam(INT_1, &m_WorldSpawn);
-	GetCurMaterial()->SetScalarParam(VEC4_0, &m_vStartScale);
-	GetCurMaterial()->SetScalarParam(VEC4_1, &m_vEndScale);
-	GetCurMaterial()->SetScalarParam(VEC4_2, &m_vStartColor);
-	GetCurMaterial()->SetScalarParam(VEC4_3, &m_vEndColor);
-	GetCurMaterial()->UpdateData();
+	// 재질 업데이트
+	GetCurMaterial(0)->SetScalarParam(INT_1, &m_WorldSpawn);
+	GetCurMaterial(0)->SetScalarParam(VEC4_0, &m_vStartScale);
+	GetCurMaterial(0)->SetScalarParam(VEC4_1, &m_vEndScale);
+	GetCurMaterial(0)->SetScalarParam(VEC4_2, &m_vStartColor);
+	GetCurMaterial(0)->SetScalarParam(VEC4_3, &m_vEndColor);
+	GetCurMaterial(0)->UpdateData();
+
+	// 렌더링
+	GetMesh()->render_particle(m_iMaxCount);
+
+	// 클리어
+	m_ParticleBuffer->Clear();
+
+	CMaterial::Clear();
 }
 
 void CParticleSystem::SaveToFile(FILE* _File)

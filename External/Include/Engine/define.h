@@ -89,6 +89,7 @@ enum class RS_TYPE
 	CULL_FRONT,
 	CULL_NONE,
 	WIRE_FRAME,
+	SHADOW,
 	END,
 };
 
@@ -421,3 +422,5 @@ extern const wchar_t* RES_TYPE_WCHAR[(UINT)RES_TYPE::END];
 
 class CEngine;
 typedef void (CEngine::* PRINT_FUNC)(void);
+
+#define SAFE_DELETE(p) if(nullptr != p) delete p; p = nullptr;

@@ -20,7 +20,7 @@ void CParticleUpdateShader::SetParticleBuffer(CStructuredBuffer* _Buffer)
 	assert(_Buffer);
 
 	m_ParticleBuffer = _Buffer;
-	m_Param.iArr[0] = m_ParticleBuffer->GetElementsCount();
+	m_Param.iArr[0] = m_ParticleBuffer->GetElementCount();
 }
 
 void CParticleUpdateShader::UpdateData()

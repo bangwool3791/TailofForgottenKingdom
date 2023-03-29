@@ -50,12 +50,12 @@ void CBorderScript::tick()
 		Vec2	v2 = CDevice::GetInst()->GetRenderResolution();
 		Vec3    vRenderResolution = Vec3(v2.x, v2.y, 100000.f - 1.f);
 
-		MeshRender()->GetCurMaterial()->SetScalarParam(FLOAT_0, &fScale);
-		MeshRender()->GetCurMaterial()->SetScalarParam(VEC4_0, &vPos);
-		MeshRender()->GetCurMaterial()->SetScalarParam(VEC4_1, &vRenderResolution);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_0, &fScale);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_0, &vPos);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_1, &vRenderResolution);
 
-		MeshRender()->GetCurMaterial()->SetScalarParam(FLOAT_1, &m_fThickness);
-		MeshRender()->GetCurMaterial()->SetScalarParam(FLOAT_2, &m_fGridInterval);
-		MeshRender()->GetCurMaterial()->SetScalarParam(VEC4_1, &m_vColor);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_1, &m_fThickness);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_2, &m_fGridInterval);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_1, &m_vColor);
 	}
 }

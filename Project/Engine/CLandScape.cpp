@@ -122,7 +122,7 @@ void CLandScape::finaltick()
 
 void CLandScape::render()
 {
-	if (nullptr == GetMesh() || nullptr == GetCurMaterial())
+	if (nullptr == GetMesh() || nullptr == GetCurMaterial(0))
 		return;
 
 	Transform()->UpdateData();
@@ -134,28 +134,28 @@ void CLandScape::render()
 
 		// 가중치 버퍼 해상도 전달
 		Vec2 vWeightMapResolution = Vec2((float)m_iWeightWidth, (float)m_iWeightHeight);
-		GetCurMaterial()->SetScalarParam(SCALAR_PARAM::VEC2_1, &vWeightMapResolution);
+		GetCurMaterial(0)->SetScalarParam(SCALAR_PARAM::VEC2_1, &vWeightMapResolution);
 
 		// 지형 면 개수 전달
-		GetCurMaterial()->SetScalarParam(INT_0, &m_iXFaceCount);
-		GetCurMaterial()->SetScalarParam(INT_1, &m_iZFaceCount);
+		GetCurMaterial(0)->SetScalarParam(INT_0, &m_iXFaceCount);
+		GetCurMaterial(0)->SetScalarParam(INT_1, &m_iZFaceCount);
 
 		// 타일 배열 개수 전달
 		float m_fTileCount = float(m_pTileArrTex->GetArraySize() / 2); // 색상, 노말 합쳐져있어서 나누기 2 해줌
-		GetCurMaterial()->SetScalarParam(SCALAR_PARAM::FLOAT_1, &m_fTileCount);
+		GetCurMaterial(0)->SetScalarParam(SCALAR_PARAM::FLOAT_1, &m_fTileCount);
 
 		Vec3 vPos = m_pCameraObj->Transform()->GetRelativePos();
 		Vec4 temp = Vec4{ vPos, 1.f };
-		GetCurMaterial()->SetScalarParam(SCALAR_PARAM::VEC4_0, &temp);
+		GetCurMaterial(0)->SetScalarParam(SCALAR_PARAM::VEC4_0, &temp);
 
 		// 타일 텍스쳐 전달
-		GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_ARR_0, m_pTileArrTex);
+		GetCurMaterial(0)->SetTexParam(TEX_PARAM::TEX_ARR_0, m_pTileArrTex);
 
 		// 업데이트
-		GetCurMaterial()->UpdateData();
+		GetCurMaterial(0)->UpdateData();
 	}
 
-	GetMesh()->render();
+	GetMesh()->render(0);
 
 	// Clear
 	CMaterial::Clear();
@@ -224,7 +224,7 @@ void CLandScape::SaveToFile(FILE* _File)
 	SaveResourceRef(m_pHeightMap, _File);
 	SaveResourceRef(m_pTileArrTex, _File);
 
-	UINT iElemCnt = m_pWeightMapBuffer->GetElementsCount();
+	UINT iElemCnt = m_pWeightMapBuffer->GetElementCount();
 	UINT iElemSize = m_pWeightMapBuffer->GetElementsSize();
 
 	fwrite(&iElemCnt, sizeof(UINT), 1, _File);

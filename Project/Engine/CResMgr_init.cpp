@@ -922,7 +922,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->CreateVertexShader(L"shader\\light.fx", "VS_DirLightShader");
 	pShader->CreatePixelShader(L"shader\\light.fx", "PS_DirLightShader");
 
-	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetRSType(RS_TYPE::SHADOW);
 	//C * F ¿¡¼­ F(1, 1, 1, 1)
 	pShader->SetBSType(BS_TYPE::ONE_ONE);
 	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);

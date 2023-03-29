@@ -35,6 +35,8 @@ private:
     LANDSCAPE_MOD           m_eMod; 	        // 지형 툴모드에서 상태값
     
     CGameObject*            m_pCameraObj;
+
+    Ptr<CMaterial>          m_LandScapeMtrl;
 private:
     void Update_HeightMap();
 public:

@@ -28,8 +28,8 @@ CParticleExplosion::CParticleExplosion()
 	m_iType = 1;
 
 	SetName(L"CParticleExplosion");
-	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ParticleRenderMtrl"));
-	GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
+	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ParticleRenderMtrl"), 0);
+	GetCurMaterial(0)->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
 	m_UpdateCS = (CParticleUpdateShader*)CResMgr::GetInst()->FindRes<CComputeShader>(L"ParticleUpdateShader").Get();
 	m_share.iAliveCount = 1;
 	m_ParticleShare->SetData(&m_share, 1);
@@ -54,7 +54,7 @@ CParticleExplosion::CParticleExplosion(const CParticleExplosion& _Rhs)
 
 	SetName(L"CParticleExplosion");
 
-	GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
+	GetCurMaterial(0)->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
 }
 
 CParticleExplosion::~CParticleExplosion()

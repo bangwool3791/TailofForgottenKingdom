@@ -286,6 +286,12 @@
     <Filter Include="HLSL\Compute\LandScape\WeightMap">
       <UniqueIdentifier>{3ce7be7e-ea18-466a-a576-e1a9cddae730}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\07. Resource\06. MeshData">
+      <UniqueIdentifier>{5b649d43-7217-415e-9709-b3310dfab810}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\14. FBXLoader">
+      <UniqueIdentifier>{36e54512-2859-4884-b1a9-0c913c885c08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -588,6 +594,12 @@
     <ClInclude Include="CWeightMapShader.h">
       <Filter>HLSL\Compute\LandScape\WeightMap</Filter>
     </ClInclude>
+    <ClInclude Include="CMeshData.h">
+      <Filter>Engine\07. Resource\06. MeshData</Filter>
+    </ClInclude>
+    <ClInclude Include="CFBXLoader.h">
+      <Filter>Engine\14. FBXLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -835,6 +847,12 @@
     </ClCompile>
     <ClCompile Include="CWeightMapShader.cpp">
       <Filter>HLSL\Compute\LandScape\WeightMap</Filter>
+    </ClCompile>
+    <ClCompile Include="CMeshData.cpp">
+      <Filter>Engine\07. Resource\06. MeshData</Filter>
+    </ClCompile>
+    <ClCompile Include="CFBXLoader.cpp">
+      <Filter>Engine\14. FBXLoader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

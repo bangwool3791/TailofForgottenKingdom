@@ -121,12 +121,11 @@ void CEditor::init()
 	// Directional Light Ãß°¡
 	CGameObjectEx* pDirLight = new CGameObjectEx;
 	pDirLight->SetName(L"DirectionalLight");
-
 	pDirLight->AddComponent(new CTransform);
 	pDirLight->AddComponent(new CLight3D);
 
 	pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
-	pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
+	pDirLight->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
 
 	pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
@@ -146,9 +145,9 @@ void CEditor::init()
 	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
 
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
+	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
+	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
 	/*
 	* Component List
@@ -336,7 +335,7 @@ void CEditor::CreateDebugDrawObject()
 	pDebugObj->AddComponent(new CMeshRender);
 
 	pDebugObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh_Debug"));
-	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"), 0);
 	pDebugObj->MeshRender()->SetInstancingType(INSTANCING_TYPE::USED);
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::RECT] = pDebugObj;
 
@@ -347,7 +346,7 @@ void CEditor::CreateDebugDrawObject()
 	pDebugObj->AddComponent(new CMeshRender);
 
 	pDebugObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CircleMesh_Debug"));
-	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"), 0);
 
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::CIRCLE] = pDebugObj;
 
@@ -357,7 +356,7 @@ void CEditor::CreateDebugDrawObject()
 	pDebugObj->AddComponent(new CMeshRender);
 
 	pDebugObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
-	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"), 0);
 
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::CUBE] = pDebugObj;
 
@@ -367,7 +366,7 @@ void CEditor::CreateDebugDrawObject()
 	pDebugObj->AddComponent(new CMeshRender);
 
 	pDebugObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"SphereMesh"));
-	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"), 0);
 
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::SPHERE] = pDebugObj;
 
@@ -377,7 +376,7 @@ void CEditor::CreateDebugDrawObject()
 	pDebugObj->AddComponent(new CMeshRender);
 
 	pDebugObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"ConeMesh"));
-	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"), 0);
 
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::CONE] = pDebugObj;
 
@@ -387,7 +386,7 @@ void CEditor::CreateDebugDrawObject()
 	pDebugObj->AddComponent(new CMeshRender);
 
 	pDebugObj->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"FrustumMesh"));
-	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
+	pDebugObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"), 0);
 
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::FRUSTUM] = pDebugObj;
 }
@@ -409,7 +408,7 @@ void CEditor::DebugDraw(tDebugShapeInfo& _info)
 		pDebugObj->Transform()->SetRelativeScale(_info.vScale);
 	}
 
-	pDebugObj->MeshRender()->GetCurMaterial()->SetScalarParam(SCALAR_PARAM::VEC4_0, &_info.vColor);
+	pDebugObj->MeshRender()->GetCurMaterial(0)->SetScalarParam(SCALAR_PARAM::VEC4_0, &_info.vColor);
 
 	pDebugObj->Transform()->finaltick();
 
@@ -418,7 +417,7 @@ void CEditor::DebugDraw(tDebugShapeInfo& _info)
 	g_transform.matProj = CRenderMgr::GetInst()->GetMainCam()->GetProjMat();
 
 	pDebugObj->MeshRender()->SetInstancingType(INSTANCING_TYPE::NONE);
-	pDebugObj->render();
+	//pDebugObj->render();
 }
 
 void CEditor::Add_Editobject(EDIT_MODE _emode, CGameObjectEx* _pGameObject)

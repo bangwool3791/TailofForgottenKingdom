@@ -7,8 +7,8 @@ CSkyBox::CSkyBox()
 	: CRenderComponent(COMPONENT_TYPE::SKYBOX)
 	, m_Type(SKYBOX_TYPE::SPHERE)
 {
-	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"SkyBoxMtrl"));
 	SetType(m_Type);
+	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"SkyBoxMtrl"), 0);
 }
 
 CSkyBox::~CSkyBox()
@@ -28,20 +28,21 @@ void CSkyBox::render()
 {
 	Transform()->UpdateData();
 
-	GetCurMaterial()->SetScalarParam(INT_0, (void*)&m_Type);
+	GetCurMaterial(0)->SetScalarParam(INT_0, (void*)&m_Type);
 
 	if (SKYBOX_TYPE::SPHERE == m_Type)
 	{
-		GetCurMaterial()->SetTexParam(TEX_0, m_SkyBoxTex);
+		GetCurMaterial(0)->SetTexParam(TEX_0, m_SkyBoxTex);
 	}
 	else
 	{
-		GetCurMaterial()->SetTexParam(TEX_CUBE_0, m_SkyBoxTex);
+		GetCurMaterial(0)->SetTexParam(TEX_CUBE_0, m_SkyBoxTex);
 	}
 
-	GetCurMaterial()->UpdateData();
+	GetCurMaterial(0)->UpdateData();
+	GetCurMaterial(0)->UpdateData();
 
-	GetMesh()->render();
+	GetMesh()->render(0);
 
 	CMaterial::Clear();
 }
@@ -53,11 +54,13 @@ void CSkyBox::SetType(SKYBOX_TYPE _type)
 	if (SKYBOX_TYPE::CUBE == _type)
 	{
 		SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+		SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"SkyBoxMtrl"), 0);
 	}
 
 	else if (SKYBOX_TYPE::SPHERE == _type)
 	{
 		SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"SphereMesh"));
+		SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"SkyBoxMtrl"), 0);
 	}
 }
 

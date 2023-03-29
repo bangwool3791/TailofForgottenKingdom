@@ -115,7 +115,7 @@ void CLight3D::render()
 	}
 
 	// ·»´õ¸µ
-	m_pVolumeMesh->render();
+	m_pVolumeMesh->render(0);
 
 	CMaterial::Clear();
 }

@@ -24,7 +24,7 @@ private:
 public:
 	int Create(UINT _iElementSize, UINT _iElementCount, SB_TYPE _eType, void* _pInitial, bool _CPUAccess = false);
 	UINT GetElementsSize() { return m_iElementSize; }
-	UINT GetElementsCount() { return m_iElementCount; }
+	UINT GetElementCount() { return m_iElementCount; }
 
 	void SetData(void* _pSrc, UINT _iElementCount);
 	void GetData(void* _pDst, UINT _iSizeByte = 0);

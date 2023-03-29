@@ -316,7 +316,7 @@ void ContentUI::ReloadContent()
 				else
 				{
 					// 해당 리소스를 참조하는 객체가 있음	
-					MessageBox(nullptr, L"사용 중 인 리소스/n리소스 삭제 실패", L"리소스 변경 확인", MB_OK);
+					MessageBox(nullptr, L"사용 중 인 리소스/n/r리소스 삭제 실패", L"리소스 변경 확인", MB_OK);
 				}
 			}
 		}

@@ -15,8 +15,9 @@
 // g_tex_1 : Normal Target Tex
 // g_tex_2 : Data Target Tex
 
-#define DepthMap        g_tex_3
-#define LightVP         g_mat_0
+#define DepthMap                 g_tex_3
+#define LightVP                  g_mat_0
+
 
 SamplerComparisonState samShadow
 {
@@ -24,7 +25,7 @@ SamplerComparisonState samShadow
     AddressU = BORDER;
     AddressV = BORDER;
     AddressW = BORDER;
-    BorderColor = float4(1.f, 1.f, 1.f, 1.f);
+    BorderColor = float4(0.f, 0.f, 0.f, 0.f);
 
     ComparisonFunc = LESS;
 };
@@ -50,7 +51,6 @@ VS_OUT VS_DirLightShader(VS_IN _in)
 
 	//Rect Mesh 투영 좌표계 변환(픽셀)
 	output.vPosition = float4(_in.vPos.xy * 2.f, 0.f, 1.f);
-
 	return output;
 }
 
@@ -123,11 +123,11 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
                 vDepthMapUV.xy + offsets[i], depth).r;
         }
         //그림자에 가려진 정도
-        percentLit *= 5.f;
+        percentLit /= 9.f;
     }
-    output.vDiffuse = lightcolor.vDiff * percentLit + lightcolor.vAmb;
+    output.vDiffuse = lightcolor.vDiff * percentLit * 10.f + lightcolor.vAmb;
     float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
-    output.vSpecular = lightcolor.vSpec * SpecCoef * percentLit;
+    output.vSpecular = lightcolor.vSpec * SpecCoef * percentLit * 10.f;
 
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;

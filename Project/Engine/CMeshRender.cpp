@@ -45,7 +45,7 @@ void CMeshRender::render()
 		return;
 
 	//여기서 왜 트랜스폼?
-	if (nullptr == GetCurMaterial() || nullptr == GetMesh())
+	if (nullptr == GetMesh())
 		return;
 	/*
 	* 텍스처 버퍼 업데이트 처리
@@ -56,16 +56,25 @@ void CMeshRender::render()
 	//삭제 예정
 	Transform()->UpdateData();
 
-	//삭제 예정
-	GetCurMaterial()->UpdateData();
-
 	if (Animator2D())
 	{
 		//삭제 예정
 		Animator2D()->UpdateData();
 	}
 
-	GetMesh()->render();
+	// 사용할 재질 업데이트
+	UINT iSubsetCount = GetMesh()->GetSubsetCount();
+
+	for (int i = 0; i < iSubsetCount; ++i)
+	{
+		if (nullptr != GetCurMaterial(i))
+		{
+			GetCurMaterial(i)->UpdateData();
+
+			// 사용할 메쉬 업데이트 및 렌더링
+			GetMesh()->render(i);
+		}
+	}
 
 	CMaterial::Clear();
 
@@ -79,7 +88,7 @@ void CMeshRender::render_Instancing()
 		return;
 
 	//여기서 왜 트랜스폼?
-	if (nullptr == GetCurMaterial() || nullptr == GetMesh() || nullptr == Transform())
+	if (nullptr == GetMesh())
 		return;
 	/*
 	* 텍스처 버퍼 업데이트 처리
@@ -101,7 +110,7 @@ void CMeshRender::render_Instancing()
 	}
 
 	tTransform transform = g_transform;
-	tMtrlConst tMtrl = GetCurMaterial()->GetMaterial();
+	tMtrlConst tMtrl = GetCurMaterial(0)->GetMaterial();
 	tAnim2DInfo tAnimInfo{};
 
 	if (Animator2D())

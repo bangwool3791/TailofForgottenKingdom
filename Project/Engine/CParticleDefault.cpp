@@ -26,14 +26,14 @@ CParticleDefault::CParticleDefault()
 	m_iType = 1;
 
 	SetName(L"CParticleDefault");
-	GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
+	GetCurMaterial(0)->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
 }
 
 CParticleDefault::CParticleDefault(const CParticleDefault& _Rhs)
 	:CParticleSystem(_Rhs)
 {
 	SetName(L"CParticleDefault");
-	GetCurMaterial()->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
+	GetCurMaterial(0)->SetTexParam(TEX_PARAM::TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"SmokeParticle"));
 }
 
 CParticleDefault::~CParticleDefault()

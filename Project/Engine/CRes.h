@@ -59,6 +59,7 @@ public:
     template<typename T>
     friend class Ptr;
     friend class CResMgr;
+    friend class CFBXLoader;
     /*
     * 추상 함수는 자식만 상속 받으면 됨.
     */

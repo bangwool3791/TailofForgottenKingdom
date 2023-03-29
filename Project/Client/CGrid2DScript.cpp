@@ -49,12 +49,12 @@ void CGrid2DScript::tick()
 		float	fScale = m_pMainCam->GetOrthographicScale();
 		Vec2	vRenderResolution = CDevice::GetInst()->GetRenderResolution();
 
-		MeshRender()->GetCurMaterial()->SetScalarParam(FLOAT_0, &fScale);
-		MeshRender()->GetCurMaterial()->SetScalarParam(VEC4_0, &vPos);
-		MeshRender()->GetCurMaterial()->SetScalarParam(VEC2_0, &vRenderResolution);
-
-		MeshRender()->GetCurMaterial()->SetScalarParam(FLOAT_1, &m_fThickness);
-		MeshRender()->GetCurMaterial()->SetScalarParam(FLOAT_2, &m_fGridInterval);
-		MeshRender()->GetCurMaterial()->SetScalarParam(VEC4_1, &m_vColor);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_0, &fScale);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_0, &vPos);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC2_0, &vRenderResolution);
+									 
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_1, &m_fThickness);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_2, &m_fGridInterval);
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_1, &m_vColor);
 	}
 }

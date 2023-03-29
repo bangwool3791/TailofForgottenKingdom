@@ -99,11 +99,11 @@ void CreateTestLelvel()
 	// SkyBox Ãß°¡
 	CGameObject* pSkyBox = new CGameObject;
 	pSkyBox->SetName(L"SkyBox");
-
+	
 	pSkyBox->AddComponent(new CTransform);
 	pSkyBox->AddComponent(new CSkyBox);
-
-	pSkyBox->Transform()->SetRelativePos(Vec3(0.f, 500.f, 400.f));
+	
+	pSkyBox->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 	pSkyBox->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
 	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
 	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
@@ -131,10 +131,25 @@ void CreateDefaultObj(CLevel* pLevel)
 	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
 	
 	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
-	pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
+	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
+	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	pLevel->AddGameObject(pObject, 1);
+
+	// ============
+	// FBX Loading
+	// ============	
+	{
+		Ptr<CMeshData> pMeshData = nullptr;
+		CGameObject* pObj = nullptr;
+		pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\House.fbx");
+		pMeshData->Save(pMeshData->GetRelativePath());
+
+		pObj = pMeshData->Instantiate();
+		pObj->SetName(L"House");
+		Instantiate(pObj, Vec3(0.f, 0.f, 0.f), 0);
+	}
+
 
 	//CGameObject* pLandScape = new CGameObject;
 	//pLandScape->SetName(L"LandScape");
@@ -209,26 +224,8 @@ void CreateCamera(CLevel* pLevel)
 	//pCamObj->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DebugDrawMtrl"));
 	
 	pCamObj->Camera()->SetProjType(PERSPECTIVE);
-	pCamObj->Camera()->SetLayerMask(1);
+	pCamObj->Camera()->SetLayerMaskAll();
 	pLevel->AddGameObject(pCamObj, 0);
-
-	wstring str[6] = { L"FrontCamera", L"BackCamera", L"LeftCamera", L"RightCamera", L"UpCamera", L"DownCamera" };
-	Vec3 rot[6] = { Vec3{0.f,0.f,0.f}, Vec3{0.f,XM_PI,0.f}, Vec3{0.f,-XM_PI * 0.5f,0.f}, Vec3{0.f,XM_PI * 0.5f,0.f}, Vec3{-XM_PI,0.f,0.f}, Vec3{XM_PI,0.f,0.f} };
-
-	for (size_t i = 0; i < 6; ++i)
-	{
-		pCamObj = new CGameObject;
-		pCamObj->SetName(str[i]);
-
-		pCamObj->AddComponent(new CTransform);
-		pCamObj->AddComponent(new CCamera);
-
-		pCamObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-		pCamObj->Transform()->SetRelativeRotation(rot[i]);
-		pCamObj->Camera()->SetProjType(PERSPECTIVE);
-		pCamObj->Camera()->SetLayerMask(1);
-		pLevel->AddGameObject(pCamObj, 0);
-	}
 }
 
 void CreateLight(CLevel* pLevel)
@@ -279,9 +276,9 @@ void CreateLight(CLevel* pLevel)
 	//pObject->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
 	//
 	//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
-	//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ReflectMtrl"));
-	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"blue01.dds"));
-	//pObject->MeshRender()->GetCurMaterial()->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
+	//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ReflectMtrl"), 0);
+	//pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"blue01.dds"));
+	//pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"CopyRenderTargetTex"));
 	//pLevel->AddGameObject(pObject, 1);
 
 	//pObject = new CGameObject;

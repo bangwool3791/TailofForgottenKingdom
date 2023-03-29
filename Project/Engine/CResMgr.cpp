@@ -125,3 +125,25 @@ Ptr<CRes> CResMgr::FindRes(const wstring& _strKey, RES_TYPE _type)
 
     return iter->second;
 }
+
+
+Ptr<CMeshData> CResMgr::LoadFBX(const wstring& _strPath)
+{
+    wstring strFileName = path(_strPath).stem();
+
+    wstring strName = L"meshdata\\";
+    strName += strFileName + L".mdat";
+
+    Ptr<CMeshData> pMeshData = FindRes<CMeshData>(strName);
+
+    if (nullptr != pMeshData)
+        return pMeshData;
+
+    pMeshData = CMeshData::LoadFromFBX(_strPath);
+    pMeshData->SetKey(strName);
+    pMeshData->SetRelativePath(strName);
+    pMeshData->m_bEngineRes = true;
+    m_arrRes[(UINT)RES_TYPE::MESHDATA].insert(make_pair(strName, pMeshData.Get()));
+
+    return pMeshData;
+}

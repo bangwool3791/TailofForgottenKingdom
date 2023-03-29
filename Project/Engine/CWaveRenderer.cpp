@@ -66,7 +66,7 @@ void CWaveRenderer::CreateMesh()
 	AddRes(pMesh, RES_TYPE::MESH);
 	SetMesh(pMesh);
 
-	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"));
+	SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
 }
 
 void CWaveRenderer::tick() 
@@ -126,7 +126,7 @@ void CWaveRenderer::render()
 {
 	Transform()->UpdateData();
 
-	GetCurMaterial()->UpdateData();
+	GetCurMaterial(0)->UpdateData();
 
 	GetMesh()->render_particle(0);
 

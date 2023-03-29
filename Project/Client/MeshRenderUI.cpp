@@ -22,7 +22,7 @@ void MeshRenderUI::update()
 	if (nullptr != GetTarget() && nullptr != GetTarget()->MeshRender())
 	{
 		m_Mesh = GetTarget()->MeshRender()->GetMesh();
-		m_Mtrl = GetTarget()->MeshRender()->GetCurMaterial();
+		m_Mtrl = GetTarget()->MeshRender()->GetCurMaterial(0);
 	}
 
 	ComponentUI::update();
@@ -117,7 +117,7 @@ void MeshRenderUI::SetMaterial(DWORD_PTR _strMaterialKey)
 	
 	assert(nullptr != pMtrl);
 
-	GetTarget()->MeshRender()->SetSharedMaterial(pMtrl);
+	GetTarget()->MeshRender()->SetSharedMaterial(pMtrl, 0);
 
 	if (!lstrcmp(L"ObjectMtrl", pMtrl->GetKey().c_str()))
 		GetTarget()->MeshRender()->SetInstancingType(INSTANCING_TYPE::USED);

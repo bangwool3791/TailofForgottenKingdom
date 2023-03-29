@@ -248,10 +248,10 @@ void MaterialUI::ConvertGameObjectPath(const wstring& originPath, const wstring&
 		{
 			if (vecObjects[i]->MeshRender())
 			{
-				wstring wstrPath = vecObjects[i]->MeshRender()->GetSharedMaterial()->GetRelativePath();
+				wstring wstrPath = vecObjects[i]->MeshRender()->GetSharedMaterial(0)->GetRelativePath();
 				if (originPath == wstrPath)
 				{
-					vecObjects[i]->MeshRender()->GetSharedMaterial()->SetRelativePath(_NewPath);
+					vecObjects[i]->MeshRender()->GetSharedMaterial(0)->SetRelativePath(_NewPath);
 					break;
 				}
 			}

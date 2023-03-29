@@ -288,7 +288,7 @@ void CCamera::render()
 	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
 	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();
-	pRectMesh->render();
+	pRectMesh->render(0);
 	CMaterial::Clear();
 
 	render_opaque();
@@ -336,7 +336,7 @@ void CCamera::EditorRender()
 	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
 	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();
-	pRectMesh->render();
+	pRectMesh->render(0);
 	CMaterial::Clear();
 
 	render_opaque();
@@ -386,7 +386,7 @@ void CCamera::render(MRT_TYPE _eType)
 	pMergeMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"MergeMtrl");
 	pRectMesh = CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh");
 	pMergeMtrl->UpdateData();
-	pRectMesh->render();
+	pRectMesh->render(0);
 	CMaterial::Clear();
 	
 	render_opaque();
@@ -427,7 +427,7 @@ void CCamera::render_opaque()
 		auto iterbegin = elem->second.begin();
 		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
 		//인스턴싱 객체 중에서 Mtrl 정보가 바뀔 경우 예외 처리 안됨
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial();
+		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
 
 		//머터리얼 구해서 
 		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
@@ -463,7 +463,7 @@ void CCamera::render_mask()
 		auto iterbegin = elem->second.begin();
 
 		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial();
+		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
 
 		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
 		{
@@ -494,7 +494,7 @@ void CCamera::render_decal()
 		auto iterbegin = elem->second.begin();
 
 		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial();
+		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
 
 		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
 		{
@@ -525,7 +525,7 @@ void CCamera::render_transparent()
 		auto iterbegin = elem->second.begin();
 
 		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial();
+		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
 
 		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
 		{
@@ -603,8 +603,8 @@ void CCamera::SortObject()
 				CTransform* pTransform = vecGameObject[j]->Transform();
 
 				if (RenderCompoent == nullptr ||
-					RenderCompoent->GetCurMaterial() == nullptr ||
-					RenderCompoent->GetCurMaterial()->GetShader() == nullptr ||
+					RenderCompoent->GetCurMaterial(0) == nullptr ||
+					RenderCompoent->GetCurMaterial(0)->GetShader() == nullptr ||
 					RenderCompoent->GetMesh() == nullptr)
 				{
 					continue;
@@ -643,7 +643,7 @@ void CCamera::SortObject()
 				//}
 				//
 				DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
-				Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial()->GetShader();
+				Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial(0)->GetShader();
 
 				SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();
 
@@ -739,14 +739,14 @@ void CCamera::SortObject(const vector<CGameObject*>& vec)
 		CTransform* pTransform = vec[j]->Transform();
 
 		if (RenderCompoent == nullptr ||
-			RenderCompoent->GetCurMaterial() == nullptr ||
-			RenderCompoent->GetCurMaterial()->GetShader() == nullptr ||
+			RenderCompoent->GetCurMaterial(0) == nullptr ||
+			RenderCompoent->GetCurMaterial(0)->GetShader() == nullptr ||
 			RenderCompoent->GetMesh() == nullptr)
 		{
 			continue;
 		}
 
-		Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial()->GetShader();
+		Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial(0)->GetShader();
 
 		SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();
 

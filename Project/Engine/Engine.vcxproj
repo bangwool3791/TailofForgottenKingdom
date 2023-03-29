@@ -77,6 +77,7 @@
     <TargetName>$(ProjectName)_debug</TargetName>
     <IncludePath>$(SolutionDir)External\Include\</IncludePath>
     <LibraryPath>$(SolutionDir)External\Library\;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir)External\Include\;$(SolutionDir)External\Include\FBXLoader\;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)External\Library\$(ProjectName)\</OutDir>
@@ -213,6 +214,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CEngine.h" />
     <ClInclude Include="CEntity.h" />
     <ClInclude Include="CEventMgr.h" />
+    <ClInclude Include="CFBXLoader.h" />
     <ClInclude Include="CFontMgr.h" />
     <ClInclude Include="CFrustum.h" />
     <ClInclude Include="CHeightMapShader.h" />
@@ -220,6 +222,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CJpsMgr.h" />
     <ClInclude Include="CLandScape.h" />
     <ClInclude Include="CLight3D.h" />
+    <ClInclude Include="CMeshData.h" />
     <ClInclude Include="CMRT.h" />
     <ClInclude Include="CCollider.h" />
     <ClInclude Include="core.h">
@@ -335,6 +338,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CEngine.cpp" />
     <ClCompile Include="CEntity.cpp" />
     <ClCompile Include="CEventMgr.cpp" />
+    <ClCompile Include="CFBXLoader.cpp" />
     <ClCompile Include="CFontMgr.cpp" />
     <ClCompile Include="CFrustum.cpp" />
     <ClCompile Include="CHeightMapShader.cpp" />
@@ -343,6 +347,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CLandScape.cpp" />
     <ClCompile Include="CLandScape_init.cpp" />
     <ClCompile Include="CLight3D.cpp" />
+    <ClCompile Include="CMeshData.cpp" />
     <ClCompile Include="CMRT.cpp" />
     <ClCompile Include="core.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

@@ -63,7 +63,7 @@ void CLandScape::CreateMesh()
 		}
 	}
 
-	pMesh = new CMesh;
+	pMesh = new CMesh(true);
 	pMesh->Create(vecVtx.data(), (UINT)vecVtx.size(), vecIdx.data(), (UINT)vecIdx.size());
 	pMesh->SetKey(L"LandscapeMesh");
 
@@ -72,11 +72,12 @@ void CLandScape::CreateMesh()
 	// 추가
 	AddRes(pMesh, RES_TYPE::MESH);
 	SetMesh(pMesh);
+	SetSharedMaterial(m_LandScapeMtrl, 0);
 }
 
 void CLandScape::CreateMaterial()
 {
-	if (nullptr != GetSharedMaterial())
+	if (nullptr != GetSharedMaterial(0))
 		return;
 
 	Ptr<CGraphicsShader> pShader = new CGraphicsShader;
@@ -102,13 +103,14 @@ void CLandScape::CreateMaterial()
 	AddRes(pShader.Get(), RES_TYPE::GRAPHICS_SHADER);
 
 	// 재질
-	Ptr<CMaterial> pMtrl = new CMaterial(true);
-	pMtrl->SetShader(pShader);
-	pMtrl->SetKey(L"LandScapeMtrl");
-	SetSharedMaterial(pMtrl);
+	// 재질
+	m_LandScapeMtrl = new CMaterial(true);
+	m_LandScapeMtrl->SetShader(pShader);
+	m_LandScapeMtrl->SetKey(L"LandScapeMtrl");
+	SetSharedMaterial(m_LandScapeMtrl, 0);
 
 	// 추가
-	AddRes(pMtrl.Get(), RES_TYPE::MATERIAL);
+	AddRes(m_LandScapeMtrl.Get(), RES_TYPE::MATERIAL);
 
 	// =====================
 	// 지형 피킹 컴퓨트 쉐이더
@@ -155,7 +157,7 @@ void CLandScape::CreateTexture()
 		, DXGI_FORMAT_R32_FLOAT
 		, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
 
-	Ptr<CMaterial> pMtrl = GetSharedMaterial();
+	Ptr<CMaterial> pMtrl = GetSharedMaterial(0);
 	pMtrl->SetScalarParam(SCALAR_PARAM::INT_0, &m_iXFaceCount);
 	pMtrl->SetScalarParam(SCALAR_PARAM::INT_1, &m_iZFaceCount);
 
@@ -274,7 +276,7 @@ void CLandScape::SetBrushMap(Ptr<CTexture> _pTex)
 
 void CLandScape::Update_HeightMap()
 {
-	Ptr<CMaterial> pMtrl = GetSharedMaterial();
+	Ptr<CMaterial> pMtrl = GetSharedMaterial(0);
 	Vec2 vResolution = Vec2(m_pHeightMap->GetWidth(), m_pHeightMap->GetHeight());
 	pMtrl->SetScalarParam(SCALAR_PARAM::VEC2_0, &vResolution);
 	pMtrl->SetTexParam(TEX_PARAM::TEX_0, m_pHeightMap);

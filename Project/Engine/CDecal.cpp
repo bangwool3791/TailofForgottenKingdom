@@ -30,11 +30,11 @@ void CDecal::SetDefaultLit(bool _bSet)
 
 	if (m_bLighting)
 	{
-		SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DeferredDecalMtrl"));
+		SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DeferredDecalMtrl"), 0);
 	}
 	else
 	{
-		SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DecalMtrl"));
+		SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"DecalMtrl"), 0);
 	}
 }
 
@@ -54,11 +54,11 @@ void CDecal::render()
 	/* TEX_0 Position Tex
 	*  TEX_1 Decal Tex
 	*/
-	GetCurMaterial()->SetTexParam(TEX_1, m_DecalTex);
-	GetCurMaterial()->UpdateData();
+	GetCurMaterial(0)->SetTexParam(TEX_1, m_DecalTex);
+	GetCurMaterial(0)->UpdateData();
 
 	// 렌더링
-	GetMesh()->render();
+	GetMesh()->render(0);
 
 	CMaterial::Clear();
 }
@@ -68,14 +68,14 @@ void CDecal::render_Instancing()
 	if (!IsActive())
 		return;
 
-	if (nullptr == GetCurMaterial() || nullptr == GetMesh() || nullptr == Transform())
+	if (nullptr == GetCurMaterial(0) || nullptr == GetMesh() || nullptr == Transform())
 		return;
 
 	//월드 정보만 갱신 후
 	Transform()->Update();
 
 	tTransform transform = g_transform;
-	tMtrlConst tMtrl = GetCurMaterial()->GetMaterial();
+	tMtrlConst tMtrl = GetCurMaterial(0)->GetMaterial();
 	tAnim2DInfo tAnimInfo{};
 
 	tObjectRender tObjectInfo = { transform, tMtrl, tAnimInfo };

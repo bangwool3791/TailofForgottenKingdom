@@ -9,6 +9,7 @@
 #include "CMaterial.h"
 #include "CComputeShader.h"
 #include "CPrefab.h"
+#include "CMeshData.h"
 
 class CResMgr
 	:public CSingleton<CResMgr>
@@ -49,6 +50,7 @@ public:
 		, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag);
 	Ptr<CTexture> CreateTexture(const wstring& _strKey, ComPtr<ID3D11Texture2D> _Tex2D);
 	Ptr<CTexture> CreateCubeTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag);
+	Ptr<CMeshData> LoadFBX(const wstring& _strPath);
 	const map<wstring, Ptr<CRes>>& GetResource(RES_TYPE _eResType)
 	{
 		return m_arrRes[(UINT)_eResType];
@@ -84,6 +86,9 @@ private:
 template<typename T>
 RES_TYPE GetType()
 {
+	if (typeid(T).hash_code() == typeid(CMeshData).hash_code())
+		return RES_TYPE::MESHDATA;
+
 	if (typeid(T).hash_code() == typeid(CMesh).hash_code())
 		return RES_TYPE::MESH;
 
