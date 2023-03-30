@@ -14,6 +14,7 @@
 #include "MeshUI.h"
 #include "TextureUI.h"
 #include "MaterialUI.h"
+#include "MeshDataUI.h"
 #include "ScriptUI.h"
 
 /*
@@ -70,6 +71,12 @@ InspectorUI::InspectorUI()
 	m_arrResUI[(UINT)RES_TYPE::MATERIAL]->ShowSeperator(false);
 	m_arrResUI[(UINT)RES_TYPE::MATERIAL]->Close();
 	AddChild(m_arrResUI[(UINT)RES_TYPE::MATERIAL]);
+
+	m_arrResUI[(UINT)RES_TYPE::MESHDATA] = new MeshDataUI;
+	m_arrResUI[(UINT)RES_TYPE::MESHDATA]->SetSize(ImVec2(0.f, 0.f));
+	m_arrResUI[(UINT)RES_TYPE::MESHDATA]->ShowSeperator(false);
+	m_arrResUI[(UINT)RES_TYPE::MESHDATA]->Close();
+	AddChild(m_arrResUI[(UINT)RES_TYPE::MESHDATA]);
 
 	ScriptUI* pScript = new ScriptUI;
 	pScript->Close();

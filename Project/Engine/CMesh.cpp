@@ -134,12 +134,15 @@ void CMesh::UpdateData(UINT _iSubset)
     UINT iStride = sizeof(Vtx);
     UINT iOffset = 0;
 
+    //정점 정보 전달
     CONTEXT->IASetVertexBuffers(0, 1, m_VB.GetAddressOf(), &iStride, &iOffset);
+    //iSubset 위치 인덱스 정보 전달
     CONTEXT->IASetIndexBuffer(m_vecIdxInfo[_iSubset].pIB.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
 CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 {
+    //FBX 위치, 정점, 인덱스, 텍스쳐 스트링 등등이 있는 구조체
     const tContainer* container = &_loader.GetContainer(0);
 
     UINT iVtxCount = (UINT)container->vecPos.size();
@@ -154,10 +157,12 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
         tVtxDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
     D3D11_SUBRESOURCE_DATA tSub = {};
+    //시스템 메모리 할당
     tSub.pSysMem = malloc(tVtxDesc.ByteWidth);
     Vtx* pSys = (Vtx*)tSub.pSysMem;
     for (UINT i = 0; i < iVtxCount; ++i)
     {
+        //위치, UV, 색상, TBN 전달
         pSys[i].vPos = container->vecPos[i];
         pSys[i].vUV = container->vecUV[i];
         pSys[i].vColor = Vec4(1.f, 0.f, 1.f, 1.f);
@@ -177,6 +182,7 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
     CMesh* pMesh = new CMesh(true);
     pMesh->m_VB = pVB;
     pMesh->m_tVBDesc = tVtxDesc;
+    //버텍스 정보 전달
     pMesh->m_pVtxSys = pSys;
 
     // 인덱스 정보
@@ -191,6 +197,7 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
         if (D3D11_USAGE_DYNAMIC == tIdxDesc.Usage)
             tIdxDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
+        //인덱스 정보 전달
         void* pSysMem = malloc(tIdxDesc.ByteWidth);
         memcpy(pSysMem, container->vecIdx[i].data(), tIdxDesc.ByteWidth);
         tSub.pSysMem = pSysMem;
@@ -200,13 +207,13 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
         {
             return NULL;
         }
-
+        //인덱스 구조체 시스템 메모리 전달
         tIndexInfo info = {};
         info.tIBDesc = tIdxDesc;
         info.iIdxCount = (UINT)container->vecIdx[i].size();
         info.pIdxSysMem = pSysMem;
         info.pIB = pIB;
-
+        //인덱스 버퍼 저장
         pMesh->m_vecIdxInfo.push_back(info);
     }
 
@@ -215,7 +222,9 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 
 void CMesh::render(UINT _iSubset)
 {
+    //인덱스 정보 업데이트
     UpdateData(_iSubset);
+    //draw
     CONTEXT->DrawIndexed(m_vecIdxInfo[_iSubset].iIdxCount, 0, 0);
 }
 

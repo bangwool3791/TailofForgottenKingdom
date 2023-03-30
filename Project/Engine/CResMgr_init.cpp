@@ -912,9 +912,12 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetRSType(RS_TYPE::CULL_BACK);
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE);
 
-	pShader->AddScalarParam(FLOAT_0, "Specular Coefficient");
+	pShader->AddScalarParam(FLOAT_0, "Diffuse Coefficient ");
+	pShader->AddScalarParam(FLOAT_1, "Ambient Coefficient ");
+	pShader->AddScalarParam(FLOAT_2, "Specular Coefficient");
 	pShader->AddTexureParam(TEX_0, "ObjectColor");
 	pShader->AddTexureParam(TEX_1, "NormalMap");
+	pShader->AddTexureParam(TEX_2, "Spec");
 	AddRes<CGraphicsShader>(L"Std3DDeferredShader", pShader);
 
 	// DirLightShader

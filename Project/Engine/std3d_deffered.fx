@@ -60,14 +60,24 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in) : SV_Target
 
 	if (g_btex_0)
 	{
-		vObjColor = g_tex_0.Sample(g_sam_0, _in.vUV);
+		float2 derivX = ddx(_in.vUV); // 인접픽셀과 x축 편미분값을 구한다
+		float2 derivY = ddy(_in.vUV); // 인접픽셀과 y축 편미분값을 구한다
+
+		vObjColor = g_tex_0.SampleGrad(g_sam_0, _in.vUV, derivX, derivY);
+
+		//vObjColor = g_tex_0.Sample(g_sam_0, _in.vUV);
 	}
 
 	float3 vNormal = _in.vViewNormal;
 
 	if (g_btex_1)
 	{
-		vNormal = g_tex_1.Sample(g_sam_0, _in.vUV);
+		float2 derivX = ddx(_in.vUV); // 인접픽셀과 x축 편미분값을 구한다
+		float2 derivY = ddy(_in.vUV); // 인접픽셀과 y축 편미분값을 구한다
+
+		vNormal = g_tex_1.SampleGrad(g_sam_0, _in.vUV, derivX, derivY);
+
+		//vNormal = g_tex_1.Sample(g_sam_0, _in.vUV);
 		/*
 		* Normal map -1 ~ 1
 		*/
@@ -87,6 +97,8 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in) : SV_Target
 	output.vNormal = float4(vNormal, 1.f);
 	output.vPosition = float4(_in.vViewPos, 1.f);
 	output.vData.x = g_float_0;
+	output.vData.y = g_float_1;
+	output.vData.z = g_float_2;
 	output.vData.w = 1.f;
 
 	return output;

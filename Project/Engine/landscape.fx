@@ -214,7 +214,7 @@ PS_OUT PS_LandScape(DS_OUT _in)
         for (int i = 0; i < 4; ++i)
         {
             vColor += TileTexArr.SampleGrad(g_sam_0, float3(_in.vUV, i), derivX, derivY) * vWeight[i];
-            vColor += TileTexArr.SampleLevel(g_sam_0, float3(_in.vUV, i), 7) * vWeight[i];
+            //vColor += TileTexArr.SampleLevel(g_sam_0, float3(_in.vUV, i), 7) * vWeight[i];
 
             if (fMaxWeight < vWeight[i])
             {

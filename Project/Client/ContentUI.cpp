@@ -264,7 +264,10 @@ void ContentUI::ReloadContent()
 		case RES_TYPE::MESH:
 			break;
 		case RES_TYPE::TEXTURE:
-			CResMgr::GetInst()->Load<CTexture>(m_vecContentName[i]);
+		{
+			Ptr<CTexture> pTex = CResMgr::GetInst()->Load<CTexture>(m_vecContentName[i]);
+			//pTex->GenerateMip(8);
+		}
 			break;
 		case RES_TYPE::SOUND:
 			CResMgr::GetInst()->Load<CSound>(m_vecContentName[i]);

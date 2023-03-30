@@ -8,7 +8,7 @@ ListUI::ListUI()
 	, m_DBCFunc(nullptr)
 {
 	Close();
-	SetSize(ImVec2(200.f, 500.f));
+	SetSize(ImVec2(400.f, 500.f));
 }
 
 ListUI::~ListUI()

@@ -6,7 +6,7 @@
 
 class ParamUI
 {
-private:
+public:
 	static UINT ParamCount;
 
 public:

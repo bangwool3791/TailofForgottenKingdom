@@ -110,11 +110,11 @@
     <Filter Include="03. UI\10. TileMapUI">
       <UniqueIdentifier>{8e4e1f42-5dd9-42d0-98ce-9a004faf9531}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. UI\11. MaptoolUI">
-      <UniqueIdentifier>{1587f995-a8b6-4b8e-b9ed-0e73f365f572}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Default\ModuleUI\ListUI\DialogUI">
       <UniqueIdentifier>{337e5a8b-64b0-4bb8-98a5-e01003e0810f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI\01. Inspector\ResUI\04. MeshDataUI">
+      <UniqueIdentifier>{bbaea3c6-15db-4b02-b00a-13291818af5f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -274,11 +274,11 @@
     <ClInclude Include="ImGuizmo.h">
       <Filter>02. ImGui\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="MaptoolUI.h">
-      <Filter>03. UI\11. MaptoolUI</Filter>
-    </ClInclude>
     <ClInclude Include="CBrushScript.h">
       <Filter>01. Editor\EditorScript</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshDataUI.h">
+      <Filter>03. UI\01. Inspector\ResUI\04. MeshDataUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -420,11 +420,11 @@
     <ClCompile Include="ImGuizmo.cpp">
       <Filter>02. ImGui\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="MaptoolUI.cpp">
-      <Filter>03. UI\11. MaptoolUI</Filter>
-    </ClCompile>
     <ClCompile Include="CBrushScript.cpp">
       <Filter>01. Editor\EditorScript</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshDataUI.cpp">
+      <Filter>03. UI\01. Inspector\ResUI\04. MeshDataUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

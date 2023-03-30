@@ -52,14 +52,19 @@ void CFBXLoader::init()
 		assert(NULL);
 }
 
+/*
+* https://cpp.hotexamples.com/examples/-/FbxImporter/Initialize/cpp-fbximporter-initialize-method-examples.html
+*/
 void CFBXLoader::LoadFbx(const wstring& _strPath)
 {
 	m_vecContainer.clear();
 
+	//Fbx를 불러오는 클래스 생성
 	m_pImporter = FbxImporter::Create(m_pManager, "");
 
 	//wstring str = wstring_convert<codecvt_utf8<wchar_t>>().from_bytes(strName.c_str());
 	string strPath(_strPath.begin(), _strPath.end());
+
 
 	if (!m_pImporter->Initialize(strPath.c_str(), -1, m_pManager->GetIOSettings()))
 		assert(nullptr);
@@ -72,12 +77,18 @@ void CFBXLoader::LoadFbx(const wstring& _strPath)
 	DesireAxis.ConvertScene(m_pScene);
 	originAxis = m_pScene->GetGlobalSettings().GetAxisSystem();*/
 
+	//! Predefined axis system: Max (UpVector = +Z, FrontVector = -Y, CoordSystem = +X (RightHanded))
 	m_pScene->GetGlobalSettings().SetAxisSystem(FbxAxisSystem::Max);
 
 	// Bone 정보 읽기
+	// m_vecBone 뼈 전체 정보 저장
 	LoadSkeleton(m_pScene->GetRootNode());
 
 	// Animation 이름정보 
+	/** Fill a string array with all existing animation stack names.
+		* The array of string is cleared before it is used
+		* \param pNameArray An array of string objects.
+		*/
 	m_pScene->FillAnimStackNameArray(m_arrAnimName);
 
 	// Animation Clip 정보
@@ -103,10 +114,14 @@ void CFBXLoader::LoadMeshDataFromNode(FbxNode* _pNode)
 	// 노드의 메쉬정보 읽기
 	FbxNodeAttribute* pAttr = _pNode->GetNodeAttribute();
 
-
 	if (pAttr && FbxNodeAttribute::eMesh == pAttr->GetAttributeType())
 	{
+		/*
+		* 글로벌좌표계에서의 translation, rotation, scaling은 변환 행렬을 통해 표현될 수 있는데 
+		* 이 변환행렬은  FbxNode::EvaluateGlobalTransform().를 통해 얻을 수 있다.
+		*/
 		FbxAMatrix matGlobal = _pNode->EvaluateGlobalTransform();
+		//삭제 필요
 		matGlobal.GetR();
 
 		FbxMesh* pMesh = _pNode->GetMesh();
@@ -141,6 +156,7 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 	string strName = _pFbxMesh->GetName();
 	Container.strName = wstring(strName.begin(), strName.end());
 
+	//제어점 포인트를 가져온다.
 	int iVtxCnt = _pFbxMesh->GetControlPointsCount();
 	Container.Resize(iVtxCnt);
 
@@ -245,6 +261,7 @@ void CFBXLoader::GetTangent(FbxMesh* _pMesh
 	FbxGeometryElementTangent* pTangent = _pMesh->GetElementTangent();
 	UINT iTangentIdx = 0;
 
+	//폴리곤 정점이면
 	if (pTangent->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
 	{
 		if (pTangent->GetReferenceMode() == FbxGeometryElement::eDirect)
@@ -252,6 +269,7 @@ void CFBXLoader::GetTangent(FbxMesh* _pMesh
 		else
 			iTangentIdx = pTangent->GetIndexArray().GetAt(_iVtxOrder);
 	}
+	//제어점이면
 	else if (pTangent->GetMappingMode() == FbxGeometryElement::eByControlPoint)
 	{
 		if (pTangent->GetReferenceMode() == FbxGeometryElement::eDirect)
@@ -420,13 +438,15 @@ void CFBXLoader::LoadTexture()
 				path_filename = vecPath[k].filename();
 				path_dest = path_fbx_texture.wstring() + path_filename.wstring();
 
+				//존재한다면 이미 생성 된 Texture
 				if (false == exists(path_dest))
 				{
 					copy(path_origin, path_dest);
 				}
 
 				path_dest = GetRelativePath(CPathMgr::GetInst()->GetContentPath(), path_dest);
-				CResMgr::GetInst()->Load<CTexture>(path_dest, path_dest);
+				Ptr<CTexture> pTex = CResMgr::GetInst()->Load<CTexture>(path_dest, path_dest);
+				pTex->GenerateMip(8);
 
 				switch (k)
 				{
@@ -442,6 +462,10 @@ void CFBXLoader::LoadTexture()
 	}
 }
 
+/*
+* 재질 생성 함수
+* m_vecContainer 저장 된 Material 정보(string)로 CMaterial 생성 저장
+*/
 void CFBXLoader::CreateMaterial()
 {
 	wstring strMtrlName;
@@ -453,6 +477,9 @@ void CFBXLoader::CreateMaterial()
 		{
 			// Material 이름짓기
 			strMtrlName = m_vecContainer[i].vecMtrl[j].strMtrlName;
+			/*
+			* 경로에서 이름, 확장자, 확장자를 제외한 이름 가져오기 name, suffix, stem
+			*/
 			if (strMtrlName.empty())
 				strMtrlName = path(m_vecContainer[i].vecMtrl[j].strDiff).stem();
 
@@ -508,6 +535,9 @@ void CFBXLoader::CreateMaterial()
 	}
 }
 
+/*
+* FbxNode 자식 정보를 받아와서.
+*/
 void CFBXLoader::LoadSkeleton(FbxNode* _pNode)
 {
 	int iChildCount = _pNode->GetChildCount();
@@ -517,8 +547,10 @@ void CFBXLoader::LoadSkeleton(FbxNode* _pNode)
 
 void CFBXLoader::LoadSkeleton_Re(FbxNode* _pNode, int _iDepth, int _iIdx, int _iParentIdx)
 {
+	//노드 속성 정보 포인터를 받아오고
 	FbxNodeAttribute* pAttr = _pNode->GetNodeAttribute();
 
+	//뼈라면
 	if (pAttr && pAttr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 	{
 		tBone* pBone = new tBone;
@@ -526,12 +558,14 @@ void CFBXLoader::LoadSkeleton_Re(FbxNode* _pNode, int _iDepth, int _iIdx, int _i
 		string strBoneName = _pNode->GetName();
 
 		pBone->strBoneName = wstring(strBoneName.begin(), strBoneName.end());
+		//뼈의 깊이를 받아온다.
 		pBone->iDepth = _iDepth++;
+		//자신의 부모 인덱스를 설정한다.
 		pBone->iParentIndx = _iParentIdx;
-
+		//뼈 벡터에 저장한다.
 		m_vecBone.push_back(pBone);
 	}
-
+	//자식 카운트를 받아와서
 	int iChildCount = _pNode->GetChildCount();
 	for (int i = 0; i < iChildCount; ++i)
 	{
@@ -539,19 +573,19 @@ void CFBXLoader::LoadSkeleton_Re(FbxNode* _pNode, int _iDepth, int _iIdx, int _i
 	}
 }
 
+//애니메이션 시작시간, 끝 시간, 동작시간, 모드를 받아온다.
 void CFBXLoader::LoadAnimationClip()
-{
+{	
+	//애니메이션 개수를 받아와서
 	int iAnimCount = m_arrAnimName.GetCount();
 
 	for (int i = 0; i < iAnimCount; ++i)
 	{
+		//이름 정보에서 FbxAnimStack 포인터를 받아온다.
 		FbxAnimStack* pAnimStack = m_pScene->FindMember<FbxAnimStack>(m_arrAnimName[i]->Buffer());
-
 
 		//FbxAnimEvaluator* pevaluator = m_pScene->GetAnimationEvaluator();
 		//m_pScene->SetCurrentAnimationStack();
-
-
 		if (!pAnimStack)
 			continue;
 
@@ -566,13 +600,18 @@ void CFBXLoader::LoadAnimationClip()
 
 		pAnimClip->eMode = m_pScene->GetGlobalSettings().GetTimeMode();
 		pAnimClip->llTimeLength = pAnimClip->tEndTime.GetFrameCount(pAnimClip->eMode) - pAnimClip->tStartTime.GetFrameCount(pAnimClip->eMode);
-
-
-
+		
 		m_vecAnimClip.push_back(pAnimClip);
 	}
 }
 
+/*
+* NURBS(Non-Uniform Rational B-Splines: 비균일 유리 B스플라인)는 
+  단순한 2D 선, 원, 호, 커브에서 가장 복잡한 3D의 유기적 자유 형상 서피스 또는 솔리드에 이르기까지, 
+  어떠한 형태도 정확하게 표현할 수 있는 수학적 표현 방법입니다. 
+  유연성과 정확성을 갖춘 NURBS 모델은 일러스트레이션, 애니메이션, 제조업 등의 어떤 과정에서도 사용할 수 있습니다
+  divide (an area) into triangles for surveying purposes.
+  */
 void CFBXLoader::Triangulate(FbxNode* _pNode)
 {
 	FbxNodeAttribute* pAttr = _pNode->GetNodeAttribute();
@@ -619,8 +658,10 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 
 				for (int j = 0; j < iClusterCount; ++j)
 				{
+					//More precisely, the cluster acts on a subset of the geometry's control points. 
 					FbxCluster* pCluster = pSkin->GetCluster(j);
-
+					
+					//관절이 연결 되있지 않다면 conitnue
 					if (!pCluster->GetLink())
 						continue;
 
@@ -705,8 +746,11 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	if (m_vecAnimClip.empty())
 		return;
 
+	//right
 	FbxVector4	v1 = { 1, 0, 0, 0 };
+	//up
 	FbxVector4	v2 = { 0, 0, 1, 0 };
+	//front
 	FbxVector4	v3 = { 0, 1, 0, 0 };
 	FbxVector4	v4 = { 0, 0, 0, 1 };
 	FbxAMatrix	matReflect;
@@ -715,6 +759,7 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	matReflect.mData[2] = v3;
 	matReflect.mData[3] = v4;
 
+	//뼈 행렬은 Node 행렬
 	m_vecBone[_iBoneIdx]->matBone = _matNodeTransform;
 
 	FbxTime::EMode eTimeMode = m_pScene->GetGlobalSettings().GetTimeMode();
@@ -727,9 +772,13 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 		tKeyFrame tFrame = {};
 		FbxTime   tTime = 0;
 
+		//프레임 설정
 		tTime.SetFrame(i, eTimeMode);
 
+		//_pNode->EvaluateGlobalTransform(tTime)
+		//월드 좌표 * 뼈 좌표
 		FbxAMatrix matFromNode = _pNode->EvaluateGlobalTransform(tTime) * _matNodeTransform;
+		//월드 좌표 * 뼈 좌표 * 현재 변환 행렬
 		FbxAMatrix matCurTrans = matFromNode.Inverse() * _pCluster->GetLink()->EvaluateGlobalTransform(tTime);
 		matCurTrans = matReflect * matCurTrans * matReflect;
 
@@ -740,6 +789,9 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	}
 }
 
+/*
+* 뼈간 오프셋 행렬 
+*/
 void CFBXLoader::LoadOffsetMatrix(FbxCluster* _pCluster
 	, const FbxAMatrix& _matNodeTransform
 	, int _iBoneIdx, tContainer* _pContainer)
@@ -790,8 +842,9 @@ void CFBXLoader::LoadWeightsAndIndices(FbxCluster* _pCluster
 	}
 }
 
-
-
+/*
+* 뼈 정보와 일치하는 인덱스 반환
+*/
 int CFBXLoader::FindBoneIndex(string _strBoneName)
 {
 	wstring strBoneName = wstring(_strBoneName.begin(), _strBoneName.end());

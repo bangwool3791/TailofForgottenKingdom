@@ -10,6 +10,13 @@ class CMeshData :
 	public CRes
 {
 	Ptr<CMesh>				m_pMesh;
+	/*
+	* Mesh 데이터
+	* 인덱스 - 머터리얼 
+	* 0  ~ 10, 1 머터리얼
+	* 11 ~ 20, 2 머터리얼
+	*/
+	
 	vector<Ptr<CMaterial>>	m_vecMtrl;
 
 public:

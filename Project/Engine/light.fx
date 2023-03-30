@@ -119,15 +119,25 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
         [unroll]
         for (int i = 0; i < 9; ++i)
         {
-            percentLit += DepthMap.SampleCmpLevelZero(samShadow,
+            percentLit += DepthMap.SampleCmpLevelZero(g_sam_3,
                 vDepthMapUV.xy + offsets[i], depth).r;
         }
         //그림자에 가려진 정도
         percentLit /= 9.f;
     }
-    output.vDiffuse = lightcolor.vDiff * percentLit * 10.f + lightcolor.vAmb;
-    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
-    output.vSpecular = lightcolor.vSpec * SpecCoef * percentLit * 10.f;
+
+    float4 vParam = g_tex_2.Sample(g_sam_0, vUV);
+    
+    if (1.f == vParam.w)
+    {
+        output.vDiffuse = lightcolor.vDiff * percentLit * vParam.x + lightcolor.vAmb * vParam.y;
+        output.vSpecular = lightcolor.vSpec * percentLit * vParam.z;
+    }
+    else
+    {
+        output.vDiffuse = lightcolor.vDiff * percentLit + lightcolor.vAmb;
+        output.vSpecular = lightcolor.vSpec * percentLit;
+    }
 
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;
@@ -181,10 +191,18 @@ PS_OUT PS_PointLightShader(VS_OUT _in)
     tLightColor lightcolor = (tLightColor)0.f;
     CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
 
-    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
+    float4 vParam = g_tex_2.Sample(g_sam_0, vUV);
 
-    output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
-    output.vSpecular = lightcolor.vSpec * SpecCoef;
+    if (1.f == vParam.w)
+    {
+        output.vDiffuse = lightcolor.vDiff * vParam.x + lightcolor.vAmb * vParam.y;
+        output.vSpecular = lightcolor.vSpec * vParam.z;
+    }
+    else
+    {
+        output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
+        output.vSpecular = lightcolor.vSpec;
+    }
 
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;
@@ -251,10 +269,18 @@ PS_OUT PS_SpotLightShader(VS_OUT _in)
 
     CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
 
-    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
+    float4 vParam = g_tex_2.Sample(g_sam_0, vUV);
 
-    output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
-    output.vSpecular = lightcolor.vSpec * SpecCoef;
+    if (1.f == vParam.w)
+    {
+        output.vDiffuse = lightcolor.vDiff * vParam.x + lightcolor.vAmb * vParam.y;
+        output.vSpecular = lightcolor.vSpec * vParam.z;
+    }
+    else
+    {
+        output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
+        output.vSpecular = lightcolor.vSpec;
+    }
 
     //output.vDiffuse.a = 1.f;
     //output.vSpecular.a = 1.f;

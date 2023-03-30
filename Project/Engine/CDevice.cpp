@@ -233,11 +233,12 @@ int CDevice::CreateSampler()
 	desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_BORDER;
 	desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_BORDER;
 	
-	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	desc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
 	desc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	for(size_t i = 0; i < 4; ++i)
 		desc.BorderColor[i] = 0.f;
 	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
+
 	//desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	//desc.MipLODBias = 0.0f;
 	//desc.MaxAnisotropy = 1;
@@ -325,7 +326,6 @@ int CDevice::CreateRasterizerState()
 
 	hr = DEVICE->CreateRasterizerState(&desc, m_arrRS[(UINT)RS_TYPE::WIRE_FRAME].GetAddressOf());
 
-	// WireFrame Mode
 	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 	desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	desc.DepthBias = 1000000;
@@ -333,7 +333,6 @@ int CDevice::CreateRasterizerState()
 	desc.SlopeScaledDepthBias = 1.f;
 
 	hr = DEVICE->CreateRasterizerState(&desc, m_arrRS[(UINT)RS_TYPE::SHADOW].GetAddressOf());
-
 
 	return hr;
 }

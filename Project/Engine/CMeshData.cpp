@@ -35,9 +35,6 @@ CGameObject* CMeshData::Instantiate()
 	return pNewObj;
 }
 
-
-
-
 CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath)
 {
 	wstring strFullPath = CPathMgr::GetInst()->GetContentPath();
@@ -50,12 +47,13 @@ CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath)
 	// 메쉬 가져오기
 	CMesh* pMesh = nullptr;
 	pMesh = CMesh::CreateFromContainer(loader);
-
+	pMesh->Read();
 	// ResMgr 에 메쉬 등록
 	wstring strMeshKey = L"mesh\\";
 	strMeshKey += path(strFullPath).stem();
 	strMeshKey += L".mesh";
 
+	//리소스 메시 저장
 	CResMgr::GetInst()->AddRes<CMesh>(strMeshKey, pMesh);
 
 	vector<Ptr<CMaterial>> vecMtrl;
@@ -64,6 +62,11 @@ CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath)
 	for (UINT i = 0; i < loader.GetContainer(0).vecMtrl.size(); ++i)
 	{
 		// 예외처리 (material 이름이 입력 안되어있을 수도 있다.)
+		/*
+		* Loading 시 Material 생성
+		* Contanier Mtrl vec 에서 스트링 저장
+		* Res Load
+		*/
 		Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(loader.GetContainer(0).vecMtrl[i].strMtrlName);
 		vecMtrl.push_back(pMtrl);
 	}

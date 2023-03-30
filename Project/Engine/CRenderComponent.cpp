@@ -18,8 +18,10 @@ CRenderComponent::CRenderComponent(const CRenderComponent& _origin)
 	, m_bUseFrustumCulling(_origin.m_bUseFrustumCulling)
 	, m_bDynamicShadow(_origin.m_bDynamicShadow)
 {
-	if (false != _origin.m_vecMtrls.empty())
+	if (!_origin.m_vecMtrls.empty())
 	{
+		UINT size = _origin.m_vecMtrls.size();
+		m_vecMtrls.resize(size);
 		for (size_t i = 0; i < _origin.m_vecMtrls.size(); ++i)
 		{
 			SetSharedMaterial(_origin.m_vecMtrls[i].pSharedMtrl, i);
@@ -59,6 +61,8 @@ void CRenderComponent::SetSharedMaterial(Ptr<CMaterial> _pMtrl, UINT _iIdx)
 
 Ptr<CMaterial> CRenderComponent::GetCurMaterial(UINT _iIdx)
 {
+	assert(!(m_vecMtrls.size() == 0));
+
 	if (nullptr == m_vecMtrls[_iIdx].pCurMtrl)
 	{
 		m_vecMtrls[_iIdx].pCurMtrl = m_vecMtrls[_iIdx].pSharedMtrl;

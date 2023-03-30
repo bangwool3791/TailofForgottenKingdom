@@ -208,9 +208,13 @@ bool CTransform::Picking(const Ray& _ray, Vec3& _vPos)
 		vPos = XMVector3TransformCoord(vertices[i].vPos, m_matWorld);
 		m_vecPoint.push_back(vPos);
 	}
+	cout << "Vec Å©±â " << m_vecPoint.size() << endl;
 
 	for (UINT i = 0; i < verts; i += 3)
 	{
+		if (verts - i < 3)
+			break;
+
 		if (_ray.Intersects(m_vecPoint[i], m_vecPoint[i + 1], m_vecPoint[i + 2], fDist))
 		{
 			vResult = _ray.direction * fDist + _ray.position;

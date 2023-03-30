@@ -65,11 +65,14 @@ void CLight3D::render_depthmap(const vector<CGameObject*>& obj)
 	m_pLightCam->Camera()->render_depthmap();
 }
 
+/*
+* 
+*/
 void CLight3D::SetLightDirection(Vec3 _vDir)
 {
 	m_Info.vWorldDir = _vDir;
 	m_Info.vWorldDir.Normalize();
-
+	//라이트 방향 front 설정
 	Vec3 vFront = m_Info.vWorldDir;
 	Vec3 vUp = Vec3(0.f, 1.f, 0.f);
 	Vec3 vRight = XMVector3Cross(vUp, vFront);
@@ -81,7 +84,7 @@ void CLight3D::SetLightDirection(Vec3 _vDir)
 	matRot._11 = vRight.x;	matRot._12 = vRight.y;	matRot._13 = vRight.z;
 	matRot._21 = vUp.x;		matRot._22 = vUp.y;		matRot._23 = vUp.z;
 	matRot._31 = vFront.x;	matRot._32 = vFront.y;	matRot._33 = vFront.z;
-
+	//회전 행렬을 만들어서, Vector3로 변환
 	Vec3 vRot = DecomposeRotMat(matRot);
 
 	// 광원이 가리키는 방향이 Transform 의 Front 가 되도록 회전시켜준다.

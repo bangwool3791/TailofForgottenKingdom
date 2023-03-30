@@ -66,106 +66,136 @@ CEditor::~CEditor()
 void CEditor::init()
 {
 	CGameObjectEx* pObject{};
-
+	CGameObjectEx* pLandScape{};
 	m_EditorObj.resize((UINT)EDIT_MODE::END);
 
 	CreateDebugDrawObject();
 
-	m_pCameraObject = new CGameObjectEx;
-	m_pCameraObject->SetName(L"Editor Camera");
+	{
+		m_pCameraObject = new CGameObjectEx;
+		m_pCameraObject->SetName(L"Editor Camera");
 
-	m_pCameraObject->AddComponent(new CTransform);
-	m_pCameraObject->AddComponent(new CCamera);
-	m_pCameraObject->AddComponent(new CCameraScript);
-	m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
-	m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
-	m_pCameraObject->Camera()->SetLayerMask(1);
-//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
-	CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
+		m_pCameraObject->AddComponent(new CTransform);
+		m_pCameraObject->AddComponent(new CCamera);
+		m_pCameraObject->AddComponent(new CCameraScript);
+		m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
+		m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
+		m_pCameraObject->Camera()->SetLayerMask(1);
+		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
+		CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
+	}
 
+	{
+		// LandScape 추가
+		pLandScape = new CGameObjectEx;
+		pLandScape->SetName(L"EditLandScape");
+		pLandScape->AddComponent(new CTransform);
+		pLandScape->AddComponent(new CLandScape);
+		g_BrushScale = pLandScape->LandScape()->GetBrushScale().x;
+		pLandScape->Transform()->SetRelativeScale(g_LandScale, g_LandScale, g_LandScale);
+		pLandScape->LandScape()->SetFaceCount(g_FaceCount, g_FaceCount);
+		pLandScape->LandScape()->SetFrustumCulling(false);
+		pLandScape->LandScape()->SetCameraObj((CGameObject*)m_pCameraObject);
+		pLandScape->finaltick();
+		//pLandScape->SetType(OBJ_TYPE::EDIT);
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
+	}
 
-	// LandScape 추가
-	CGameObjectEx* pLandScape = new CGameObjectEx;
-	pLandScape->SetName(L"EditLandScape");
-	pLandScape->AddComponent(new CTransform);
-	pLandScape->AddComponent(new CLandScape);
-	g_BrushScale = pLandScape->LandScape()->GetBrushScale().x;
-	pLandScape->Transform()->SetRelativeScale(g_LandScale, g_LandScale, g_LandScale);
-	pLandScape->LandScape()->SetFaceCount(g_FaceCount, g_FaceCount);
-	pLandScape->LandScape()->SetFrustumCulling(false);
-	pLandScape->LandScape()->SetCameraObj((CGameObject*)m_pCameraObject);
-	pLandScape->finaltick();
-	//pLandScape->SetType(OBJ_TYPE::EDIT);
-	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
+	{
+		pObject = new CGameObjectEx;
+		pObject->SetName(L"BrushObject");
 
-	pObject = new CGameObjectEx;
-	pObject->SetName(L"BrushObject");
+		pObject->AddComponent(new CTransform);
+		pObject->AddComponent(new CDecal);
+		pObject->AddComponent(new CBrushScript);
+		pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
+		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
+		pObject->Transform()->SetRelativeScale(Vec3{ fScale, fScale, fScale });
+		pObject->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
+		//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
+		pObject->Decal()->SetDecalTexture(pLandScape->LandScape()->GetBrushTexture());
+		pObject->Decal()->SetDefaultLit(true);
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"BrushObject", pObject);
 
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CDecal);
-	pObject->AddComponent(new CBrushScript);
-	pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
-	float fScale = g_BrushScale * g_LandScale * g_FaceCount;
-	pObject->Transform()->SetRelativeScale(Vec3{ fScale, fScale, fScale });
-	pObject->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
-	//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
-	pObject->Decal()->SetDecalTexture(pLandScape->LandScape()->GetBrushTexture());
-	pObject->Decal()->SetDefaultLit(true);
-	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"BrushObject", pObject);
+		TileMapUI* pLandScapeUI = (TileMapUI*)CImGuiMgr::GetInst()->FindUI("TileMapUI");
+		pLandScapeUI->begin();
+		ContentUI* pContentUI = (ContentUI*)CImGuiMgr::GetInst()->FindUI("ContentUI");
+		pContentUI->begin();
+	}
 
-	TileMapUI* pLandScapeUI = (TileMapUI*)CImGuiMgr::GetInst()->FindUI("TileMapUI");
-	pLandScapeUI->begin();
-	ContentUI* pContentUI = (ContentUI*)CImGuiMgr::GetInst()->FindUI("ContentUI");
-	pContentUI->begin();
+	{
+		// Directional Light 추가
+		CGameObjectEx* pDirLight = new CGameObjectEx;
+		pDirLight->SetName(L"DirectionalLight");
+		pDirLight->AddComponent(new CTransform);
+		pDirLight->AddComponent(new CLight3D);
 
-	// Directional Light 추가
-	CGameObjectEx* pDirLight = new CGameObjectEx;
-	pDirLight->SetName(L"DirectionalLight");
-	pDirLight->AddComponent(new CTransform);
-	pDirLight->AddComponent(new CLight3D);
+		pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
+		pDirLight->Transform()->SetRelativeRotation(Vec3(XM_PI / 4.f, 0.f, 0.f));
 
-	pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
-	pDirLight->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
+		pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+		pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
+		pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
+		pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+		pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
+		//pDirLight->SetType(OBJ_TYPE::EDIT);
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
+	}
 
-	pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
-	pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
-	pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
-	pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
-	pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
-	//pDirLight->SetType(OBJ_TYPE::EDIT);
-	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
+	//test obj
+	{
+		pObject = new CGameObjectEx;
+		pObject->SetName(L"Sphere");
+		pObject->AddComponent(new CTransform);
+		pObject->AddComponent(new CMeshRender);
+		pObject->AddComponent(new CCollider3D);
 
-	pObject = new CGameObjectEx;
-	pObject->SetName(L"Sphere");
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CMeshRender);
-	pObject->AddComponent(new CCollider3D);
+		pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
+		pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
 
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
-	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
+		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
+		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
+		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
+	}
 
-	pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
-	pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
-	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
-	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
-	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
+	{
+		Ptr<CMeshData> pMeshData = nullptr;
+		CGameObject* pObj = nullptr;
+		pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\House.fbx");
+		pMeshData->Save(pMeshData->GetRelativePath());
+
+		pObj = pMeshData->Instantiate();
+		pObj->SetName(L"House");
+		pObject = new CGameObjectEx(*pObj);
+		delete pObj;
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"House", pObject);
+	}
 	/*
 	* Component List
 	*/
-	m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM] = new CTransform();
-	m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM]->SetName(L"Transform");
-	m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D] = new CCollider2D();
-	m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D]->SetName(L"Colider2D");
-	m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR2D] = new CAnimator2D();
-	m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR2D]->SetName(L"Animator2D");
-	//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]		= new CLight2D();
-	//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]->SetName(L"Light2D");
-	m_arrCom[(UINT)COMPONENT_TYPE::PARTICLESYSTEM] = new CParticleSystem();
-	m_arrCom[(UINT)COMPONENT_TYPE::PARTICLESYSTEM]->SetName(L"CParticleSystem");
-	m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D] = new CLight2D();
-	m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]->SetName(L"CLight2D");
-	m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER] = new CMeshRender();
-	m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER]->SetName(L"CMeshRender");
+	{
+		m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM] = new CTransform();
+		m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM]->SetName(L"Transform");
+		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D] = new CCollider2D();
+		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D]->SetName(L"Colider2D");
+		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR2D] = new CAnimator2D();
+		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR2D]->SetName(L"Animator2D");
+		//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]		= new CLight2D();
+		//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]->SetName(L"Light2D");
+		m_arrCom[(UINT)COMPONENT_TYPE::PARTICLESYSTEM] = new CParticleSystem();
+		m_arrCom[(UINT)COMPONENT_TYPE::PARTICLESYSTEM]->SetName(L"CParticleSystem");
+		m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D] = new CLight2D();
+		m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]->SetName(L"CLight2D");
+		m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER] = new CMeshRender();
+		m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER]->SetName(L"CMeshRender");
+	}
+
+	{
+		Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga");
+		pTex->GenerateMip(8);
+	}
 }
 
 /*
