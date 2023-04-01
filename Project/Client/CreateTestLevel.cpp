@@ -139,16 +139,16 @@ void CreateDefaultObj(CLevel* pLevel)
 	// ============
 	// FBX Loading
 	// ============	
-	{
-		Ptr<CMeshData> pMeshData = nullptr;
-		CGameObject* pObj = nullptr;
-		pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\House.fbx");
-		pMeshData->Save(pMeshData->GetRelativePath());
+	//{
+	//	Ptr<CMeshData> pMeshData = nullptr;
+	//	CGameObject* pObj = nullptr;
+	//	pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\House.fbx");
+	//	pMeshData->Save(pMeshData->GetRelativePath());
 
-		pObj = pMeshData->Instantiate();
-		pObj->SetName(L"House");
-		Instantiate(pObj, Vec3(0.f, 0.f, 0.f), 0);
-	}
+	//	pObj = pMeshData->Instantiate();
+	//	pObj->SetName(L"House");
+	//	Instantiate(pObj, Vec3(0.f, 0.f, 0.f), 0);
+	//}
 
 
 	//CGameObject* pLandScape = new CGameObject;

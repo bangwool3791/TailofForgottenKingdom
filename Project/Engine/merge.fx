@@ -22,7 +22,7 @@
 //g_float_1 : middle grey
 //g_float_2 : g_fLumWhiteSqr
 
-#define LUM_FACTOR float3(5.f, 5.f, 5.f)
+#define LUM_FACTOR float3(10.f, 10.f, 10.f)
 float3 ToneMapping(float3 vHDRColor)
 {
 	// 현재 픽셀에 대한 휘도 스케일 계산
@@ -80,6 +80,9 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 	float4 vDiffuse = g_tex_2.Sample(g_sam_0, vUV);
 	float4 vSpecular = g_tex_3.Sample(g_sam_0, vUV);
 	vOutColor.rgb = (vOutColor.rgb * vDiffuse.rgb) + vSpecular.rgb;
+
+	vOutColor.rgb = ToneMapping(vOutColor.rgb);
+
 	return vOutColor;
 
 }

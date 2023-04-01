@@ -49,7 +49,7 @@ public:
 	Ptr<CTexture> CreateTexture(const wstring& _strKey
 		, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag);
 	Ptr<CTexture> CreateTexture(const wstring& _strKey, ComPtr<ID3D11Texture2D> _Tex2D);
-	Ptr<CTexture> CreateCubeTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag);
+	Ptr<CTexture> CreateCubeTexture(const wstring& _strKey, const vector<Ptr<CTexture>> vecTex);
 	Ptr<CMeshData> LoadFBX(const wstring& _strPath);
 	const map<wstring, Ptr<CRes>>& GetResource(RES_TYPE _eResType)
 	{
@@ -212,7 +212,7 @@ inline Ptr<T> CResMgr::Load(const wstring& _strKey, const wstring& _strRelativeP
 			MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
 			delete pResource;
 			return nullptr;
-		}
+		} 
 	}
 	else if (FAILED(pResource->Load(strFilePath)))
 	{

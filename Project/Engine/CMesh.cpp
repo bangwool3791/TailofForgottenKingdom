@@ -179,7 +179,9 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
         return NULL;
     }
 
-    CMesh* pMesh = new CMesh(true);
+    //FBX Loading -> CMesh 파일 저장 -> 불러오기
+    //Not Engin Res 
+    CMesh* pMesh = new CMesh;
     pMesh->m_VB = pVB;
     pMesh->m_tVBDesc = tVtxDesc;
     //버텍스 정보 전달
@@ -463,79 +465,116 @@ bool CMesh::IntersectTriangle(const Vec3& orig, const Vec3& dir, Vec3& v0, Vec3&
     return TRUE; 
 }
 
-void CMesh::Save(const wstring& _strRelativePath) 
+void CMesh::Save(const wstring& _strRelativePath)
 {
-    Read();
+    // 상대경로 복사
+    SetRelativePath(_strRelativePath);
 
-    if (!CheckRelativePath(_strRelativePath))
-    {
-        MessageBox(nullptr, L"CMaterial Path Overlapped", L"Error", MB_OK);
-        return;
-    }
+    // 파일 경로 만들기
+    wstring strFilePath = CPathMgr::GetInst()->GetContentPath() + _strRelativePath;
 
-    wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
-    strFilePath += _strRelativePath;
-
+    // 파일 쓰기모드로 열기
     FILE* pFile = nullptr;
-    _wfopen_s(&pFile, strFilePath.c_str(), L"wb");
 
-    if (!pFile)
-        return;
+    errno_t err = _wfopen_s(&pFile, strFilePath.c_str(), L"wb");
+    assert(pFile);
 
-    CRes::SaveKeyPath(pFile);
+    // 키값, 상대 경로	
+    SaveWStringToFile(GetName(), pFile);
+    SaveWStringToFile(GetKey(), pFile);
+    SaveWStringToFile(GetRelativePath(), pFile);
 
-    if (nullptr != m_vertices)
+    // 정점 데이터 저장				
+    int iByteSize = m_tVBDesc.ByteWidth;
+    fwrite(&iByteSize, sizeof(int), 1, pFile);
+    fwrite(m_pVtxSys, iByteSize, 1, pFile);
+
+    // 인덱스 정보
+    UINT iMtrlCount = (UINT)m_vecIdxInfo.size();
+    fwrite(&iMtrlCount, sizeof(int), 1, pFile);
+
+    UINT iIdxBuffSize = 0;
+    /*
+    * Save Index buffer as a Mtrl size 
+    */
+    for (UINT i = 0; i < iMtrlCount; ++i)
     {
-        size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
-
-        for (UINT i = 0; i < nVerts; i += 4)
-        {
-            fwrite(&m_vertices[i].vColor, sizeof(Vec4), 1, pFile);
-            fwrite(&m_vertices[i + 1].vColor, sizeof(Vec4), 1, pFile);
-            fwrite(&m_vertices[i + 2].vColor, sizeof(Vec4), 1, pFile);
-            fwrite(&m_vertices[i + 3].vColor, sizeof(Vec4), 1, pFile);
-        }
+        fwrite(&m_vecIdxInfo[i], sizeof(tIndexInfo), 1, pFile);
+        fwrite(m_vecIdxInfo[i].pIdxSysMem
+            , m_vecIdxInfo[i].iIdxCount * sizeof(UINT)
+            , 1, pFile);
     }
 
     fclose(pFile);
-
-    MessageBox(nullptr, L"CMesh Save ", L"Success", MB_OK);
 }
 
 int CMesh::Load(const wstring& _strFilePath)
 {
-    wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
-    strFilePath += _strFilePath;
-
+    // 읽기모드로 파일열기
     FILE* pFile = nullptr;
+    _wfopen_s(&pFile, _strFilePath.c_str(), L"rb");
 
-    _wfopen_s(&pFile, strFilePath.c_str(), L"rb");
+    // 키값, 상대경로
+    wstring strName, strKey, strRelativePath;
+    LoadWStringFromFile(strName, pFile);
+    LoadWStringFromFile(strKey, pFile);
+    LoadWStringFromFile(strRelativePath, pFile);
 
-    if (!pFile)
-        return -1;
+    SetName(strName);
+    SetKey(strKey);
+    SetRelativePath(strRelativePath);
 
-    CRes::LoadKeyPath(pFile);
+    // 정점데이터
+    UINT iByteSize = 0;
+    fread(&iByteSize, sizeof(int), 1, pFile);
 
-    if (nullptr != m_vertices)
+    m_pVtxSys = (Vtx*)malloc(iByteSize);
+    fread(m_pVtxSys, 1, iByteSize, pFile);
+
+
+    D3D11_BUFFER_DESC tDesc = {};
+    tDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    tDesc.ByteWidth = iByteSize;
+    tDesc.Usage = D3D11_USAGE_DEFAULT;
+
+    D3D11_SUBRESOURCE_DATA tSubData = {};
+    tSubData.pSysMem = m_pVtxSys;
+
+    if (FAILED(DEVICE->CreateBuffer(&tDesc, &tSubData, m_VB.GetAddressOf())))
     {
-        size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
-
-        for (UINT i = 0; i < nVerts; i += 4)
-        {
-            fread(&m_vertices[i].vColor, sizeof(Vec4), 1, pFile);
-            fread(&m_vertices[i + 1].vColor, sizeof(Vec4), 1, pFile);
-            fread(&m_vertices[i + 2].vColor, sizeof(Vec4), 1, pFile);
-            fread(&m_vertices[i + 3].vColor, sizeof(Vec4), 1, pFile);
-        }
+        assert(nullptr);
     }
+
+    // 인덱스 정보
+    UINT iMtrlCount = 0;
+    fread(&iMtrlCount, sizeof(int), 1, pFile);
+
+    for (UINT i = 0; i < iMtrlCount; ++i)
+    {
+        tIndexInfo info = {};
+        fread(&info, sizeof(tIndexInfo), 1, pFile);
+
+        UINT iByteWidth = info.iIdxCount * sizeof(UINT);
+
+        void* pSysMem = malloc(iByteWidth);
+        info.pIdxSysMem = pSysMem;
+        fread(info.pIdxSysMem, iByteWidth, 1, pFile);
+
+        tSubData.pSysMem = info.pIdxSysMem;
+
+        if (FAILED(DEVICE->CreateBuffer(&info.tIBDesc, &tSubData, info.pIB.GetAddressOf())))
+        {
+            assert(nullptr);
+        }
+
+        m_vecIdxInfo.push_back(info);
+    }
+
     fclose(pFile);
-
-    Write();
-
-    //MessageBox(nullptr, L"CMesh Load ", L"Success", MB_OK);
 
     return S_OK;
 }
+
 
 Vtx* CMesh::GetVertices(size_t& _nVerts)
 {

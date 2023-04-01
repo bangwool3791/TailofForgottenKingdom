@@ -12,18 +12,18 @@ class CMeshData :
 	Ptr<CMesh>				m_pMesh;
 	/*
 	* Mesh 데이터
-	* 인덱스 - 머터리얼 
+	* 인덱스 - 머터리얼
 	* 0  ~ 10, 1 머터리얼
 	* 11 ~ 20, 2 머터리얼
 	*/
-	
+
 	vector<Ptr<CMaterial>>	m_vecMtrl;
 
 public:
 	static CMeshData* LoadFromFBX(const wstring& _strFilePath);
-
-	virtual void Save(const wstring& _strFilePath) {}
-	virtual int Load(const wstring& _strFilePath) { return S_OK; }
+	const vector<Ptr<CMaterial>>& GetMtrls() { return m_vecMtrl; }
+	virtual void Save(const wstring& _strFilePath);
+	virtual int Load(const wstring& _strFilePath);
 
 	CGameObject* Instantiate();
 

@@ -86,8 +86,4 @@ float4 PS_Std3D(VS_OUT _in) : SV_Target
     return vOutColor;
 }
 
-
-
-
-
 #endif

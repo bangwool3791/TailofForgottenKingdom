@@ -48,6 +48,10 @@ struct PS_OUT
 	float4 vNormal		: SV_Target1;
 	float4 vPosition	: SV_Target2;
 	float4 vData		: SV_Target3;
+
+	float4 vDiffuse		: SV_Target4;
+	float4 vSpecluar	: SV_Target5;
+	float4 vAmbient	    : SV_Target6;
 };
 
 
@@ -97,10 +101,9 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in) : SV_Target
 	output.vNormal = float4(vNormal, 1.f);
 	output.vPosition = float4(_in.vViewPos, 1.f);
 	output.vData.x = g_float_0;
-	output.vData.y = g_float_1;
-	output.vData.z = g_float_2;
-	output.vData.w = 1.f;
-
+	output.vDiffuse = g_vDiff;
+	output.vSpecluar = g_vSpec;
+	output.vAmbient = g_vAmb;
 	return output;
 }
 

@@ -5,6 +5,7 @@
 
 #include "TreeUI.h"
 #include "InspectorUI.h"
+#include "ProgressUI.h"
 #include "CEditorCam.h"
 #include "CGameObjectEx.h"
 
@@ -165,8 +166,8 @@ void ContentUI::render_update()
 
 			if (tRay.bSuccess)
 			{
-				ray.direction =  CEditor::GetInst()->FindByName(L"Editor Camera")->Camera()->GetRay().vDir;
-				ray.position = CEditor::GetInst()->FindByName(L"Editor Camera")->Camera()->GetRay().vStart;
+				ray.direction =  CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vDir;
+				ray.position = CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vStart;
 
 				const map<const wchar_t*, CGameObjectEx*>  map = CEditor::GetInst()->GetEdiotrObj(CEditor::GetInst()->GetEditMode());
 
@@ -238,10 +239,12 @@ void ContentUI::ResetContent()
 
 void ContentUI::ReloadContent()
 {
+
 	// Content 폴더에 있는 모든 리소스들을 검사 및 로딩
 	wstring strFolderPath = CPathMgr::GetInst()->GetContentPath();
+	m_vecContentName.clear();
 	FindContentFileName(strFolderPath);
-
+	
 	for (size_t i{}; i < m_vecContentName.size(); ++i)
 	{
 		RES_TYPE resType = GetResTypeByExt(m_vecContentName[i]);
@@ -255,6 +258,7 @@ void ContentUI::ReloadContent()
 			CResMgr::GetInst()->Load<CPrefab>(m_vecContentName[i]);
 			break;
 		case RES_TYPE::MESHDATA:
+			CResMgr::GetInst()->Load<CMeshData>(m_vecContentName[i], m_vecContentName[i]);
 			break;
 		case RES_TYPE::COMPUTE_SHADER:
 			break;
@@ -262,6 +266,7 @@ void ContentUI::ReloadContent()
 			CResMgr::GetInst()->Load<CMaterial>(m_vecContentName[i]);
 			break;
 		case RES_TYPE::MESH:
+			CResMgr::GetInst()->Load<CMesh>(m_vecContentName[i]);
 			break;
 		case RES_TYPE::TEXTURE:
 		{
@@ -295,7 +300,7 @@ void ContentUI::ReloadContent()
 
 			wstring strRelativePath = iter->second->GetRelativePath();
 
-			if (strRelativePath.empty())
+ 			if (strRelativePath.empty())
 			{
 				int a = 0;
 			}
@@ -347,6 +352,7 @@ void ContentUI::SetResourceToInspector(DWORD_PTR _res)
 void ContentUI::FindContentFileName(const wstring& _strFolderPath)
 {
 	// 모든 파일명을 알아낸다.
+
 	wstring strFolderPath = _strFolderPath + L"*.*";
 
 	HANDLE hFindHandle = nullptr;

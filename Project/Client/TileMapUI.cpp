@@ -11,6 +11,7 @@
 
 #include <Engine\CTexture.h>
 #include <Engine\CResMgr.h>
+#include <Engine\CRenderMgr.h>
 
 #include <Engine\CScript.h>
 
@@ -539,6 +540,38 @@ void TileMapUI::render_update()
 	}
 
 	ImGui::Image(m_BrushImage, ImVec2(212.f, 212.f), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f));
+
+	Text(HSV_SKY_GREY, Vec2(150.f, 30.f), "Env Cube map");
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Capture##4", ButtonScale))
+	{
+		m_fileDialogCubemapSave.type = ImGuiFileDialogType_SaveFile;
+		m_fileDialogCubemapSave.title = "Save File";
+		m_fileDialogCubemapSave.fileName = "blank.png";
+
+		string path = CPathMgr::GetInst()->GetSingleContentPath();
+		std::filesystem::path _path(path + "texture");
+		m_fileDialogCubemapSave.directoryPath = _path;
+		m_bDialogCubemapSave = true;
+	}
+
+	if (m_bDialogCubemapSave)
+	{
+		if (ImGui::FileDialog(&m_bDialogCubemapSave, &m_fileDialogCubemapSave))
+		{
+			auto map = CEditor::GetInst()->GetEdiotrObj(EDIT_MODE::MAPTOOL);
+
+			static vector<CGameObject*> vec{};
+
+			for (auto iter{ map.begin() }; iter != map.end(); ++iter)
+				vec.push_back(iter->second);
+
+			CRenderMgr::GetInst()->render_env(vec, m_fileDialogCubemapSave.resultPath, m_fileDialogCubemapSave.resultPath);
+		}
+	}
+
 }
 
 #include <Engine\CTexture.h>

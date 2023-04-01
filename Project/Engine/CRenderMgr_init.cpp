@@ -25,24 +25,34 @@ void CRenderMgr::init()
 	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"SpecularTargetTex"));
 	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"DecalTargetTex"));
 
-	float a = 1.f;
+	float a = 4.f;
 	pMtrl->SetScalarParam(FLOAT_1, &a);
+	a = 0.6f;
 	pMtrl->SetScalarParam(FLOAT_2, &a);
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DirLightMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
 	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"NormalTargetTex"));
 	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"DataTargetTex"));
+	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"FbxDiffuseTargetTex"));
+	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"FbxSpecularTargetTex"));
+	pMtrl->SetTexParam(TEX_5, CResMgr::GetInst()->FindRes<CTexture>(L"FbxAmbientTargetTex"));
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"PointLightMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
 	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"NormalTargetTex"));
 	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"DataTargetTex"));
+	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"FbxDiffuseTargetTex"));
+	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"FbxSpecularTargetTex"));
+	pMtrl->SetTexParam(TEX_5, CResMgr::GetInst()->FindRes<CTexture>(L"FbxAmbientTargetTex"));
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"SpotLightMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
 	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"NormalTargetTex"));
 	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"DataTargetTex"));
+	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"FbxDiffuseTargetTex"));
+	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"FbxSpecularTargetTex"));
+	pMtrl->SetTexParam(TEX_5, CResMgr::GetInst()->FindRes<CTexture>(L"FbxAmbientTargetTex"));
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DecalMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
@@ -121,6 +131,23 @@ void CRenderMgr::CreateMRT()
 			CResMgr::GetInst()->CreateTexture(L"DataTargetTex"
 			, vRenderResolution.x, vRenderResolution.y
 			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+
+			CResMgr::GetInst()->CreateTexture(L"FbxDiffuseTargetTex"
+			, vRenderResolution.x, vRenderResolution.y
+			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+
+			CResMgr::GetInst()->CreateTexture(L"FbxSpecularTargetTex"
+			, vRenderResolution.x, vRenderResolution.y
+			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+
+
+			CResMgr::GetInst()->CreateTexture(L"FbxAmbientTargetTex"
+			, vRenderResolution.x, vRenderResolution.y
+			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			
+
 			/*CResMgr::GetInst()->CreateTexture(L"EmissiveTargetTex"
 								, vRenderResolution.x, vRenderResolution.y
 								, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),*/
@@ -231,19 +258,19 @@ void CRenderMgr::CreateMRT()
 		// HDR MRT
 		// =========
 		{
-			//Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
-			//
-			//Ptr<CTexture> arrRTTex[8] =
-			//{
-			//	CResMgr::GetInst()->CreateTexture(L"HdrTargetTex"
-			//	, vRenderResolution.x, vRenderResolution.y
-			//	, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-			//
-			//};
-			//
-			//Ptr<CTexture> pDSTex = nullptr;
-			//m_arrMRT[(UINT)MRT_TYPE::HDR] = new CMRT;
-			//m_arrMRT[(UINT)MRT_TYPE::HDR]->Create(arrRTTex, arrClear, pDSTex);
+			Vec4 arrClear[8] = { Vec4(0.2f, 0.2f, 0.2f, 1.f), };
+			
+			Ptr<CTexture> arrRTTex[8] =
+			{
+				CResMgr::GetInst()->CreateTexture(L"HdrTargetTex"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			
+			};
+			
+			Ptr<CTexture> pDSTex = nullptr;
+			m_arrMRT[(UINT)MRT_TYPE::HDR] = new CMRT;
+			m_arrMRT[(UINT)MRT_TYPE::HDR]->Create(arrRTTex, arrClear, pDSTex);
 		}
 
 		{
@@ -262,7 +289,7 @@ void CRenderMgr::CreateMRT()
 			Ptr<CTexture> arrRTTex[8] =
 			{
 				CResMgr::GetInst()->CreateTexture(L"DepthMapTex"
-												, 4096, 4096
+												, 4096 * 2, 4096 * 2
 												, DXGI_FORMAT_R32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 			};
 
@@ -273,7 +300,7 @@ void CRenderMgr::CreateMRT()
 			// Depth Stencil Texture ¸¸µé±â
 			Ptr<CTexture> pDepthStencilTex
 				= CResMgr::GetInst()->CreateTexture(L"DepthMapDSTex"
-					, 4096, 4096
+					, 4096 * 2, 4096 * 2
 					, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL);
 
 
@@ -293,11 +320,19 @@ void CRenderMgr::CreateMRT(const wstring& wstr, MRT_TYPE eType)
 	{
 		CResMgr::GetInst()->CreateTexture(wstr
 		, vRenderResolution.x, vRenderResolution.y
-		, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+		, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 
 	};
 
-	Ptr<CTexture> pDSTex = CResMgr::GetInst()->FindRes<CTexture>(L"DepthStencilTex");
+	Ptr<CTexture> pDSTex = CResMgr::GetInst()->FindRes<CTexture>(L"CubeDepthStencilTex");
+
+	if (nullptr == pDSTex)
+	{
+		pDSTex
+			= CResMgr::GetInst()->CreateTexture(L"CubeDepthStencilTex"
+				, vRenderResolution.x, vRenderResolution.y
+				, DXGI_FORMAT_D32_FLOAT, D3D11_BIND_DEPTH_STENCIL);
+	}
 	m_arrMRT[(UINT)eType] = new CMRT;
 	m_arrMRT[(UINT)eType]->Create(arrRTTex, arrClear, pDSTex);
 }

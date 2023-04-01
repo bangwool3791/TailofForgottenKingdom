@@ -26,11 +26,14 @@ private :
     bool                        m_bDialogTextureArrLoad{};
     
     bool                        m_bDialogBrushLoad{};
+    bool                        m_bDialogCubemapSave{};
+
     ImFileDialogInfo            m_fileDialogBrushLoad;
     ImFileDialogInfo            m_fileDialogLoad;
     ImFileDialogInfo            m_fileDialogSave;
     ImFileDialogInfo            m_fileDialogTextureArrSave;
     ImFileDialogInfo            m_fileDialogTextureArrLoad;
+    ImFileDialogInfo            m_fileDialogCubemapSave;
 
     ImFileDialogInfo            m_fileDialogLandscapeSave;
     ImFileDialogInfo            m_fileDialogLandscapeLoad;

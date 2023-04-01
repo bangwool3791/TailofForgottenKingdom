@@ -457,8 +457,8 @@ void CFBXLoader::LoadTexture()
 				}
 			}
 		}
-		path_origin = path_origin.parent_path();
-		remove_all(path_origin);
+		//path_origin = path_origin.parent_path();
+		//remove_all(path_origin);
 	}
 }
 

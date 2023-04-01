@@ -344,14 +344,12 @@ void CCamera::EditorRender()
 
 	render_transparent();
 	render_postprocess();
-
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
 }
 
 void CCamera::render(MRT_TYPE _eType)
 {
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+
 	g_transform.matView = m_matView;
 	g_transform.matViewInv = m_matViewInv;
 	g_transform.matProj = m_matProj;
@@ -360,7 +358,6 @@ void CCamera::render(MRT_TYPE _eType)
 	/*
 	* 여기서 행렬 세팅 -> render transform 업데이트
 	*/
-	SortObject();
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
 	render_deferred();
 	
@@ -395,9 +392,9 @@ void CCamera::render(MRT_TYPE _eType)
 	render_transparent();
 	render_postprocess();
 	
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
 }
 /*
 * 상수 버퍼 불러와서, 오브젝트 -> 텍스쳐 업데이트

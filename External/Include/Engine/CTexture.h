@@ -82,6 +82,7 @@ public:
     // »ý¼º
     void Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iBindFlag);
     void Create(ComPtr<ID3D11Texture2D> _Tex2D);
+    void CreateCubeTexture(vector<Ptr<CTexture>> _arrTex);
     int CreateArrayTexture(const vector<Ptr<CTexture>>& _vecTex, int _iMapLevel);
     CLONE_ASSERT(CTexture);
 public:

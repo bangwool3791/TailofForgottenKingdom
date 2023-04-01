@@ -1,11 +1,21 @@
 #include "pch.h"
 #include "ProgressUI.h"
+#include "imgui.h"
 
 ProgressUI::ProgressUI()
 	: UI("ProgressUI")
+	, m_fFactor{0.4f}
 {
 	Close();
 }
+
+ProgressUI::ProgressUI(float _fFactor)
+	: UI("ProgressUI")
+	, m_fFactor{_fFactor}
+{
+	Close();
+}
+
 
 ProgressUI::~ProgressUI()
 {
@@ -18,7 +28,10 @@ void ProgressUI::render_update()
 
 	if (m_animate)
 	{
-		m_progress += m_progress_dir * 0.4f * ImGui::GetIO().DeltaTime;
+		/*
+		* 시간을 factor 만큼 나눠서 프로그래스에 더한다.
+		*/
+		m_progress += m_progress_dir * m_fFactor * ImGui::GetIO().DeltaTime;
 		if (m_progress >= +1.1f) { m_progress = +1.1f; m_progress_dir *= -1.0f; }
 		if (m_progress <= -0.1f) { m_progress = -0.1f; m_progress_dir *= -1.0f; }
 	}
@@ -35,7 +48,6 @@ void ProgressUI::render_update()
 	{
 		Close();
 	}
-
 }
 
 void ProgressUI::Close()

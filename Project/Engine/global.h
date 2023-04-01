@@ -22,6 +22,8 @@
 #include <stdint.h>
 #include "precision.h"
 #include "tinyxml.h"
+#include <sys\stat.h>
+#include <sys\types.h>
 
 using std::vector;
 using std::list;

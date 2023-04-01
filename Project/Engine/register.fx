@@ -21,10 +21,10 @@ cbuffer TRANSFORM : register(b0)
 
 cbuffer MATERIAL : register(b1)
 {
-    float4 vDiff;
-    float4 vSpec;
-    float4 vAmb;
-    float4 vEmv;
+    float4 g_vDiff;
+    float4 g_vSpec;
+    float4 g_vAmb;
+    float4 g_vEmv;
 
     int g_int_0;
     int g_int_1;
@@ -181,7 +181,7 @@ SamplerState g_sam_0 : register(s0); // anisotropic sampler
 SamplerState g_sam_1 : register(s1); // point sampler
 SamplerState g_sam_2 : register(s2); // linear sampler
 SamplerComparisonState g_sam_3 : register(s3); // shadow
-static const float SMAP_SIZE = 4096.f;
+static const float SMAP_SIZE = 4096.f * 2.f;
 static const float SMAP_DX = 1.0f / SMAP_SIZE;
 #endif
 

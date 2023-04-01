@@ -307,6 +307,57 @@ void CTexture::Create(UINT _iWidth, UINT _iHeight, DXGI_FORMAT _Format, UINT _iB
     CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), m_Image);
 }
 
+void CTexture::CreateCubeTexture(vector<Ptr<CTexture>> _arrTex)
+{
+    //Description of each face
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    //The Shader Resource view description
+    D3D11_SHADER_RESOURCE_VIEW_DESC SMViewDesc = {};
+
+    m_Desc.Width = 256;
+    m_Desc.Height = 256;
+    m_Desc.MipLevels = 0;
+    m_Desc.ArraySize = 6;
+    m_Desc.SampleDesc.Count = 1;
+    m_Desc.SampleDesc.Quality = 0;
+
+    m_Desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+   
+    m_Desc.Usage = D3D11_USAGE_DEFAULT;
+
+    m_Desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    m_Desc.CPUAccessFlags = 0;
+    m_Desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+    SMViewDesc.Format = texDesc.Format;
+    SMViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+    SMViewDesc.TextureCube.MipLevels = texDesc.MipLevels;
+    SMViewDesc.TextureCube.MostDetailedMip = 0;
+
+    HRESULT hr = DEVICE->CreateTexture2D(&m_Desc, NULL, m_Tex2D.GetAddressOf());
+    for (int i = 0; i < 6; i++)
+    {
+        UINT iOffset = D3D11CalcSubresource(0, i, 0);
+
+        CONTEXT->UpdateSubresource(m_Tex2D.Get(), iOffset, nullptr, _arrTex[i]->GetSysMem()
+            , _arrTex[i]->GetRowPitch(), _arrTex[i]->GetSlicePitch());
+    }
+
+    // Shader Resource View 积己
+    D3D11_SHADER_RESOURCE_VIEW_DESC viewdesc = {};
+    viewdesc.Format = m_Desc.Format;
+    viewdesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+    viewdesc.Texture2DArray.MipLevels = -1;
+    viewdesc.Texture2DArray.MostDetailedMip = 0;
+
+    hr = DEVICE->CreateShaderResourceView(m_Tex2D.Get(), &viewdesc, m_SRV.GetAddressOf());
+
+    // 褂甘 积己
+    CONTEXT->GenerateMips(m_SRV.Get());
+    m_Tex2D->GetDesc(&m_Desc);
+
+    CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), m_Image);
+}
 
 int CTexture::CreateArrayTexture(const vector<Ptr<CTexture>>& _vecTex, int _iMapLevel)
 {
@@ -557,7 +608,9 @@ void CTexture::SaveTexture(const wstring& path)
 void CTexture::SaveTextureArray(const wstring& path)
 {
     CaptureTexture(DEVICE, CONTEXT, m_Tex2D.Get(), m_Image);
-    SaveToDDSFile(m_Image.GetImages(), 6, m_Image.GetMetadata(), DDS_FLAGS_NONE, path.c_str());
+    const Image* img = m_Image.GetImages();
+    TexMetadata mdata = m_Image.GetMetadata();
+    HRESULT hr = SaveToDDSFile(m_Image.GetImages(), 6, m_Image.GetMetadata(), DDS_FLAGS_NONE, path.c_str());
 }
 
 

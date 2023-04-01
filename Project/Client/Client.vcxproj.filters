@@ -116,6 +116,9 @@
     <Filter Include="03. UI\01. Inspector\ResUI\04. MeshDataUI">
       <UniqueIdentifier>{bbaea3c6-15db-4b02-b00a-13291818af5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Editor\CLoader">
+      <UniqueIdentifier>{0e67b3a2-6bf4-4d1f-b689-0fd4b1756a9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -280,6 +283,9 @@
     <ClInclude Include="MeshDataUI.h">
       <Filter>03. UI\01. Inspector\ResUI\04. MeshDataUI</Filter>
     </ClInclude>
+    <ClInclude Include="CLoader.h">
+      <Filter>01. Editor\CLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -425,6 +431,9 @@
     </ClCompile>
     <ClCompile Include="MeshDataUI.cpp">
       <Filter>03. UI\01. Inspector\ResUI\04. MeshDataUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CLoader.cpp">
+      <Filter>01. Editor\CLoader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

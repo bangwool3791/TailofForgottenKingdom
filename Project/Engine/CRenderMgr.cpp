@@ -8,6 +8,7 @@
 #include "CResMgr.h"
 #include "CRenderMgr.h"
 #include "CCamera.h"
+#include "CTransform.h"
 
 #include "CConstBuffer.h"
 #include "CStructuredBuffer.h"
@@ -153,6 +154,74 @@ void CRenderMgr::render_editor(const vector<CGameObject*>& obj)
 	m_EditorCam->EditorRender();
 }
 
+void CRenderMgr::render_env(const vector<CGameObject*>& obj, const wstring& texName, wstring path)
+{
+	static const Vec3 rot[6] =
+	{
+		 Vec3{0.f,XM_PI * 0.5f,0.f}, Vec3{0.f,-XM_PI * 0.5f,0.f}, Vec3{-XM_PI * 0.5f,0.f,0.f},
+		 Vec3{XM_PI * 0.5f,0.f,0.f}, Vec3{0.f,0.f,0.f},  Vec3{0.f,XM_PI,0.f}
+	};
+
+	static const MRT_TYPE type[6] =
+	{
+		MRT_TYPE::RIGHT,MRT_TYPE::LEFT,MRT_TYPE::UP, MRT_TYPE::DOWN, MRT_TYPE::FRONT,MRT_TYPE::BACK
+	};
+
+	static const wstring str[6] =
+	{
+		L"RightTargetTex", L"LeftTargetTex",L"UpTargetTex", L"DownTargetTex" ,
+		L"FrontTargetTex", L"BackTargetTex"
+	};
+
+	assert(m_EnvCam);
+	render_dynamic_shadowdepth(obj);
+
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::SWAPCHAIN);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
+	CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
+
+	for (size_t i = 0; i < 6; ++i)
+	{
+		m_EnvCam->Transform()->SetRelativeRotation(rot[i]);
+		m_EnvCam->Transform()->finaltick();
+		m_EnvCam->finaltick();
+		m_EnvCam->SortObject(obj);
+		m_EnvCam->render(type[i]);
+	}
+
+	vector<Ptr<CTexture>> vecTex{};
+
+	for (size_t i = 0; i < 6; ++i)
+		vecTex.push_back(CResMgr::GetInst()->FindRes<CTexture>(str[i]));
+
+	UINT iLen = path.size();
+
+	for (size_t i = 0; i < 6; ++i)
+	{
+		wstring temp = path;
+		temp.insert(iLen - 4, str[i]);
+		vecTex[i]->SaveTexture(temp);
+	}
+	
+
+	/*
+	* Texture 6장 불러와서 Cube Texture를 만든다.
+	*/
+//	Ptr<CTexture> pTex = CResMgr::GetInst()->CreateCubeTexture(texName, vecTex);
+//
+//	if (nullptr == pTex)
+//		return;
+//	else
+//		pTex->SaveTextureArray(path);
+}
+
+void CRenderMgr::DebugDraw(DEBUG_SHAPE _eShape, Vec4 _vColor, Vec3 _vPosition, Vec3 _vScale, Vec3 _vRotation, float _fRadius, float _fDuration)
+{
+#ifdef _DEBUG
+	m_DebugDrawInfo.push_back(tDebugShapeInfo{ _eShape, _vColor, _vPosition, _vScale, _vRotation, _fRadius, _fDuration, 0.f });
+#endif
+}
 
 void CRenderMgr::UpdateNoiseTexture()
 {

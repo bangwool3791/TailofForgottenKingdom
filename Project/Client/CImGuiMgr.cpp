@@ -99,7 +99,7 @@ void CImGuiMgr::Guizmo()
 
     if (nullptr != m_pSelectedObj)
     {
-        CGameObjectEx* pCam = CEditor::GetInst()->FindByName(L"Editor Camera");
+        CGameObjectEx* pCam = CEditor::GetInst()->FindByName(L"EditorCamera");
         Vec3 pos = m_pSelectedObj->Transform()->GetRelativePos();
         Vec3 rot = m_pSelectedObj->Transform()->GetRelativeRotation();
         Vec3 sca = m_pSelectedObj->Transform()->GetRelativeScale();
@@ -369,11 +369,6 @@ void CImGuiMgr::CreateUI()
     pUI = new OutlinerUI;
     m_mapUI.insert(make_pair(pUI->GetName(), pUI));
 
-    pUI = new ContentUI;
-    m_mapUI.insert(make_pair(pUI->GetName(), pUI));
-    ((ContentUI*)pUI)->ReloadContent();
-    ((ContentUI*)pUI)->ResetContent();
-
     pUI = new ListUI;    
     pUI->SetModal(true);
     m_mapUI.insert(make_pair(pUI->GetName(), pUI));
@@ -388,6 +383,14 @@ void CImGuiMgr::CreateUI()
     progressui->SetModal(true);
     progressui->Close();
     m_mapUI.insert(make_pair(progressui->GetName(), progressui));
+
+    /*
+    * Content UI -> Progress UI ÂüÁ¶
+    */
+    pUI = new ContentUI;
+    m_mapUI.insert(make_pair(pUI->GetName(), pUI));
+    ((ContentUI*)pUI)->ReloadContent();
+    ((ContentUI*)pUI)->ResetContent();
 }
 
 UI* CImGuiMgr::FindUI(const string& _name)

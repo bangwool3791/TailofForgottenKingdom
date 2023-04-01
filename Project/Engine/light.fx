@@ -32,34 +32,34 @@ SamplerComparisonState samShadow
 
 struct VS_IN
 {
-	float3 vPos : POSITION;
+    float3 vPos : POSITION;
 };
 
 /*
-* 셰이더에 대한 입력을 위해 SV_Position 선언된 경우 두 가지 보간 모드 중 하나를 지정할 수 있습니다. 
-* linearNoPerspective 또는 linearNoPerspectiveCentroid는 다중 샘플 앤티앨리어싱 시 중심 맞춤 xyzw 값을 제공합니다. 
+* 셰이더에 대한 입력을 위해 SV_Position 선언된 경우 두 가지 보간 모드 중 하나를 지정할 수 있습니다.
+* linearNoPerspective 또는 linearNoPerspectiveCentroid는 다중 샘플 앤티앨리어싱 시 중심 맞춤 xyzw 값을 제공합니다.
 * 셰이더에서 사용되는 경우 SV_Position 픽셀 위치를 설명합니다. 모든 셰이더에서 0.5 오프셋으로 픽셀 중심을 가져올 수 있습니다.
 */
 struct VS_OUT
 {
-	float4 vPosition : SV_Position;
+    float4 vPosition : SV_Position;
 };
 
 VS_OUT VS_DirLightShader(VS_IN _in)
 {
-	VS_OUT output = (VS_OUT)0.f;
+    VS_OUT output = (VS_OUT)0.f;
 
-	//Rect Mesh 투영 좌표계 변환(픽셀)
-	output.vPosition = float4(_in.vPos.xy * 2.f, 0.f, 1.f);
-	return output;
+    //Rect Mesh 투영 좌표계 변환(픽셀)
+    output.vPosition = float4(_in.vPos.xy * 2.f, 0.f, 1.f);
+    return output;
 }
 
 //Directional Light 객체 텍스쳐 바인딩 
 struct PS_OUT
 {
-	//Taget Texture Binding from MRT 
-	float4 vDiffuse : SV_Target;
-	float4 vSpecular : SV_Target1;
+    //Taget Texture Binding from MRT 
+    float4 vDiffuse : SV_Target;
+    float4 vSpecular : SV_Target1;
 };
 
 /*
@@ -68,19 +68,19 @@ struct PS_OUT
 */
 PS_OUT PS_DirLightShader(VS_OUT _in)
 {
-	PS_OUT output = (PS_OUT)0.f;
+    PS_OUT output = (PS_OUT)0.f;
 
-	float2 vUV = _in.vPosition.xy / g_vRenderResolution;
-;
-	float4 vViewPos = g_tex_0.Sample(g_sam_0, vUV);
+    float2 vUV = _in.vPosition.xy / g_vRenderResolution;
+    ;
+    float4 vViewPos = g_tex_0.Sample(g_sam_0, vUV);
 
-	if (0.f == vViewPos.a)
-		discard;
+    if (0.f == vViewPos.a)
+        discard;
 
-	float4 vViewNormal = g_tex_1.Sample(g_sam_0, vUV);
+    float4 vViewNormal = g_tex_1.Sample(g_sam_0, vUV);
 
-	tLightColor lightcolor = (tLightColor)0.f;
-	CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
+    tLightColor lightcolor = (tLightColor)0.f;
+    CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
 
     // 그림자 판정
     // ViewPos -> WorldPos
@@ -102,42 +102,51 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
     float fDepth = DepthMap.Sample(g_sam_0, vDepthMapUV).r;
     float fShadowPow = 0.f;
 
+    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
+
+    float4 vDiffuse = g_tex_3.Sample(g_sam_0, vUV);
+    float4 vSpecluar = g_tex_4.Sample(g_sam_0, vUV);
+    float4 vAmbient = g_tex_5.Sample(g_sam_0, vUV);
+
+    // 광원에 기록된 깊이보다, 물체의 깊이가 더 멀 때, 그림자 판정
+
+    // Depth in NDC space.
+    float depth = vLightProj.z;
+
+    // Texel size.
+    const float dx = SMAP_DX;
+
+    const float2 offsets[9] =
     {
-        // Depth in NDC space.
-        float depth = vLightProj.z;
+        float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
+        float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+        float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
+    };
 
-        // Texel size.
-        const float dx = SMAP_DX;
-
-        const float2 offsets[9] =
-        {
-            float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
-            float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
-            float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
-        };
-
-        [unroll]
-        for (int i = 0; i < 9; ++i)
-        {
-            percentLit += DepthMap.SampleCmpLevelZero(g_sam_3,
-                vDepthMapUV.xy + offsets[i], depth).r;
-        }
-        //그림자에 가려진 정도
-        percentLit /= 9.f;
-    }
-
-    float4 vParam = g_tex_2.Sample(g_sam_0, vUV);
-    
-    if (1.f == vParam.w)
+    [unroll]
+    for (int i = 0; i < 9; ++i)
     {
-        output.vDiffuse = lightcolor.vDiff * percentLit * vParam.x + lightcolor.vAmb * vParam.y;
-        output.vSpecular = lightcolor.vSpec * percentLit * vParam.z;
+        percentLit += DepthMap.SampleCmpLevelZero(g_sam_3,
+            vDepthMapUV.xy + offsets[i], depth).r;
     }
+    //그림자에 가려진 정도
+    percentLit /= 9.f;
+
+    if (0 < vDiffuse.w)
+        output.vDiffuse = lightcolor.vDiff * percentLit;
     else
-    {
-        output.vDiffuse = lightcolor.vDiff * percentLit + lightcolor.vAmb;
-        output.vSpecular = lightcolor.vSpec * percentLit;
-    }
+        output.vDiffuse = lightcolor.vDiff * percentLit;
+
+    if (0 < vAmbient.w)
+        output.vDiffuse += lightcolor.vAmb * vAmbient;
+    else
+        output.vDiffuse += lightcolor.vAmb;
+
+    if (0 < vSpecluar.w)
+        output.vSpecular = lightcolor.vSpec * SpecCoef * percentLit;
+    else
+        output.vSpecular = lightcolor.vSpec * SpecCoef * percentLit;
+
 
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;
@@ -158,11 +167,11 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
 
 VS_OUT VS_PointLightShader(VS_IN _in)
 {
-	VS_OUT output = (VS_OUT)0.f;
+    VS_OUT output = (VS_OUT)0.f;
 
-	output.vPosition = mul(float4(_in.vPos, 1.f), g_matWVP);
+    output.vPosition = mul(float4(_in.vPos, 1.f), g_matWVP);
 
-	return output;
+    return output;
 }
 
 PS_OUT PS_PointLightShader(VS_OUT _in)
@@ -191,18 +200,26 @@ PS_OUT PS_PointLightShader(VS_OUT _in)
     tLightColor lightcolor = (tLightColor)0.f;
     CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
 
-    float4 vParam = g_tex_2.Sample(g_sam_0, vUV);
+    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
 
-    if (1.f == vParam.w)
-    {
-        output.vDiffuse = lightcolor.vDiff * vParam.x + lightcolor.vAmb * vParam.y;
-        output.vSpecular = lightcolor.vSpec * vParam.z;
-    }
+    float4 vDiffuse = g_tex_3.Sample(g_sam_0, vUV);
+    float4 vSpecluar = g_tex_4.Sample(g_sam_0, vUV);
+    float4 vAmbient = g_tex_5.Sample(g_sam_0, vUV);
+
+    if (1 == vDiffuse.w)
+        output.vDiffuse = lightcolor.vDiff * vDiffuse;
     else
-    {
-        output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
-        output.vSpecular = lightcolor.vSpec;
-    }
+        output.vDiffuse = lightcolor.vDiff;
+
+    if (1 == vAmbient.w)
+        output.vDiffuse += lightcolor.vAmb * vAmbient;
+    else
+        output.vDiffuse += lightcolor.vAmb;
+
+    if (1 == vSpecluar.w)
+        output.vSpecular = lightcolor.vSpec * SpecCoef * vSpecluar;
+    else
+        output.vSpecular = lightcolor.vSpec * SpecCoef;
 
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;
@@ -269,21 +286,29 @@ PS_OUT PS_SpotLightShader(VS_OUT _in)
 
     CalcLight3D(vViewPos.xyz, vViewNormal.xyz, g_int_0, lightcolor);
 
-    float4 vParam = g_tex_2.Sample(g_sam_0, vUV);
+    float SpecCoef = g_tex_2.Sample(g_sam_0, vUV).x;
 
-    if (1.f == vParam.w)
-    {
-        output.vDiffuse = lightcolor.vDiff * vParam.x + lightcolor.vAmb * vParam.y;
-        output.vSpecular = lightcolor.vSpec * vParam.z;
-    }
+    float4 vDiffuse = g_tex_3.Sample(g_sam_0, vUV);
+    float4 vSpecluar = g_tex_4.Sample(g_sam_0, vUV);
+    float4 vAmbient = g_tex_5.Sample(g_sam_0, vUV);
+
+    if (1 == vDiffuse.w)
+        output.vDiffuse = lightcolor.vDiff * vDiffuse;
     else
-    {
-        output.vDiffuse = lightcolor.vDiff + lightcolor.vAmb;
-        output.vSpecular = lightcolor.vSpec;
-    }
+        output.vDiffuse = lightcolor.vDiff;
 
-    //output.vDiffuse.a = 1.f;
-    //output.vSpecular.a = 1.f;
+    if (1 == vAmbient.w)
+        output.vDiffuse += lightcolor.vAmb * vAmbient;
+    else
+        output.vDiffuse += lightcolor.vAmb;
+
+    if (1 == vSpecluar.w)
+        output.vSpecular = lightcolor.vSpec * SpecCoef * vSpecluar;
+    else
+        output.vSpecular = lightcolor.vSpec * SpecCoef;
+
+    output.vDiffuse.a = 1.f;
+    output.vSpecular.a = 1.f;
 
     return output;
 }

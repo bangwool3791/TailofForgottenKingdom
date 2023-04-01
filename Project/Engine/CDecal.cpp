@@ -44,7 +44,7 @@ void CDecal::finaltick()
 
 void CDecal::render()
 {
-	DebugDrawCube(Vec4(0.2f, 0.8f, 0.2f, 1.f), Transform()->GetWorldPos(), Transform()->GetWorldScale(), Transform()->GetRelativeRotation());
+	//DebugDrawCube(Vec4(0.2f, 0.8f, 0.2f, 1.f), Transform()->GetWorldPos(), Transform()->GetWorldScale(), Transform()->GetRelativeRotation());
 
 	// 위치 행렬 업데이트
 	// 데칼을 찍을 큐브의 위치 행렬을 셰이더로 업데이트 한다.

@@ -27,6 +27,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CImGuiMgr.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CLoader.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CSaveLoadMgr.cpp"
 
 
@@ -67,7 +70,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\imgui_demo.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\imgui_draw.cpp"
 

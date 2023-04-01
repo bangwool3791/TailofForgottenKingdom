@@ -111,6 +111,7 @@ void CResMgr::AddRes(const wstring& _strKey, RES_TYPE _type, CRes* _pRes)
 
     _pRes->SetKey(_strKey);
     m_arrRes[(UINT)_type].insert(make_pair(_strKey, _pRes));
+
     m_bChanged = true;
 }
 
@@ -144,6 +145,9 @@ Ptr<CMeshData> CResMgr::LoadFBX(const wstring& _strPath)
     pMeshData->SetRelativePath(strName);
     pMeshData->m_bEngineRes = true;
     m_arrRes[(UINT)RES_TYPE::MESHDATA].insert(make_pair(strName, pMeshData.Get()));
+
+    // meshdata 를 실제파일로 저장
+    pMeshData->Save(strName);
 
     return pMeshData;
 }

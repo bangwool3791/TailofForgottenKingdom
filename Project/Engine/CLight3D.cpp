@@ -133,7 +133,7 @@ void CLight3D::SetLightType(LIGHT_TYPE _eType)
 		m_pLightMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DirLightMtrl");
 
 		m_pLightCam->Camera()->SetProjType(PROJ_TYPE::ORTHOGRAHPIC);
-		m_pLightCam->Camera()->SetWidth(4096.f);
+		m_pLightCam->Camera()->SetWidth(4096.f * 2.f);
 		m_pLightCam->Camera()->SetAspectRatio(1.f);
 		m_pLightCam->Camera()->SetFar(100000.f);
 	}

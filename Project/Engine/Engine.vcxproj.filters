@@ -928,14 +928,8 @@
     <FxCompile Include="building.fx">
       <Filter>HLSL\Render\2D\Building</Filter>
     </FxCompile>
-    <FxCompile Include="std3d.fx">
-      <Filter>HLSL\Render\3D</Filter>
-    </FxCompile>
     <FxCompile Include="matrix.fx">
       <Filter>HLSL\Header</Filter>
-    </FxCompile>
-    <FxCompile Include="std3d_deffered.fx">
-      <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
     <FxCompile Include="merge.fx">
       <Filter>HLSL\Render\3D</Filter>
@@ -999,6 +993,15 @@
     </FxCompile>
     <FxCompile Include="weightmap.fx">
       <Filter>HLSL\Compute\LandScape\WeightMap</Filter>
+    </FxCompile>
+    <FxCompile Include="hdr.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="std3d_deffered.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="std3d.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

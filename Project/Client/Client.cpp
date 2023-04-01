@@ -98,7 +98,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 vec.push_back((CGameObject*)iter->second);
             }
             CEngine::GetInst()->render(vec);
-
+            /*
+            * Object Swapchain render -> debug object render
+            */
+            CEditor::GetInst()->debug_render();
             vec.clear();
 
             CImGuiMgr::GetInst()->progress();

@@ -56,14 +56,18 @@ Ptr<CTexture> CResMgr::CreateTexture(const wstring& _strKey, ComPtr<ID3D11Textur
 	return pTex;
 }
 
-Ptr<CTexture> CResMgr::CreateCubeTexture(const wstring& _strKey, UINT _iWidth, UINT _iHeight, DXGI_FORMAT _eFormat, UINT _iBindFlag)
+Ptr<CTexture> CResMgr::CreateCubeTexture(const wstring& _strKey, const vector<Ptr<CTexture>> vecTex)
 {
 	Ptr<CTexture> pTex = FindRes<CTexture>(_strKey);
-	assert(!pTex.Get());
+	if (pTex.Get())
+	{
+		MessageBox(nullptr, L"에러", L"큐브 텍스쳐 이미 생성", MB_OK);
+		return nullptr;
+	}
 
 	pTex = new CTexture(true);
 
-	//pTex->CreateCubeTexture(_iWidth, _iHeight, _eFormat, _iBindFlag);
+	pTex->CreateCubeTexture(vecTex);
 
 	AddRes<CTexture>(_strKey, pTex.Get());
 	return pTex;
@@ -811,7 +815,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDSType(DS_TYPE::NO_WRITE);
 	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
-
+	pShader->AddScalarParam(VEC4_0, "Color");
 	AddRes<CGraphicsShader>(L"DebugDrawShader", pShader);
 
 	// ParticleRenderShader
@@ -904,6 +908,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->AddScalarParam(FLOAT_0, "Specular Coefficient");
 	pShader->AddTexureParam(TEX_0, "ObjectColor");
 	pShader->AddTexureParam(TEX_1, "NormalMap");
+	pShader->AddTexureParam(TEX_2, "Spec");
 	AddRes<CGraphicsShader>(L"Std3DShader", pShader);
 
 	pShader = new CGraphicsShader;
@@ -912,9 +917,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetRSType(RS_TYPE::CULL_BACK);
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE);
 
-	pShader->AddScalarParam(FLOAT_0, "Diffuse Coefficient ");
-	pShader->AddScalarParam(FLOAT_1, "Ambient Coefficient ");
-	pShader->AddScalarParam(FLOAT_2, "Specular Coefficient");
+	pShader->AddScalarParam(FLOAT_0, "Specular Coefficient");
 	pShader->AddTexureParam(TEX_0, "ObjectColor");
 	pShader->AddTexureParam(TEX_1, "NormalMap");
 	pShader->AddTexureParam(TEX_2, "Spec");
@@ -1178,6 +1181,8 @@ void CResMgr::CreateDefaultMaterial()
 
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"DebugDrawShader"));
+	Vec4 vColor{ 0.f, 1.f, 0.f, 1.f };
+	pMaterial->SetScalarParam(VEC4_0, &vColor);
 	AddRes<CMaterial>(L"DebugDrawMtrl", pMaterial);
 
 	pMaterial = new CMaterial(true);

@@ -160,10 +160,9 @@ void CMaterial::Save(const wstring& _strRelativePath)
 
 	FILE* pFile = nullptr;
 
-	if (!pFile)
-		return;
-
 	_wfopen_s(&pFile, strFilePath.c_str(), L"wb");
+
+	assert(pFile);
 
 	CRes::SaveKeyPath(pFile);
 
@@ -180,8 +179,6 @@ void CMaterial::Save(const wstring& _strRelativePath)
 	}
 
 	fclose(pFile);
-
-	MessageBox(nullptr, L"CMaterial Save", L"Success", MB_OK);
 }
 
 int CMaterial::Load(const wstring& _strFilePath)

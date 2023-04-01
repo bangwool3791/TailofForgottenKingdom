@@ -70,20 +70,7 @@ void CEditor::init()
 	m_EditorObj.resize((UINT)EDIT_MODE::END);
 
 	CreateDebugDrawObject();
-
-	{
-		m_pCameraObject = new CGameObjectEx;
-		m_pCameraObject->SetName(L"Editor Camera");
-
-		m_pCameraObject->AddComponent(new CTransform);
-		m_pCameraObject->AddComponent(new CCamera);
-		m_pCameraObject->AddComponent(new CCameraScript);
-		m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
-		m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
-		m_pCameraObject->Camera()->SetLayerMask(1);
-		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
-		CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
-	}
+	CreateCamera();
 
 	{
 		// LandScape Ãß°¡
@@ -163,14 +150,13 @@ void CEditor::init()
 	{
 		Ptr<CMeshData> pMeshData = nullptr;
 		CGameObject* pObj = nullptr;
-		pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\House.fbx");
-		pMeshData->Save(pMeshData->GetRelativePath());
-
+		//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\arene_stage.FBX");
+		pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\arene_stage.mdat");
 		pObj = pMeshData->Instantiate();
-		pObj->SetName(L"House");
+		pObj->SetName(L"arene_stage");
 		pObject = new CGameObjectEx(*pObj);
 		delete pObj;
-		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"House", pObject);
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"arene_stage", pObject);
 	}
 	/*
 	* Component List
@@ -207,17 +193,14 @@ void CEditor::progress()
 	if (LEVEL_STATE::PLAY != CLevelMgr::GetInst()->GetCurLevel()->GetState())
 	{
 		tick();
-		render();
 	}
 	//Debug Shape
-	debug_render();
 }
 
 void CEditor::tickObj()
 {
 	for (auto iter{ m_EditorObj[(UINT)m_editmode].begin() }; iter != m_EditorObj[(UINT)m_editmode].end(); ++iter)
 	{
-		if (L"EditLandScape" != iter->first)
 			iter->second->tick();
 	}
 
@@ -271,6 +254,7 @@ void CEditor::finaltickObj()
 	m_pCameraObject->finaltick();
 
 	m_pCameraObject->Camera()->SortObject(vec);
+	m_pEnvCameraObj->Camera()->SortObject(vec);
 }
 
 void CEditor::tick()
@@ -421,6 +405,37 @@ void CEditor::CreateDebugDrawObject()
 	m_DebugDrawObject[(UINT)DEBUG_SHAPE::FRUSTUM] = pDebugObj;
 }
 
+void CEditor::CreateCamera()
+{
+	CGameObjectEx* pObj{};
+
+	{
+		m_pCameraObject = new CGameObjectEx;
+		m_pCameraObject->SetName(L"EditorCamera");
+
+		m_pCameraObject->AddComponent(new CTransform);
+		m_pCameraObject->AddComponent(new CCamera);
+		m_pCameraObject->AddComponent(new CCameraScript);
+		m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
+		m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
+		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
+		CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
+	}
+
+	{
+		m_pEnvCameraObj = new CGameObjectEx;
+		m_pEnvCameraObj->SetName(L"EnvCamera");
+		
+		m_pEnvCameraObj->AddComponent(new CTransform);
+		m_pEnvCameraObj->AddComponent(new CCamera);
+		m_pEnvCameraObj->AddComponent(new CCollider3D);
+		m_pEnvCameraObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+		m_pEnvCameraObj->Camera()->SetProjType(PERSPECTIVE);
+		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
+		CRenderMgr::GetInst()->SetEnvCamera(m_pEnvCameraObj->Camera());
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EnvCamera", m_pEnvCameraObj);
+	}
+}
 
 void CEditor::DebugDraw(tDebugShapeInfo& _info)
 {
@@ -447,7 +462,7 @@ void CEditor::DebugDraw(tDebugShapeInfo& _info)
 	g_transform.matProj = CRenderMgr::GetInst()->GetMainCam()->GetProjMat();
 
 	pDebugObj->MeshRender()->SetInstancingType(INSTANCING_TYPE::NONE);
-	//pDebugObj->render();
+	pDebugObj->render();
 }
 
 void CEditor::Add_Editobject(EDIT_MODE _emode, CGameObjectEx* _pGameObject)
@@ -486,7 +501,7 @@ void CEditor::Add_Editobject(EDIT_MODE _emode, const wchar_t* _pName, CGameObjec
 CGameObjectEx* CEditor::FindByName(const wstring& _strky)
 {
 
-	if (!lstrcmp(_strky.c_str(), L"Editor Camera"))
+	if (!lstrcmp(_strky.c_str(), L"EditorCamera"))
 	{
 		return m_pCameraObject;
 	}
