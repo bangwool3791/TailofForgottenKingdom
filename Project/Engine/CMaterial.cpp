@@ -10,7 +10,10 @@ CMaterial::CMaterial()
 	, m_tConst{}
 	, m_arrTex{}
 {
-
+	m_tConst.mtrl.vDiff = Vec4(1.f, 1.f, 1.f, 1.f);
+	m_tConst.mtrl.vSpec = Vec4(1.f, 1.f, 1.f, 1.f);
+	m_tConst.mtrl.vAmb = Vec4(1.f, 1.f, 1.f, 1.f);
+	m_tConst.mtrl.vEmv = Vec4(1.f, 1.f, 1.f, 1.f);
 }
 
 CMaterial::CMaterial(bool _bEngineRes)

@@ -1,5 +1,8 @@
 #include "pch.h"
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CParticleDefault.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CPaintShader.cpp"
 
 
@@ -42,6 +45,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShader.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShadowMapShader.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSkyBox.cpp"
 
 
@@ -52,7 +58,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CStructuredBuffer.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CTexture.cpp"
 

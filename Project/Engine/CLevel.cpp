@@ -2,7 +2,7 @@
 #include "CLevel.h"
 
 CLevel::CLevel()
-	:m_State{LEVEL_STATE::STOP}
+	:m_State{LEVEL_STATE::LOADER}
 {
 	m_arrLayer[0].SetName(L"Default");
 

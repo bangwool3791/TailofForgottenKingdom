@@ -6,6 +6,7 @@
 #include "CTransform.h"
 #include "CCamera.h"
 
+#include "CPaintShader.h"
 #include "CRenderMgr.h"
 #include "CKeyMgr.h"
 
@@ -56,10 +57,10 @@ void CLandScape::finaltick()
 {
 	Raycasting();
 
-	if (LANDSCAPE_MOD::NONE == m_eMod)
-	{
-		return;
-	}
+	//if (LANDSCAPE_MOD::NONE == m_eMod)
+	//{
+	//	return;
+	//}
 
 	/*
 	* CS 레이 캐스트 결과 가져온다.

@@ -375,6 +375,9 @@ void ContentUI::FindContentFileName(const wstring& _strFolderPath)
 		}
 		else
 		{
+			if (_strFolderPath.find(L"fbx\\") != std::string::npos)
+				continue;
+
 			wstring strRelative = GetRelativePath(CPathMgr::GetInst()->GetContentPath(), _strFolderPath + data.cFileName);
 			m_vecContentName.push_back(strRelative);
 		}

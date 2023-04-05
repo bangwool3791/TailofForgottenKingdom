@@ -58,7 +58,7 @@ enum class SHADER_DOMAIN
 
 	DOMAIN_TRANSPARENT,  // 반투명
 	DOMAIN_POST_PROCESS, // 후처리	    
-
+	DOMAIN_UI,			 // UI	  
 	// Engine 차원에서 처리 
 	DOMAIN_LIGHT,				// 광원 처리
 	NONE,
@@ -330,6 +330,7 @@ enum class LEVEL_STATE
 	PLAY,
 	STOP,
 	PAUSE,
+	LOADER,
 };
 
 enum TAP_CATEGORY
@@ -392,7 +393,6 @@ enum class MRT_TYPE
 	BLUR,
 	BLOOM,
 	SHADOW,
-	ENVBOX,
 	FRONT,
 	BACK,
 	LEFT,

@@ -3,7 +3,7 @@
 #include "CRenderMgr.h"
 #include "CTransform.h"
 #include "CAnimator2D.h"
-
+#include "CAnimator3D.h"
 CMeshRender::CMeshRender()
 	:CRenderComponent{ COMPONENT_TYPE::MESHRENDER }
 {
@@ -62,6 +62,20 @@ void CMeshRender::render()
 		Animator2D()->UpdateData();
 	}
 
+	// Animator3D 업데이트
+	if (Animator3D())
+	{
+		Animator3D()->UpdateData();
+
+		for (size_t i = 0; i < GetMtrlCount(); ++i)
+		{
+			if (nullptr == GetCurMaterial(i))
+				continue;
+			GetCurMaterial(i)->SetAnim3D(true); // Animation Mesh 알리기
+			GetCurMaterial(i)->SetBoneCount(Animator3D()->GetBoneCount());
+		}
+	}
+
 	// 사용할 재질 업데이트
 	UINT iSubsetCount = GetMesh()->GetSubsetCount();
 
@@ -80,6 +94,9 @@ void CMeshRender::render()
 
 	if (Animator2D())
 		Animator2D()->Clear();
+
+	if (Animator3D())
+		Animator3D()->ClearData();
 }
 
 void CMeshRender::render_Instancing()

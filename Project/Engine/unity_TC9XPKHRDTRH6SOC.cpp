@@ -1,5 +1,11 @@
 #include "pch.h"
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFrustum.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CHeightMapShader.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CImage.cpp"
 
 
@@ -52,7 +58,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMeshRender.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CParticleDefault.cpp"
 

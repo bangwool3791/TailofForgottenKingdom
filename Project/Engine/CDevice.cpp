@@ -239,19 +239,6 @@ int CDevice::CreateSampler()
 		desc.BorderColor[i] = 0.f;
 	hr = DEVICE->CreateSamplerState(&desc, m_arrSampler[(UINT)SAMPLER_TYPE::SHADOW].GetAddressOf());
 
-	//desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	//desc.MipLODBias = 0.0f;
-	//desc.MaxAnisotropy = 1;
-	//desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	//desc.BorderColor[0] = 0.f;
-	//desc.BorderColor[1] = 0.f;
-	//desc.BorderColor[2] = 0.f;
-	//desc.BorderColor[3] = 0.f;
-	//desc.MinLOD = 0;
-	//desc.MaxLOD = D3D11_FLOAT32_MAX;
-	//desc.AddressU = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-	//desc.AddressV = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
-	//desc.AddressW = D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP;
 	// »ùÇÃ·¯ ¹ÙÀÎµù
 	CONTEXT->VSSetSamplers((UINT)SAMPLER_TYPE::ANISOTROPIC, 1, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());
 	CONTEXT->HSSetSamplers((UINT)SAMPLER_TYPE::ANISOTROPIC, 1, m_arrSampler[(UINT)SAMPLER_TYPE::ANISOTROPIC].GetAddressOf());
@@ -386,12 +373,24 @@ int CDevice::CreateBlendState()
 {
 	HRESULT hr = S_OK;
 
-	// Default ºí·»µù
-	m_arrBS[(UINT)BS_TYPE::DEFAULT] = nullptr;
-
-
-
 	D3D11_BLEND_DESC desc = {};
+
+	// Default ºí·»µù	
+	desc.AlphaToCoverageEnable = false;
+	desc.IndependentBlendEnable = false;
+
+	desc.RenderTarget[0].BlendEnable = true;
+	desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+
+	desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	hr = DEVICE->CreateBlendState(&desc, m_arrBS[(UINT)BS_TYPE::DEFAULT].GetAddressOf());
 
 
 	// Alpha Blend

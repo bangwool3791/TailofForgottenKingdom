@@ -62,6 +62,8 @@ CEditor::~CEditor()
 }
 
 #include "TileMapUI.h"
+#include <Engine\CPaintShader.h>
+#include <Engine\CShadowMapShader.h>
 
 void CEditor::init()
 {
@@ -118,13 +120,14 @@ void CEditor::init()
 		pDirLight->AddComponent(new CLight3D);
 
 		pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
-		pDirLight->Transform()->SetRelativeRotation(Vec3(XM_PI / 4.f, 0.f, 0.f));
+		pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
+
+		pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+		pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
 
 		pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 		pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
 		pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
-		pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
-		pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
 		//pDirLight->SetType(OBJ_TYPE::EDIT);
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
 	}
@@ -136,27 +139,59 @@ void CEditor::init()
 		pObject->AddComponent(new CTransform);
 		pObject->AddComponent(new CMeshRender);
 		pObject->AddComponent(new CCollider3D);
-
+		
 		pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
 		pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
-
+		
 		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
 		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
 		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
 		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
+		//
+		//pObject = new CGameObjectEx;
+		//pObject->SetName(L"Rect");
+		//
+		//pObject->AddComponent(new CTransform);
+		//pObject->AddComponent(new CMeshRender);
+		//
+		//pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 500.f));
+		//pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 0.f));
+		//
+		//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
+		//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
+		//pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"ShadowAdjacentTex"));
+		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Rect", pObject);
+	
 	}
 
 	{
-		Ptr<CMeshData> pMeshData = nullptr;
-		CGameObject* pObj = nullptr;
-		//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\arene_stage.FBX");
-		pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\arene_stage.mdat");
-		pObj = pMeshData->Instantiate();
-		pObj->SetName(L"arene_stage");
-		pObject = new CGameObjectEx(*pObj);
-		delete pObj;
-		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"arene_stage", pObject);
+		// ============
+		// FBX Loading
+		// ============	
+		{
+			Ptr<CMeshData> pMeshData = nullptr;
+			CGameObject* pObj = nullptr;
+			pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\monster.fbx");
+			pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\monster.mdat");
+
+			pObj = pMeshData->Instantiate();
+			pObj->SetName(L"Monster");
+			pObj->Transform()->SetRelativeScale(10.f, 10.f, 10.f);
+			CGameObjectEx* pObjEx = new CGameObjectEx(*pObj);
+			delete pObj;
+			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Monster", pObjEx);
+		}
+
+		//Ptr<CMeshData> pMeshData = nullptr;
+		//CGameObject* pObj = nullptr;
+		//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\Animal_Bass.FBX");
+		//pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\Animal_Bass.mdat");
+		//pObj = pMeshData->Instantiate();
+		//pObj->SetName(L"Animal_Bass");
+		//pObject = new CGameObjectEx(*pObj);
+		//delete pObj;
+		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Animal_Bass", pObject);
 	}
 	/*
 	* Component List

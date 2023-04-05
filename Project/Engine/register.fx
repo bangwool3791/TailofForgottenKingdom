@@ -93,6 +93,11 @@ cbuffer MATERIAL : register(b1)
     int g_padding_0;
     int g_padding_1;
     int g_padding_2;
+
+    // 3D Animation 정보
+    int     g_iAnim;
+    int     g_iBoneCount;
+    int2    padding;
 };
 
 cbuffer GLOBAL : register(b2)
@@ -104,7 +109,7 @@ cbuffer GLOBAL : register(b2)
 
     float   g_fAccTime;
     float   g_fDT;
-}
+};
 
 cbuffer ANIM2DINFO : register(b3)
 {
@@ -115,7 +120,7 @@ cbuffer ANIM2DINFO : register(b3)
 
     int     g_iAnim2DUse;
     int3    iPadding;
-}
+};
 
 // 텍스쳐 레지스터
 Texture2D g_tex_0 : register(t0);
@@ -161,12 +166,13 @@ StructuredBuffer<tLightInfo> g_Light2DBuffer : register(t55);
 StructuredBuffer<tLightInfo> g_Light3DBuffer : register(t56);
 
 
-StructuredBuffer<tTile>       g_TileBuffer     : register(t56);
+StructuredBuffer<tTile> g_TileBuffer : register(t56);
 
 /*
 * Instancing object
 */
-StructuredBuffer<tRenderInfo> g_RenderInfo   : register(t57);
+StructuredBuffer<tRenderInfo> g_RenderInfo : register(t57);
+StructuredBuffer<Matrix> g_arrBoneMat : register(t58);
 // Noise Texture
 Texture2D g_Noise : register(t58);
 

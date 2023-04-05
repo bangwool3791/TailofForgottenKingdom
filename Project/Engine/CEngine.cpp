@@ -87,7 +87,7 @@ void CEngine::finaltick()
 
 void CEngine::render()
 {
-	CRenderMgr::GetInst()->render();
+	//CRenderMgr::GetInst()->render();
 
 	CTimeMgr::GetInst()->render();
 	/*

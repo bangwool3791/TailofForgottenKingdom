@@ -135,7 +135,6 @@ void CreateDefaultObj(CLevel* pLevel)
 	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
 	pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
 	pLevel->AddGameObject(pObject, 1);
-
 	// ============
 	// FBX Loading
 	// ============	

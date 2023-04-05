@@ -4,6 +4,7 @@
 class CComponent;
 class CCamera;
 class CAnimator2D;
+class CAnimator3D;
 class CTransform;
 class CLight2D;
 class CLight3D;
@@ -76,6 +77,7 @@ public:
 	GET_COMPONENT(Collider2D, COLLIDER2D);
 	GET_COMPONENT(Collider3D, COLLIDER3D);
 	GET_COMPONENT(Animator2D, ANIMATOR2D);
+	GET_COMPONENT(Animator3D, ANIMATOR3D);
 	GET_COMPONENT(Light2D, LIGHT2D);
 	GET_COMPONENT(Light3D, LIGHT3D);
 	GET_COMPONENT(ParticleSystem, PARTICLESYSTEM);

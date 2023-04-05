@@ -3,45 +3,45 @@
 #include "CSound.h"
 
 CResMgr::CResMgr()
-	:m_vecLayoutInfo{}
-	, m_iLayoutOffset{0}
+    :m_vecLayoutInfo{}
+    , m_iLayoutOffset{ 0 }
 {
-	for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
-	{
-		m_arrRes[i] = {};
-	}
+    for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
+    {
+        m_arrRes[i] = {};
+    }
 }
 
 CResMgr::~CResMgr()
 {
-	for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
-	{
-		Safe_Del_Map(m_arrRes[i]);
-	}
-	//CSound::g_pFMOD->release();
+    for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
+    {
+        Safe_Del_Map(m_arrRes[i]);
+    }
+    //CSound::g_pFMOD->release();
 }
 
 bool CResMgr::DeleteRes(RES_TYPE _Type, const wstring& _strKey)
 {
-	map<wstring, Ptr<CRes>>::iterator iter = m_arrRes[(UINT)_Type].find(_strKey);
+    map<wstring, Ptr<CRes>>::iterator iter = m_arrRes[(UINT)_Type].find(_strKey);
 
-	if (m_arrRes[(UINT)_Type].end() != iter)
-	{
-		m_arrRes[(UINT)_Type].erase(iter);
-		m_bChanged = true;
-		return true;
-	}
+    if (m_arrRes[(UINT)_Type].end() != iter)
+    {
+        m_arrRes[(UINT)_Type].erase(iter);
+        m_bChanged = true;
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 void CResMgr::tick()
 {
-	m_bChanged = false;
+    m_bChanged = false;
 }
 
 
-Vec3 CResMgr::GetCircleVector(size_t i, size_t tessellation) 
+Vec3 CResMgr::GetCircleVector(size_t i, size_t tessellation)
 {
     const float angle = float(i) * XM_2PI / float(tessellation);
     float       sin;
@@ -111,7 +111,6 @@ void CResMgr::AddRes(const wstring& _strKey, RES_TYPE _type, CRes* _pRes)
 
     _pRes->SetKey(_strKey);
     m_arrRes[(UINT)_type].insert(make_pair(_strKey, _pRes));
-
     m_bChanged = true;
 }
 
@@ -145,9 +144,6 @@ Ptr<CMeshData> CResMgr::LoadFBX(const wstring& _strPath)
     pMeshData->SetRelativePath(strName);
     pMeshData->m_bEngineRes = true;
     m_arrRes[(UINT)RES_TYPE::MESHDATA].insert(make_pair(strName, pMeshData.Get()));
-
-    // meshdata 를 실제파일로 저장
-    pMeshData->Save(strName);
 
     return pMeshData;
 }

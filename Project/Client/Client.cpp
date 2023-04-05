@@ -28,12 +28,12 @@ void                D3DMemoryLeakCheck();
 LRESULT CALLBACK mouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
- {
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPWSTR    lpCmdLine,
+    _In_ int       nCmdShow)
+{
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-   //_CrtSetBreakAlloc(10223);
+    //_CrtSetBreakAlloc(10223);
 
     srand(0);
 
@@ -42,7 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // 애플리케이션 초기화를 수행합니다:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance(hInstance, nCmdShow))
     {
         return FALSE;
     }
@@ -66,10 +66,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //GUI 주석
     CEditor::GetInst()->init();
 
-   // 주석 끝
-    // 기본 메시지 루프입니다:
+    // 주석 끝
+     // 기본 메시지 루프입니다:
 
-    //g_Hook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, hInstance, NULL);
+     //g_Hook = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, hInstance, NULL);
     vector<CGameObject*> vec{};
 
     while (true)
@@ -90,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             CEngine::GetInst()->progress();
             //GUI 주석
             CEditor::GetInst()->progress();
-            
+
             auto map = CEditor::GetInst()->GetEdiotrObj(EDIT_MODE::MAPTOOL);
 
             for (auto iter = map.begin(); iter != map.end(); ++iter)
@@ -98,10 +98,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 vec.push_back((CGameObject*)iter->second);
             }
             CEngine::GetInst()->render(vec);
-            /*
-            * Object Swapchain render -> debug object render
-            */
-            CEditor::GetInst()->debug_render();
+
             vec.clear();
 
             CImGuiMgr::GetInst()->progress();
@@ -112,7 +109,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
     UnhookWindowsHookEx(g_Hook);
     D3DMemoryLeakCheck();
-    return (int) msg.wParam;
+    return (int)msg.wParam;
 }
 
 
@@ -128,17 +125,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_CLIENT);
-    wcex.lpszClassName  = L"Client";
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_CLIENT));
+    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_CLIENT);
+    wcex.lpszClassName = L"Client";
+    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
 }
@@ -155,20 +152,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+    g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   g_hWnd = CreateWindowW(L"Client", L"Client", WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+    g_hWnd = CreateWindowW(L"Client", L"Client", WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-   if (!g_hWnd)
-   {
-      return FALSE;
-   }
+    if (!g_hWnd)
+    {
+        return FALSE;
+    }
 
-   ShowWindow(g_hWnd, nCmdShow);
-   UpdateWindow(g_hWnd);
+    ShowWindow(g_hWnd, nCmdShow);
+    UpdateWindow(g_hWnd);
 
-   return TRUE;
+    return TRUE;
 }
 
 //
@@ -280,13 +277,13 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 void D3DMemoryLeakCheck()
 {
     HMODULE dxgidebugdll = GetModuleHandleW(L"DXGIDebug.dll");
-    decltype(&DXGIGetDebugInterface) GetDebugInterface = reinterpret_cast<decltype(& DXGIGetDebugInterface)>(GetProcAddress(dxgidebugdll, "DXGIGetDebugInterface"));
+    decltype(&DXGIGetDebugInterface) GetDebugInterface = reinterpret_cast<decltype(&DXGIGetDebugInterface)>(GetProcAddress(dxgidebugdll, "DXGIGetDebugInterface"));
     IDXGIDebug* debug;
     GetDebugInterface(IID_PPV_ARGS(&debug));
     OutputDebugStringW(L"▽▽▽▽▽▽▽▽▽ Direct3D Object ref count 메모리 누수 체크 ▽▽▽▽▽▽▽▽▽\r\n");
-  //  debug->ReportLiveObjects(DXGI_DEBUG_D3D11, DXGI_DEBUG_RLO_DETAIL);
+    //  debug->ReportLiveObjects(DXGI_DEBUG_D3D11, DXGI_DEBUG_RLO_DETAIL);
     OutputDebugStringW(L"△△△△△△△△△ 반환되지 않은 IUnkown 객체가 있을경우 위에 나타납니다. △△△△△△△△△\r\n");
 
     debug->Release();
-   // decltype GetDebugInterface = 
+    // decltype GetDebugInterface = 
 }

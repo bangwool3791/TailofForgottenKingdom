@@ -19,7 +19,7 @@ private:
 	vector<tAnim2DFrm>	m_vecFrm;
 	int					m_iCurIdx;
 
-	CAnimator2D* m_pOwner;
+	CAnimator2D*		m_pOwner;
 	Ptr<CTexture>		m_AtlasTex;
 
 	float				m_fAccTime;

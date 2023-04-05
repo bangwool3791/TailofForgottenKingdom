@@ -90,7 +90,7 @@ void Safe_Del_Array(T* (&_arr)[SIZE])
 template<typename T>
 void Safe_Del_Array(T& arr)
 {
-	for (auto Iter{ arr.begin()}; Iter != arr.end(); ++Iter)
+	for (auto Iter{ arr.begin() }; Iter != arr.end(); ++Iter)
 	{
 		delete* Iter;
 		(*Iter) = nullptr;
@@ -101,7 +101,7 @@ template<typename T>
 void Safe_Del_Vec(vector<T*>& _vec)
 {
 	//typename vector<T*>::iterator iter = _vec.begin();
-	for (size_t i{}; i <  _vec.size(); ++i)
+	for (size_t i{}; i < _vec.size(); ++i)
 	{
 		if (nullptr != (_vec[i]))
 			delete (_vec[i]);
@@ -225,8 +225,10 @@ void DebugDrawCircle(Vec4 _vColor, Vec3 _vPosition, float _fRadius, float _fDura
 void DebugDrawCube(Vec4 _vColor, Vec3 _vPosition, Vec3 _vScale, Vec3 _vRotation, float _fDuration = 0.f);
 void DebugDrawSphere(Vec4 _vColor, Vec3 _vPosition, float _fRadius, float _fDuration = 0.f);
 void DebugDrawCone(Vec4 _vColor, Vec3 _vPosition, Vec3 _vScale, Vec3 _vRotation, float _fDuration = 0.f);
-void DebugDrawFrustum(Vec4 _vColor, Vec3 _vPosition,Vec3 _vRotation, float _fDuration = 0.f);
+void DebugDrawFrustum(Vec4 _vColor, Vec3 _vPosition, Vec3 _vRotation, float _fDuration = 0.f);
 #endif
+
+Matrix GetMatrixFromFbxMatrix(FbxAMatrix& _mat);
 
 bool closeEnough(const float& a, const float& b
 	, const float& epsilon = std::numeric_limits<float>::epsilon());

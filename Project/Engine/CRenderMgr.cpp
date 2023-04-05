@@ -48,6 +48,25 @@ void CRenderMgr::tick()
 	m_vecLight3D.clear();
 }
 
+void CRenderMgr::clear()
+{
+	// MRT 타겟 클리어
+	ClearMRT();
+
+	UpdateNoiseTexture();
+
+	UpdateLight2D();
+
+	UpdateLight3D();
+
+	static CConstBuffer* pGlobalCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::GLOBAL);
+	pGlobalCB->SetData(&g_global);
+	pGlobalCB->UpdateData(PIPELINE_STAGE::ALL_STAGE);
+	pGlobalCB->UpdateData_CS();
+}
+
+#include "CLevelMgr.h"
+
 void CRenderMgr::render()
 {
 	clear();
@@ -84,25 +103,6 @@ void CRenderMgr::render(const vector<CGameObject*>& obj)
 	//GUI 주석 끝
 }
 
-void CRenderMgr::clear()
-{
-	// MRT 타겟 클리어
-	ClearMRT();
-
-	UpdateNoiseTexture();
-
-	UpdateLight2D();
-
-	UpdateLight3D();
-
-	static CConstBuffer* pGlobalCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::GLOBAL);
-	pGlobalCB->SetData(&g_global);
-	pGlobalCB->UpdateData(PIPELINE_STAGE::ALL_STAGE);
-	pGlobalCB->UpdateData_CS();
-}
-
-#include "CLevelMgr.h"
-
 void CRenderMgr::render_game()
 {
 	render_dynamic_shadowdepth();
@@ -113,6 +113,22 @@ void CRenderMgr::render_game()
 
 		(*elem)->render();
 	}
+}
+
+void CRenderMgr::render_editor()
+{
+	assert(m_EditorCam);
+	render_dynamic_shadowdepth();
+
+	m_EditorCam->EditorRender();
+}
+
+void CRenderMgr::render_editor(const vector<CGameObject*>& obj)
+{
+	assert(m_EditorCam);
+	render_dynamic_shadowdepth(obj);
+
+	m_EditorCam->EditorRender();
 }
 
 
@@ -136,22 +152,6 @@ void CRenderMgr::render_dynamic_shadowdepth(const vector<CGameObject*>& obj)
 		if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
 			m_vecLight3D[i]->render_depthmap(obj);
 	}
-}
-
-void CRenderMgr::render_editor()
-{
-	assert(m_EditorCam);
-	render_dynamic_shadowdepth();
-
-	m_EditorCam->EditorRender();
-}
-
-void CRenderMgr::render_editor(const vector<CGameObject*>& obj)
-{
-	assert(m_EditorCam);
-	render_dynamic_shadowdepth(obj);
-
-	m_EditorCam->EditorRender();
 }
 
 void CRenderMgr::render_env(const vector<CGameObject*>& obj, const wstring& texName, wstring path)
@@ -203,24 +203,6 @@ void CRenderMgr::render_env(const vector<CGameObject*>& obj, const wstring& texN
 		temp.insert(iLen - 4, str[i]);
 		vecTex[i]->SaveTexture(temp);
 	}
-	
-
-	/*
-	* Texture 6장 불러와서 Cube Texture를 만든다.
-	*/
-//	Ptr<CTexture> pTex = CResMgr::GetInst()->CreateCubeTexture(texName, vecTex);
-//
-//	if (nullptr == pTex)
-//		return;
-//	else
-//		pTex->SaveTextureArray(path);
-}
-
-void CRenderMgr::DebugDraw(DEBUG_SHAPE _eShape, Vec4 _vColor, Vec3 _vPosition, Vec3 _vScale, Vec3 _vRotation, float _fRadius, float _fDuration)
-{
-#ifdef _DEBUG
-	m_DebugDrawInfo.push_back(tDebugShapeInfo{ _eShape, _vColor, _vPosition, _vScale, _vRotation, _fRadius, _fDuration, 0.f });
-#endif
 }
 
 void CRenderMgr::UpdateNoiseTexture()
@@ -242,7 +224,7 @@ void CRenderMgr::UpdateLight2D()
 	{
 		m_pLight2DBuffer->Create(m_pLight2DBuffer->GetElementsSize(), (UINT)m_vecLight2D.size(), SB_TYPE::SRV_ONLY, nullptr, true);
 	}
-		
+
 	/*
 	* 구조체 버퍼안에, 조명 정보를 입력한다.
 	*/
@@ -286,7 +268,7 @@ void CRenderMgr::UpdateLight3D()
 void CRenderMgr::CopyRenderTarget()
 {
 	static Ptr<CTexture> RTTex = CResMgr::GetInst()->FindRes<CTexture>(L"RenderTargetTex");
-	
+
 	ID3D11ShaderResourceView* SRV = nullptr;
 
 	CONTEXT->PSSetShaderResources(60, 1, &SRV);

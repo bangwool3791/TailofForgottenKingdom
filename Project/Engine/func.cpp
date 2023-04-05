@@ -243,3 +243,16 @@ Vec3 DecomposeRotMat(const Matrix& _matRot)
 	}
 	return vNewRot;
 }
+
+Matrix GetMatrixFromFbxMatrix(FbxAMatrix& _mat)
+{
+	Matrix mat;
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			mat.m[i][j] = (float)_mat.Get(i, j);
+		}
+	}
+	return mat;
+}

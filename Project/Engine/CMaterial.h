@@ -30,6 +30,9 @@ public :
 	void SetTexParam(TEX_PARAM _eTex, Ptr<CTexture> _pTex);
 	Ptr<CTexture> GetTexParam(TEX_PARAM _eTexParam) { return m_arrTex[(UINT)_eTexParam]; }
 
+	void SetAnim3D(bool _bTrue) { m_tConst.arrAnimData[0] = (int)_bTrue; }
+	void SetBoneCount(int _iBoneCount) { m_tConst.arrAnimData[1] = _iBoneCount; }
+
 	void UpdateData();
 	static void Clear();
 

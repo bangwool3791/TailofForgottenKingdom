@@ -30,6 +30,12 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CLoader.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CLoadingLevel.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Collider3DUI.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CSaveLoadMgr.cpp"
 
 
@@ -43,31 +49,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ImGuiFileDialog.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ImGuizmo.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\imgui_filedialog.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\MenuUI.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ComponentUI.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ContentUI.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\DummyUI.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Func.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\imgui.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\imgui_demo.cpp"
 

@@ -14,7 +14,7 @@ CPaintShader::~CPaintShader()
 
 void CPaintShader::UpdateData()
 {
-	m_pTargetTex->UpdateData_CS(0, true);
+	m_pTargetTex->UpdateData_CS(0, false);
 
 	// 그룹 수 계산
 	m_iGroupX = m_pTargetTex->GetWidth() / m_iGroupPerThreadX + 1;

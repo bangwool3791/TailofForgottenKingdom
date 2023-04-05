@@ -261,9 +261,7 @@ void CCamera::render()
 	g_transform.matProj = m_matProj;
 	g_transform.matProjInv = m_matProjInv;
 	g_transform.matReflect = m_matReflect;
-	/*
-	* 여기서 행렬 세팅 -> render transform 업데이트
-	*/
+
 	SortObject();
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DEFERRED)->OMSet();
 	render_deferred();
@@ -296,10 +294,6 @@ void CCamera::render()
 
 	render_transparent();
 	render_postprocess();
-
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DEFERRED);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::DECAL);
-	//CRenderMgr::GetInst()->ClearMRT(MRT_TYPE::LIGHT);
 }
 
 void CCamera::EditorRender()
@@ -550,6 +544,12 @@ void CCamera::render_postprocess()
 	}
 }
 
+void CCamera::render_ui()
+{
+	for (auto iter{ m_vecUi.begin() }; iter != m_vecUi.end(); ++iter)
+		(*iter)->render();
+}
+
 void CCamera::SetLayerMask(const wstring& _strLayerName)
 {
 	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurLevel();
@@ -578,6 +578,8 @@ void CCamera::SortObject()
 	m_vecMask.clear();
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
+	m_vecUi.clear();
+
 	Clear_VecOfMap(m_mapOpaqueVec);
 	Clear_VecOfMap(m_mapMaskVec);
 	Clear_VecOfMap(m_mapDecalVec);
@@ -710,6 +712,9 @@ void CCamera::SortObject()
 				break;
 				case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
 					m_vecPostProcess.push_back(vecGameObject[j]);
+					break;
+				case SHADER_DOMAIN::DOMAIN_UI:
+					m_vecUi.push_back(vecGameObject[j]);
 					break;
 				}
 			}

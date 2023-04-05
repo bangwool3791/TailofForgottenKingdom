@@ -25,18 +25,15 @@ void CRenderMgr::init()
 	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"SpecularTargetTex"));
 	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"DecalTargetTex"));
 
-	float a = 4.f;
+	float a = 1.f;
 	pMtrl->SetScalarParam(FLOAT_1, &a);
-	a = 0.6f;
+	a = 1.f;
 	pMtrl->SetScalarParam(FLOAT_2, &a);
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DirLightMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
 	pMtrl->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"NormalTargetTex"));
 	pMtrl->SetTexParam(TEX_2, CResMgr::GetInst()->FindRes<CTexture>(L"DataTargetTex"));
-	pMtrl->SetTexParam(TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"FbxDiffuseTargetTex"));
-	pMtrl->SetTexParam(TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"FbxSpecularTargetTex"));
-	pMtrl->SetTexParam(TEX_5, CResMgr::GetInst()->FindRes<CTexture>(L"FbxAmbientTargetTex"));
 
 	pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"PointLightMtrl");
 	pMtrl->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
@@ -131,23 +128,6 @@ void CRenderMgr::CreateMRT()
 			CResMgr::GetInst()->CreateTexture(L"DataTargetTex"
 			, vRenderResolution.x, vRenderResolution.y
 			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-
-
-			CResMgr::GetInst()->CreateTexture(L"FbxDiffuseTargetTex"
-			, vRenderResolution.x, vRenderResolution.y
-			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-
-
-			CResMgr::GetInst()->CreateTexture(L"FbxSpecularTargetTex"
-			, vRenderResolution.x, vRenderResolution.y
-			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-
-
-			CResMgr::GetInst()->CreateTexture(L"FbxAmbientTargetTex"
-			, vRenderResolution.x, vRenderResolution.y
-			, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
-			
-
 			/*CResMgr::GetInst()->CreateTexture(L"EmissiveTargetTex"
 								, vRenderResolution.x, vRenderResolution.y
 								, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),*/
@@ -306,7 +286,10 @@ void CRenderMgr::CreateMRT()
 
 			m_arrMRT[(UINT)MRT_TYPE::SHADOW] = new CMRT;
 			m_arrMRT[(UINT)MRT_TYPE::SHADOW]->Create(arrRTTex, arrClear, pDepthStencilTex);
+
 		}
+
+
 	}
 }
 

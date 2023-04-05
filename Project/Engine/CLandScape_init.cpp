@@ -144,6 +144,7 @@ void CLandScape::CreateMaterial()
 	{
 		m_pCSWeightMap = new CWeightMapShader;
 		m_pCSWeightMap->CreateComputeShader(L"shader\\weightmap.fx", "CS_WeightMap");
+		m_pCSWeightMap->SetKey(L"WeightMapShader");
 		AddRes(m_pCSWeightMap.Get(), RES_TYPE::COMPUTE_SHADER);
 	}
 }
@@ -274,12 +275,24 @@ void CLandScape::SetBrushMap(Ptr<CTexture> _pTex)
 	m_pCSHeightMap->SetBrushTex(m_pBrushTex);
 }
 
+void CLandScape::SetShadowMap(Ptr<CTexture> _pTex)
+{
+	m_pCSShadowMap->SetShwdowMapTex(_pTex);
+}
+
+void CLandScape::SetTargetMap(Ptr<CTexture> _pTex)
+{
+	m_pCSShadowMap->SetShadowValidTex(_pTex);
+}
+
 void CLandScape::Update_HeightMap()
 {
 	Ptr<CMaterial> pMtrl = GetSharedMaterial(0);
 	Vec2 vResolution = Vec2(m_pHeightMap->GetWidth(), m_pHeightMap->GetHeight());
+
 	pMtrl->SetScalarParam(SCALAR_PARAM::VEC2_0, &vResolution);
 	pMtrl->SetTexParam(TEX_PARAM::TEX_0, m_pHeightMap);
+
 	m_pCSRaycast->SetHeightMap(m_pHeightMap);
 	m_pCSHeightMap->SetHeightMap(m_pHeightMap);
 }

@@ -2,7 +2,7 @@
 #include "UI.h"
 
 class TreeUI;
-class CGameObject;
+class CGameObjectEx;
 
 class ContentUI :
     public UI

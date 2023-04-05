@@ -292,6 +292,21 @@
     <Filter Include="Engine\14. FBXLoader">
       <UniqueIdentifier>{36e54512-2859-4884-b1a9-0c913c885c08}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Compute\LandScape\ShadowMap">
+      <UniqueIdentifier>{54a2e529-6b79-4632-a589-9ffda8a0b64d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\11. Animation3D">
+      <UniqueIdentifier>{04903dda-b094-49dc-80bd-5b13447625c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\Compute\Animation3D">
+      <UniqueIdentifier>{61af34b5-c73b-46db-9f7a-c38ecedc7317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\11. Animation3D\CAnimation3D">
+      <UniqueIdentifier>{7e0f4896-824d-446e-87a8-afb17f53d2af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\11. Animation3D\CAnimator3D">
+      <UniqueIdentifier>{b12a6319-9037-4118-b66d-0f0347b6bcff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -600,6 +615,18 @@
     <ClInclude Include="CFBXLoader.h">
       <Filter>Engine\14. FBXLoader</Filter>
     </ClInclude>
+    <ClInclude Include="CShadowMapShader.h">
+      <Filter>HLSL\Compute\LandScape\ShadowMap</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnimation3DShader.h">
+      <Filter>HLSL\Compute\Animation3D</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnimation3D.h">
+      <Filter>Engine\06. Component\11. Animation3D\CAnimation3D</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnimator3D.h">
+      <Filter>Engine\06. Component\11. Animation3D\CAnimator3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -854,6 +881,18 @@
     <ClCompile Include="CFBXLoader.cpp">
       <Filter>Engine\14. FBXLoader</Filter>
     </ClCompile>
+    <ClCompile Include="CShadowMapShader.cpp">
+      <Filter>HLSL\Compute\LandScape\ShadowMap</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimation3DShader.cpp">
+      <Filter>HLSL\Compute\Animation3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimation3D.cpp">
+      <Filter>Engine\06. Component\11. Animation3D\CAnimation3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimator3D.cpp">
+      <Filter>Engine\06. Component\11. Animation3D\CAnimator3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="register.fx">
@@ -1002,6 +1041,12 @@
     </FxCompile>
     <FxCompile Include="std3d.fx">
       <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="shadowmap.fx">
+      <Filter>HLSL\Compute\LandScape\ShadowMap</Filter>
+    </FxCompile>
+    <FxCompile Include="animation3d.fx">
+      <Filter>HLSL\Compute\Animation3D</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

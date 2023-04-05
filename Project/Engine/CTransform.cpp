@@ -208,7 +208,6 @@ bool CTransform::Picking(const Ray& _ray, Vec3& _vPos)
 		vPos = XMVector3TransformCoord(vertices[i].vPos, m_matWorld);
 		m_vecPoint.push_back(vPos);
 	}
-	cout << "Vec Å©±â " << m_vecPoint.size() << endl;
 
 	for (UINT i = 0; i < verts; i += 3)
 	{

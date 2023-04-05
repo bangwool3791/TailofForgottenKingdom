@@ -15,19 +15,6 @@ static void Text(ImVec4 _vColor, Vec2 _vSize, string _str)
 	ImGui::PopID();
 }
 
-static void HelpMarker(const char* desc)
-{
-	ImGui::TextDisabled("(?)");
-	if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
-	{
-		ImGui::BeginTooltip();
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::TextUnformatted(desc);
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
-	}
-}
-
 static float ConvertRadianToDegree(float _fRadian)
 {
 	return _fRadian / XM_PI * 180;

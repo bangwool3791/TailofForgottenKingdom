@@ -8,7 +8,7 @@
 #include "CAnimator2DUI.h"
 #include "TransformUI.h"
 #include "MeshRenderUI.h"
-#include "Collider2DUI.h"
+#include "Collider3DUI.h"
 #include "ShadowUI.h"
 #include "Light2DUI.h"
 #include "MeshUI.h"
@@ -39,16 +39,16 @@ InspectorUI::InspectorUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::MESHRENDER]->SetSize(ImVec2(0.f, 150.f));
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::MESHRENDER]);
 
-	m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER2D] = new Collider2DUI;
-	m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER2D]->SetSize(ImVec2(0.f, 150.f));
-	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER2D]);
+	m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER3D] = new Collider3DUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER3D]->SetSize(ImVec2(0.f, 150.f));
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER3D]);
 
 	//m_arrComUI[(UINT)COMPONENT_TYPE::SCRIPT] = new ShadowUI;
 	//AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::SCRIPT]);
 
-	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D] = new CAnimator2DUI;
-	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D]->SetSize(ImVec2(0.f, 150.f));
-	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D]);
+	//m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D] = new CAnimator2DUI;
+	//m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D]->SetSize(ImVec2(0.f, 150.f));
+	//AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D]);
 	//m_arrObjUI[(UINT)OBJECT_TYPE::LIGHT2D] = new Light2DUI;
 	//m_arrObjUI[(UINT)OBJECT_TYPE::LIGHT2D]->SetSize(ImVec2(0.f, 150.f));
 	//AddChild(m_arrObjUI[(UINT)OBJECT_TYPE::LIGHT2D]);

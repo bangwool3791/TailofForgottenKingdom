@@ -52,6 +52,7 @@ public:
 	array<CComponent*, (UINT)COMPONENT_TYPE::END>& GetArrComponents() { return m_arrCom; }
 	CComponent* GetArrComponent(COMPONENT_TYPE _eType) { return m_arrCom[(UINT)_eType]; }
 	CGameObjectEx* FindByName(const wstring& _strky);
+	const map<const wchar_t*, CGameObjectEx*>& GetRenderObj() { return m_EditorObj[(UINT)m_editmode]; }
 	const map<const wchar_t*, CGameObjectEx*>& GetEdiotrObj(EDIT_MODE _eType) { return m_EditorObj[(UINT)_eType]; }
 	void PopByName(const wstring& _strky);
 private:

@@ -187,10 +187,15 @@ void CImGuiMgr::Guizmo()
         }
     }
 }
+#include <Engine\CLevelMgr.h>
+#include <Engine\CLevel.h>
+
 void CImGuiMgr::progress()
 {
     //알림 확인
-    ObserveContent();
+    
+    if(LEVEL_STATE::LOADER != CLevelMgr::GetInst()->GetCurLevel()->GetState())
+        ObserveContent();
 
     EDIT_MODE mode = CEditor::GetInst()->GetEditMode();
 

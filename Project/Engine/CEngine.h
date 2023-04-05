@@ -1,6 +1,8 @@
 #pragma once
 #include "Waves.h"
 
+class CCamera;
+
 class CEngine
 	: public CSingleton<CEngine>
 {

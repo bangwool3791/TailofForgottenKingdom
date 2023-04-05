@@ -118,4 +118,15 @@ struct tRaycastOut
     int success;
 };
 
+//스킨 정보
+struct tSkinningInfo
+{
+    //위치
+    float3 vPos;
+    //TBN
+    float3 vTangent;
+    float3 vBinormal;
+    float3 vNormal;
+};
+
 #endif

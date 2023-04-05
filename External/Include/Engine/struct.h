@@ -17,6 +17,9 @@ struct Vtx
 	Vec3 vTangent;
 	Vec3 vBinormal;
 	Vec3 vNormal;
+
+	Vec4 vWeights;
+	Vec4 vIndices;
 };
 
 struct tEvent
@@ -37,28 +40,6 @@ struct tTile
 	UINT		iInfo;
 };
 
-struct tAnim2DFrm
-{
-	Vec2 vLeftTop;
-	Vec2 vSlice;
-	Vec2 vOffset;
-	Vec2 vFullSize;
-	float fDuration;
-};
-
-struct tAnim2DInfo
-{
-	Vec2 vLeftTop;
-	Vec2 vSlice;
-	Vec2 vOffset;
-	Vec2 vFullSize;
-
-	int iAnim2DUse;
-	/*
-	* .fx 파일에서 16바이트 단위로 데이터 전달 필요
-	*/
-	int iPaading[3];
-};
 struct tDebugShapeInfo
 {
 	DEBUG_SHAPE eShape;
@@ -127,13 +108,8 @@ struct tMtrlConst
 	Matrix matArr[4];
 
 	int HasTex[(UINT)TEX_PARAM::TEX_END];
-};
 
-struct tObjectRender
-{
-	tTransform transform;
-	tMtrlConst mtrl;
-	tAnim2DInfo animation;
+	int	arrAnimData[4];	// 3D Animation 정보
 };
 
 struct tLightInfo
@@ -268,6 +244,113 @@ struct tRaycastOut
 struct tWeight_4
 {
 	float arrWeight[4];
+};
+
+// ============
+// Animation 2D
+// ============
+struct tAnim2DFrm
+{
+	Vec2 vLeftTop;
+	Vec2 vSlice;
+	Vec2 vOffset;
+	Vec2 vFullSize;
+	float fDuration;
+};
+
+// ============
+// Animation 3D
+// ============
+struct tAnim3DFrm
+{
+	double dStart;
+	double dEnd;
+	UINT   iFrameCount;
+	bool   bRepeat;
+};
+
+struct tAnim2DInfo
+{
+	Vec2 vLeftTop;
+	Vec2 vSlice;
+	Vec2 vOffset;
+	Vec2 vFullSize;
+
+	int iAnim2DUse;
+	/*
+	* .fx 파일에서 16바이트 단위로 데이터 전달 필요
+	*/
+	int iPaading[3];
+};
+
+struct tObjectRender
+{
+	tTransform transform;
+	tMtrlConst mtrl;
+	tAnim2DInfo animation;
+};
+
+// ============
+// Animation 3D
+// ============
+
+struct tFrameTrans
+{
+	Vec4	vTranslate;
+	Vec4	vScale;
+	Vec4	qRot;
+};
+
+struct tMTKeyFrame
+{
+	//시간
+	double  dTime;
+	//프레임
+	int	    iFrame;
+	//이동
+	Vec3	vTranslate;
+	//크기
+	Vec3	vScale;
+	//회전
+	Vec4	qRot;
+};
+
+struct tMTBone
+{
+	//뼈 이름
+	wstring				strBoneName;
+	//뼈 깊이
+	int					iDepth;
+	//부모 인덱스
+	int					iParentIndx;
+	//부모->자신 행렬 곱
+	Matrix				matOffset;
+	//미 사용
+	Matrix				matBone;
+	//프레임 정보
+	vector<tMTKeyFrame> vecKeyFrame;
+};
+
+//애니메이션 정보
+struct tMTAnimClip
+{
+	//애니메이션 이름
+	wstring			strAnimName;
+	//시작 프레임
+	int				iStartFrame;
+	//끝 프레임
+	int				iEndFrame;
+	//프레임 길이
+	int				iFrameLength;
+	//시작 시간
+	double			dStartTime;
+	//끝 시간
+	double			dEndTime;
+	//시간 길이
+	double			dTimeLength;
+	float			fUpdateTime;
+	//애니메이션 프레임 정보
+	FbxTime::EMode	eMode;
 };
 
 extern tGlobalData g_global;

@@ -57,6 +57,7 @@ private:
 
     map<const wstring, vector<CGameObject*>> m_mapTransparentVec;
     vector<CGameObject* >                    m_vecPostProcess;
+    vector<CGameObject* >                    m_vecUi;
 
     CStructuredBuffer* m_pObjectRenderBuffer;
 
@@ -69,7 +70,7 @@ private:
     void render_decal();
     void render_transparent();
     void render_postprocess();
-    void render_ui() {}
+    void render_ui();
     //void update_render(Ptr<CMesh> p);
 public:
     void            InitializeEnvView(Vec3 vEyePos);

@@ -2,6 +2,7 @@
 #include "CRenderComponent.h"
 
 #include "CTransform.h"
+#include "CAnimator3D.h"
 
 CRenderComponent::CRenderComponent(COMPONENT_TYPE _eComponentType)
 	:CComponent(_eComponentType)
@@ -101,9 +102,27 @@ void CRenderComponent::render_depthmap()
 
 	Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DepthMapMtrl");
 
+	// Animator3D 업데이트
+	if (Animator3D())
+	{
+		Animator3D()->UpdateData();
+		pMtrl->SetAnim3D(true);
+		pMtrl->SetBoneCount(Animator3D()->GetBoneCount());
+	}
+
+	// 사용할 재질 업데이트
 	pMtrl->UpdateData();
 
-	m_pMesh->render(0);
+	UINT iSubsetCount = GetMesh()->GetSubsetCount();
+
+	for (int i = 0; i < iSubsetCount; ++i)
+	{
+		// 사용할 메쉬 업데이트 및 렌더링
+		GetMesh()->render(i);
+	}
+	pMtrl->SetAnim3D(false); // Animation Mesh 알리기
+	//뼈 개수 0
+	pMtrl->SetBoneCount(0);
 }
 
 void CRenderComponent::SaveToFile(FILE* _File)

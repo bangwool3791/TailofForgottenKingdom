@@ -52,19 +52,14 @@ void CFBXLoader::init()
 		assert(NULL);
 }
 
-/*
-* https://cpp.hotexamples.com/examples/-/FbxImporter/Initialize/cpp-fbximporter-initialize-method-examples.html
-*/
 void CFBXLoader::LoadFbx(const wstring& _strPath)
 {
 	m_vecContainer.clear();
 
-	//Fbx를 불러오는 클래스 생성
 	m_pImporter = FbxImporter::Create(m_pManager, "");
 
 	//wstring str = wstring_convert<codecvt_utf8<wchar_t>>().from_bytes(strName.c_str());
 	string strPath(_strPath.begin(), _strPath.end());
-
 
 	if (!m_pImporter->Initialize(strPath.c_str(), -1, m_pManager->GetIOSettings()))
 		assert(nullptr);
@@ -77,18 +72,13 @@ void CFBXLoader::LoadFbx(const wstring& _strPath)
 	DesireAxis.ConvertScene(m_pScene);
 	originAxis = m_pScene->GetGlobalSettings().GetAxisSystem();*/
 
-	//! Predefined axis system: Max (UpVector = +Z, FrontVector = -Y, CoordSystem = +X (RightHanded))
 	m_pScene->GetGlobalSettings().SetAxisSystem(FbxAxisSystem::Max);
 
 	// Bone 정보 읽기
-	// m_vecBone 뼈 전체 정보 저장
 	LoadSkeleton(m_pScene->GetRootNode());
 
 	// Animation 이름정보 
-	/** Fill a string array with all existing animation stack names.
-		* The array of string is cleared before it is used
-		* \param pNameArray An array of string objects.
-		*/
+	// 라이브러리 사용
 	m_pScene->FillAnimStackNameArray(m_arrAnimName);
 
 	// Animation Clip 정보
@@ -114,14 +104,11 @@ void CFBXLoader::LoadMeshDataFromNode(FbxNode* _pNode)
 	// 노드의 메쉬정보 읽기
 	FbxNodeAttribute* pAttr = _pNode->GetNodeAttribute();
 
+	//속성 타입 Mesh
 	if (pAttr && FbxNodeAttribute::eMesh == pAttr->GetAttributeType())
 	{
-		/*
-		* 글로벌좌표계에서의 translation, rotation, scaling은 변환 행렬을 통해 표현될 수 있는데 
-		* 이 변환행렬은  FbxNode::EvaluateGlobalTransform().를 통해 얻을 수 있다.
-		*/
+		//Rotation 행렬 정보 
 		FbxAMatrix matGlobal = _pNode->EvaluateGlobalTransform();
-		//삭제 필요
 		matGlobal.GetR();
 
 		FbxMesh* pMesh = _pNode->GetMesh();
@@ -144,6 +131,7 @@ void CFBXLoader::LoadMeshDataFromNode(FbxNode* _pNode)
 	int iChildCnt = _pNode->GetChildCount();
 	for (int i = 0; i < iChildCnt; ++i)
 	{
+		//Get Child Node
 		LoadMeshDataFromNode(_pNode->GetChild(i));
 	}
 }
@@ -152,16 +140,16 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 {
 	m_vecContainer.push_back(tContainer{});
 	tContainer& Container = m_vecContainer[m_vecContainer.size() - 1];
-
+	//Mesh 이름 Get
 	string strName = _pFbxMesh->GetName();
 	Container.strName = wstring(strName.begin(), strName.end());
-
-	//제어점 포인트를 가져온다.
+	//Vtx Cnt Get
 	int iVtxCnt = _pFbxMesh->GetControlPointsCount();
+	//Container Vtx Size 조절
 	Container.Resize(iVtxCnt);
 
 	FbxVector4* pFbxPos = _pFbxMesh->GetControlPoints();
-
+	//Position 정보 Get
 	for (int i = 0; i < iVtxCnt; ++i)
 	{
 		Container.vecPos[i].x = (float)pFbxPos[i].mData[0];
@@ -174,9 +162,11 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 
 	// 재질의 개수 ( ==> SubSet 개수 ==> Index Buffer Count)
 	int iMtrlCnt = _pFbxMesh->GetNode()->GetMaterialCount();
+	//인덱스 버퍼 크기 -> 머터리얼 개수
 	Container.vecIdx.resize(iMtrlCnt);
 
 	// 정점 정보가 속한 subset 을 알기위해서...
+	// Subset 하위 정보
 	FbxGeometryElementMaterial* pMtrl = _pFbxMesh->GetElementMaterial();
 
 	// 폴리곤을 구성하는 정점 개수
@@ -187,6 +177,8 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 	UINT arrIdx[3] = {};
 	UINT iVtxOrder = 0; // 폴리곤 순서로 접근하는 순번
 
+	//Polygon 개수 만큼
+	//Polygon 삼각형 이므로 3개씩
 	for (int i = 0; i < iPolyCnt; ++i)
 	{
 		for (int j = 0; j < iPolySize; ++j)
@@ -194,7 +186,7 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 			// i 번째 폴리곤에, j 번째 정점
 			int iIdx = _pFbxMesh->GetPolygonVertex(i, j);
 			arrIdx[j] = iIdx;
-
+			//TBN, UV 좌표 Get
 			GetTangent(_pFbxMesh, &Container, iIdx, iVtxOrder);
 			GetBinormal(_pFbxMesh, &Container, iIdx, iVtxOrder);
 			GetNormal(_pFbxMesh, &Container, iIdx, iVtxOrder);
@@ -202,6 +194,7 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 
 			++iVtxOrder;
 		}
+		//하위 메시 정점 정보 저장
 		UINT iSubsetIdx = pMtrl->GetIndexArray().GetAt(i);
 		Container.vecIdx[iSubsetIdx].push_back(arrIdx[0]);
 		Container.vecIdx[iSubsetIdx].push_back(arrIdx[2]);
@@ -210,7 +203,7 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 
 	LoadAnimationData(_pFbxMesh, &Container);
 }
-
+//Diffuse, Amb, Spec(Texture) Load
 void CFBXLoader::LoadMaterial(FbxSurfaceMaterial* _pMtrlSur)
 {
 	tFbxMaterial tMtrlInfo{};
@@ -261,7 +254,6 @@ void CFBXLoader::GetTangent(FbxMesh* _pMesh
 	FbxGeometryElementTangent* pTangent = _pMesh->GetElementTangent();
 	UINT iTangentIdx = 0;
 
-	//폴리곤 정점이면
 	if (pTangent->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
 	{
 		if (pTangent->GetReferenceMode() == FbxGeometryElement::eDirect)
@@ -269,7 +261,6 @@ void CFBXLoader::GetTangent(FbxMesh* _pMesh
 		else
 			iTangentIdx = pTangent->GetIndexArray().GetAt(_iVtxOrder);
 	}
-	//제어점이면
 	else if (pTangent->GetMappingMode() == FbxGeometryElement::eByControlPoint)
 	{
 		if (pTangent->GetReferenceMode() == FbxGeometryElement::eDirect)
@@ -438,15 +429,13 @@ void CFBXLoader::LoadTexture()
 				path_filename = vecPath[k].filename();
 				path_dest = path_fbx_texture.wstring() + path_filename.wstring();
 
-				//존재한다면 이미 생성 된 Texture
 				if (false == exists(path_dest))
 				{
 					copy(path_origin, path_dest);
 				}
 
 				path_dest = GetRelativePath(CPathMgr::GetInst()->GetContentPath(), path_dest);
-				Ptr<CTexture> pTex = CResMgr::GetInst()->Load<CTexture>(path_dest, path_dest);
-				pTex->GenerateMip(8);
+				CResMgr::GetInst()->Load<CTexture>(path_dest, path_dest);
 
 				switch (k)
 				{
@@ -457,15 +446,11 @@ void CFBXLoader::LoadTexture()
 				}
 			}
 		}
-		//path_origin = path_origin.parent_path();
-		//remove_all(path_origin);
+		path_origin = path_origin.parent_path();
+		remove_all(path_origin);
 	}
 }
 
-/*
-* 재질 생성 함수
-* m_vecContainer 저장 된 Material 정보(string)로 CMaterial 생성 저장
-*/
 void CFBXLoader::CreateMaterial()
 {
 	wstring strMtrlName;
@@ -477,12 +462,10 @@ void CFBXLoader::CreateMaterial()
 		{
 			// Material 이름짓기
 			strMtrlName = m_vecContainer[i].vecMtrl[j].strMtrlName;
-			/*
-			* 경로에서 이름, 확장자, 확장자를 제외한 이름 가져오기 name, suffix, stem
-			*/
 			if (strMtrlName.empty())
 				strMtrlName = path(m_vecContainer[i].vecMtrl[j].strDiff).stem();
 
+			//String 정보 프로젝트 맞게 변경
 			strPath = L"material\\";
 			strPath += strMtrlName + L".mtrl";
 
@@ -501,7 +484,7 @@ void CFBXLoader::CreateMaterial()
 			pMaterial->SetRelativePath(strPath);
 
 			pMaterial->SetShader(CResMgr::GetInst()->FindRes<CGraphicsShader>(L"Std3DDeferredShader"));
-
+			//Diff, Amb, Spec 텍스쳐 Set			
 			wstring strTexKey = m_vecContainer[i].vecMtrl[j].strDiff;
 			Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(strTexKey);
 			if (NULL != pTex)
@@ -522,105 +505,105 @@ void CFBXLoader::CreateMaterial()
 			if (NULL != pTex)
 				pMaterial->SetTexParam(TEX_PARAM::TEX_3, pTex.Get());
 
-
+			//Diff, Spec, Amb, vEmv Set
 			pMaterial->SetMaterialCoefficient(
 				m_vecContainer[i].vecMtrl[j].tMtrl.vDiff
 				, m_vecContainer[i].vecMtrl[j].tMtrl.vSpec
 				, m_vecContainer[i].vecMtrl[j].tMtrl.vAmb
 				, m_vecContainer[i].vecMtrl[j].tMtrl.vEmv);
 
+			//Material Res Add
 			CResMgr::GetInst()->AddRes<CMaterial>(pMaterial->GetKey(), pMaterial.Get());
+			//Save
 			pMaterial->Save(strPath);
 		}
 	}
 }
 
-/*
-* FbxNode 자식 정보를 받아와서.
-*/
 void CFBXLoader::LoadSkeleton(FbxNode* _pNode)
 {
 	int iChildCount = _pNode->GetChildCount();
 
 	LoadSkeleton_Re(_pNode, 0, 0, -1);
 }
-
+//재귀 함수, Bone 정보 읽어온다.
 void CFBXLoader::LoadSkeleton_Re(FbxNode* _pNode, int _iDepth, int _iIdx, int _iParentIdx)
 {
-	//노드 속성 정보 포인터를 받아오고
+	//Fbx Node 속성 
 	FbxNodeAttribute* pAttr = _pNode->GetNodeAttribute();
-
-	//뼈라면
+	//속성 Type eSkeleton
 	if (pAttr && pAttr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 	{
+		//본생성
 		tBone* pBone = new tBone;
 
 		string strBoneName = _pNode->GetName();
-
+		//이름
 		pBone->strBoneName = wstring(strBoneName.begin(), strBoneName.end());
-		//뼈의 깊이를 받아온다.
+		//깊이
 		pBone->iDepth = _iDepth++;
-		//자신의 부모 인덱스를 설정한다.
+		//부모 인덱스 (Root -1)
 		pBone->iParentIndx = _iParentIdx;
-		//뼈 벡터에 저장한다.
+		//저장
 		m_vecBone.push_back(pBone);
 	}
-	//자식 카운트를 받아와서
+
 	int iChildCount = _pNode->GetChildCount();
 	for (int i = 0; i < iChildCount; ++i)
 	{
+		//자식 속성, 깊이 + 1, 현재 본 인덱스, 부모 본 인덱스
 		LoadSkeleton_Re(_pNode->GetChild(i), _iDepth, (int)m_vecBone.size(), _iIdx);
 	}
 }
 
-//애니메이션 시작시간, 끝 시간, 동작시간, 모드를 받아온다.
 void CFBXLoader::LoadAnimationClip()
-{	
-	//애니메이션 개수를 받아와서
+{
 	int iAnimCount = m_arrAnimName.GetCount();
 
+	//애니메이션 개수 만큼 Get
 	for (int i = 0; i < iAnimCount; ++i)
 	{
-		//이름 정보에서 FbxAnimStack 포인터를 받아온다.
 		FbxAnimStack* pAnimStack = m_pScene->FindMember<FbxAnimStack>(m_arrAnimName[i]->Buffer());
+
 
 		//FbxAnimEvaluator* pevaluator = m_pScene->GetAnimationEvaluator();
 		//m_pScene->SetCurrentAnimationStack();
+
+
 		if (!pAnimStack)
 			continue;
 
+		//클립 구조체 생성
 		tAnimClip* pAnimClip = new tAnimClip;
 
 		string strClipName = pAnimStack->GetName();
 		pAnimClip->strName = wstring(strClipName.begin(), strClipName.end());
-
+		//Scene 애니메이션 이름 -> Info get
 		FbxTakeInfo* pTakeInfo = m_pScene->GetTakeInfo(pAnimStack->GetName());
 		pAnimClip->tStartTime = pTakeInfo->mLocalTimeSpan.GetStart();
 		pAnimClip->tEndTime = pTakeInfo->mLocalTimeSpan.GetStop();
-
+		//프레임 enum 값
 		pAnimClip->eMode = m_pScene->GetGlobalSettings().GetTimeMode();
+		//Interval 계산
 		pAnimClip->llTimeLength = pAnimClip->tEndTime.GetFrameCount(pAnimClip->eMode) - pAnimClip->tStartTime.GetFrameCount(pAnimClip->eMode);
-		
+
+
+
 		m_vecAnimClip.push_back(pAnimClip);
 	}
 }
 
-/*
-* NURBS(Non-Uniform Rational B-Splines: 비균일 유리 B스플라인)는 
-  단순한 2D 선, 원, 호, 커브에서 가장 복잡한 3D의 유기적 자유 형상 서피스 또는 솔리드에 이르기까지, 
-  어떠한 형태도 정확하게 표현할 수 있는 수학적 표현 방법입니다. 
-  유연성과 정확성을 갖춘 NURBS 모델은 일러스트레이션, 애니메이션, 제조업 등의 어떤 과정에서도 사용할 수 있습니다
-  divide (an area) into triangles for surveying purposes.
-  */
 void CFBXLoader::Triangulate(FbxNode* _pNode)
 {
 	FbxNodeAttribute* pAttr = _pNode->GetNodeAttribute();
 
+	//메쉬, Surface, nurbs
 	if (pAttr &&
 		(pAttr->GetAttributeType() == FbxNodeAttribute::eMesh
 			|| pAttr->GetAttributeType() == FbxNodeAttribute::eNurbs
 			|| pAttr->GetAttributeType() == FbxNodeAttribute::eNurbsSurface))
 	{
+		//삼각화 
 		FbxGeometryConverter converter(m_pManager);
 		converter.Triangulate(pAttr, true);
 	}
@@ -637,9 +620,11 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 {
 	// Animation Data 로드할 필요가 없음
 	int iSkinCount = _pMesh->GetDeformerCount(FbxDeformer::eSkin);
+	//Skin 정보 0 또는 
 	if (iSkinCount <= 0 || m_vecAnimClip.empty())
 		return;
 
+	//FBX 애니메이션 정보 Set
 	_pContainer->bAnimation = true;
 
 	// Skin 개수만큼 반복을하며 읽는다.	
@@ -650,6 +635,7 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 		if (pSkin)
 		{
 			FbxSkin::EType eType = pSkin->GetSkinningType();
+			//스킨 타입 Rigid, Linear
 			if (FbxSkin::eRigid == eType || FbxSkin::eLinear)
 			{
 				// Cluster 를 얻어온다
@@ -658,10 +644,8 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 
 				for (int j = 0; j < iClusterCount; ++j)
 				{
-					//More precisely, the cluster acts on a subset of the geometry's control points. 
 					FbxCluster* pCluster = pSkin->GetCluster(j);
-					
-					//관절이 연결 되있지 않다면 conitnue
+					//관절이 Link되지 않으면 bone, weights, indices 정보 Get 건너 뛴다.
 					if (!pCluster->GetLink())
 						continue;
 
@@ -669,7 +653,7 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 					int iBoneIdx = FindBoneIndex(pCluster->GetLink()->GetName());
 					if (-1 == iBoneIdx)
 						assert(NULL);
-
+					//Mesh node 행렬 정보 Get
 					FbxAMatrix matNodeTransform = GetTransform(_pMesh->GetNode());
 
 					// Weights And Indices 정보를 읽는다.
@@ -684,6 +668,7 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 			}
 		}
 	}
+	//Weight, Bone Idx 정보가 Vec4 포맷이 아니면, 변경
 	CheckWeightAndIndices(_pMesh, _pContainer);
 }
 
@@ -708,6 +693,7 @@ void CFBXLoader::CheckWeightAndIndices(FbxMesh* _pMesh, tContainer* _pContainer)
 			double dWeight = 0.f;
 			for (UINT i = 0; i < (*iter).size(); ++i)
 			{
+				//모든 가중치 합 계산
 				dWeight += (*iter)[i].dWeight;
 			}
 
@@ -715,10 +701,11 @@ void CFBXLoader::CheckWeightAndIndices(FbxMesh* _pMesh, tContainer* _pContainer)
 			double revision = 0.f;
 			if (dWeight > 1.0)
 			{
+				//음수인데 ? 더해준다?
 				revision = 1.0 - dWeight;
 				(*iter)[0].dWeight += revision;
 			}
-
+			//그리고 4번째 이후 벡터를 삭제한다???
 			if ((*iter).size() >= 4)
 			{
 				(*iter).erase((*iter).begin() + 4, (*iter).end());
@@ -728,13 +715,13 @@ void CFBXLoader::CheckWeightAndIndices(FbxMesh* _pMesh, tContainer* _pContainer)
 		// 정점 정보로 변환, 
 		float fWeights[4] = {};
 		float fIndices[4] = {};
-
+		//크기4 벡터 순회
 		for (UINT i = 0; i < (*iter).size(); ++i)
 		{
 			fWeights[i] = (float)(*iter)[i].dWeight;
 			fIndices[i] = (float)(*iter)[i].iBoneIdx;
 		}
-
+		//Vec4 구조 weight, bone idx 저장
 		memcpy(&_pContainer->vecWeights[iVtxIdx], fWeights, sizeof(Vec4));
 		memcpy(&_pContainer->vecIndices[iVtxIdx], fIndices, sizeof(Vec4));
 	}
@@ -743,14 +730,13 @@ void CFBXLoader::CheckWeightAndIndices(FbxMesh* _pMesh, tContainer* _pContainer)
 void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	, const FbxAMatrix& _matNodeTransform, int _iBoneIdx, tContainer* _pContainer)
 {
+	//클립 데이터가 없으면 Animation 데이터 미 추출
 	if (m_vecAnimClip.empty())
 		return;
 
-	//right
+	//reflection 행렬 계산
 	FbxVector4	v1 = { 1, 0, 0, 0 };
-	//up
 	FbxVector4	v2 = { 0, 0, 1, 0 };
-	//front
 	FbxVector4	v3 = { 0, 1, 0, 0 };
 	FbxVector4	v4 = { 0, 0, 0, 1 };
 	FbxAMatrix	matReflect;
@@ -759,7 +745,6 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	matReflect.mData[2] = v3;
 	matReflect.mData[3] = v4;
 
-	//뼈 행렬은 Node 행렬
 	m_vecBone[_iBoneIdx]->matBone = _matNodeTransform;
 
 	FbxTime::EMode eTimeMode = m_pScene->GetGlobalSettings().GetTimeMode();
@@ -767,18 +752,17 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	FbxLongLong llStartFrame = m_vecAnimClip[0]->tStartTime.GetFrameCount(eTimeMode);
 	FbxLongLong llEndFrame = m_vecAnimClip[0]->tEndTime.GetFrameCount(eTimeMode);
 
+	//시작 프레임부터, 끝 프레임까지
 	for (FbxLongLong i = llStartFrame; i < llEndFrame; ++i)
 	{
+		//행렬 정보를 담는다.
 		tKeyFrame tFrame = {};
 		FbxTime   tTime = 0;
-
-		//프레임 설정
+		//현재 프레임, 시간 정보 저장
 		tTime.SetFrame(i, eTimeMode);
-
-		//_pNode->EvaluateGlobalTransform(tTime)
-		//월드 좌표 * 뼈 좌표
+		//현재 노드 행렬 * 최상위 행렬(?)
 		FbxAMatrix matFromNode = _pNode->EvaluateGlobalTransform(tTime) * _matNodeTransform;
-		//월드 좌표 * 뼈 좌표 * 현재 변환 행렬
+		//현재 행렬 정보 
 		FbxAMatrix matCurTrans = matFromNode.Inverse() * _pCluster->GetLink()->EvaluateGlobalTransform(tTime);
 		matCurTrans = matReflect * matCurTrans * matReflect;
 
@@ -789,20 +773,20 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 	}
 }
 
-/*
-* 뼈간 오프셋 행렬 
-*/
+//루트로부터 자신의 뼈위치까지 행렬을 계산
 void CFBXLoader::LoadOffsetMatrix(FbxCluster* _pCluster
 	, const FbxAMatrix& _matNodeTransform
 	, int _iBoneIdx, tContainer* _pContainer)
 {
 	FbxAMatrix matClusterTrans;
 	FbxAMatrix matClusterLinkTrans;
-
+	//관절 행렬 구한다.
 	_pCluster->GetTransformMatrix(matClusterTrans);
+	//관절과 링크 된 행렬 구한다.
 	_pCluster->GetTransformLinkMatrix(matClusterLinkTrans);
 
 	// Reflect Matrix
+	// x,z 평면 대칭이동
 	FbxVector4 V0 = { 1, 0, 0, 0 };
 	FbxVector4 V1 = { 0, 0, 1, 0 };
 	FbxVector4 V2 = { 0, 1, 0, 0 };
@@ -815,6 +799,8 @@ void CFBXLoader::LoadOffsetMatrix(FbxCluster* _pCluster
 	matReflect[3] = V3;
 
 	FbxAMatrix matOffset;
+	//_matNodeTransform 최상위 부모
+	//
 	matOffset = matClusterLinkTrans.Inverse() * matClusterTrans * _matNodeTransform;
 	matOffset = matReflect * matOffset * matReflect;
 
@@ -830,21 +816,27 @@ void CFBXLoader::LoadWeightsAndIndices(FbxCluster* _pCluster
 
 	for (int i = 0; i < iIndicesCount; ++i)
 	{
+		/*
+		* 	int		iBoneIdx;
+			double	dWeight;
+		*/
 		tWeightsAndIndices tWI = {};
 
 		// 각 정점에게 본 인덱스 정보와, 가중치 값을 알린다.
+		//뼈 인덱스 정보
 		tWI.iBoneIdx = _iBoneIdx;
+		//weight (행렬 연산에 얼마나 영향을 받을지) 
 		tWI.dWeight = _pCluster->GetControlPointWeights()[i];
-
+		//정점 인덱스 정보 Get
 		int iVtxIdx = _pCluster->GetControlPointIndices()[i];
 
+		//vecWI[iVtxIdx]-> Vec4 매핑
 		_pContainer->vecWI[iVtxIdx].push_back(tWI);
 	}
 }
 
-/*
-* 뼈 정보와 일치하는 인덱스 반환
-*/
+
+
 int CFBXLoader::FindBoneIndex(string _strBoneName)
 {
 	wstring strBoneName = wstring(_strBoneName.begin(), _strBoneName.end());

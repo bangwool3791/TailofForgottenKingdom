@@ -1,17 +1,6 @@
 #pragma once
 #include "global.h"
 
-
-// Fbx Loader
-#include <FBXLoader/fbxsdk.h>
-
-#ifdef _DEBUG
-#pragma comment(lib, "FBXLoader/x64/debug/libfbxsdk-md.lib")
-#else
-#pragma comment(lib, "FBXLoader/x64/release/libfbxsdk-md.lib")
-#endif
-
-
 //===============
 // Struct of FBX 
 //===============
@@ -96,7 +85,6 @@ class CFBXLoader
 {
 private:
 	FbxManager* m_pManager;
-	//http://docs.autodesk.com/FBX/2014/ENU/FBX-SDK-Documentation/index.html?url=cpp_ref/class_fbx_scene.html,topicNumber=cpp_ref_class_fbx_scene_htmldb2f0780-e2cb-4efb-b0a2-99b021e07bcd
 	FbxScene* m_pScene;
 	FbxImporter* m_pImporter;
 

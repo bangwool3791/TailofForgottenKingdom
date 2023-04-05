@@ -7,6 +7,7 @@
 #include "CGameObject.h"
 #include "CTransform.h"
 #include "CMeshRender.h"
+#include "CAnimator3D.h"
 
 #include "CFBXLoader.h"
 
@@ -32,6 +33,17 @@ CGameObject* CMeshData::Instantiate()
 		pNewObj->MeshRender()->SetSharedMaterial(m_vecMtrl[i], i);
 	}
 
+	// Animation 파트 추가
+	if (false == m_pMesh->IsAnimMesh())
+		return pNewObj;
+
+	CAnimator3D* pAnimator = new CAnimator3D;
+	pNewObj->AddComponent(pAnimator);
+
+	pAnimator->SetBones(m_pMesh->GetBones());
+	pAnimator->SetAnimClip(m_pMesh->GetAnimClip());
+
+
 	return pNewObj;
 }
 
@@ -47,7 +59,8 @@ CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath)
 	// 메쉬 가져오기
 	CMesh* pMesh = nullptr;
 	pMesh = CMesh::CreateFromContainer(loader);
-	pMesh->Read();
+	//멀티스레드에서 Read시 문제 발생
+	//pMesh->ReadByConsole();
 
 	// ResMgr 에 메쉬 등록
 	if (nullptr != pMesh)
