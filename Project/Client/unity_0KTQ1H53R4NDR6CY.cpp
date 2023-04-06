@@ -1,5 +1,8 @@
 #include "pch.h"
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\AnimationUI.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CAnimator2DUI.cpp"
 
 
@@ -46,7 +49,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CreateTestLevel.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ImGuiFileDialog.cpp"
 

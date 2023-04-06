@@ -254,13 +254,15 @@ void OutlinerUI::ResetLevel()
 void OutlinerUI::SetObject(DWORD_PTR _res)
 {
 	m_Node = (TreeNode*)_res;
+	m_pTargetObj = m_Node->GetGameObjectEx();
+	assert(m_pTargetObj);
 }
 
 void OutlinerUI::SetObjectToInspector(DWORD_PTR _res)
 {
 	// _res : 클릭한 노드
 	TreeNode* pSelectedNode = (TreeNode*)_res;
-	CGameObject* pObject = (CGameObject*)pSelectedNode->GetData();
+	CGameObjectEx* pObject = (CGameObjectEx*)pSelectedNode->GetData();
 
 	// InspectorUI 에 클릭된 Resouce 를 알려준다.
 	InspectorUI* Inspector = (InspectorUI*)CImGuiMgr::GetInst()->FindUI("Inspector");

@@ -39,7 +39,7 @@ CGameObject* CMeshData::Instantiate()
 
 	CAnimator3D* pAnimator = new CAnimator3D;
 	pNewObj->AddComponent(pAnimator);
-
+	pAnimator->begin();
 	pAnimator->SetBones(m_pMesh->GetBones());
 	pAnimator->SetAnimClip(m_pMesh->GetAnimClip());
 

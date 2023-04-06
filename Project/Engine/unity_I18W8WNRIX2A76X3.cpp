@@ -3,9 +3,6 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CAnimation2D.cpp"
 
 
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CAnimation3D.cpp"
-
-
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CAnimation3DShader.cpp"
 
 
@@ -58,4 +55,7 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFontMgr.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFrustum.cpp"
 

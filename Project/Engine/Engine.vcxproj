@@ -201,7 +201,6 @@ call EngineCopy.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="CAnimation2D.h" />
-    <ClInclude Include="CAnimation3D.h" />
     <ClInclude Include="CAnimation3DShader.h" />
     <ClInclude Include="CAnimator2D.h" />
     <ClInclude Include="CAnimator3D.h" />
@@ -328,7 +327,6 @@ call EngineCopy.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="CAnimation2D.cpp" />
-    <ClCompile Include="CAnimation3D.cpp" />
     <ClCompile Include="CAnimation3DShader.cpp" />
     <ClCompile Include="CAnimator2D.cpp" />
     <ClCompile Include="CAnimator3D.cpp" />

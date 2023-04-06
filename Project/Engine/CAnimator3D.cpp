@@ -50,23 +50,73 @@ CAnimator3D::~CAnimator3D()
 	SAFE_DELETE(m_pBoneFinalMatBuffer);
 }
 
+void CAnimator3D::begin() 
+{
+	/*
+	* 	double dStart;
+	double dEnd;
+	UINT   iFrameCount;
+	bool   bRepeat;
+	*/
+	m_mapAnimation.emplace(std::make_pair<wstring, tAnim3DFrm>(L"1", { 0, 10, 30, true }));
+	m_mapAnimation.emplace(std::make_pair<wstring, tAnim3DFrm>(L"2", { 11, 20, 30, true }));
+
+	m_tCurFrame = { 0, 5, 30, true };
+}
+
 void CAnimator3D::finaltick()
 {
-	m_dCurTime = 0.f;
-
-	m_vecClipUpdateTime[m_iCurClip] += DT;
-
-	//총 애니메이션 시간을 넘어가면 초기화
-	if (m_vecClipUpdateTime[m_iCurClip] >= m_pVecClip->at(m_iCurClip).dTimeLength)
+	if (KEY_PRESSED(KEY::NUM_1))
 	{
+		/*
+		* 1440 프레임 중 0~200 프레임 사용
+		*/
+		m_tCurFrame = { 0, 5, 30, true };
 		m_vecClipUpdateTime[m_iCurClip] = 0.f;
+		m_bEnd = false;
+	}
+	else if (KEY_PRESSED(KEY::NUM_2))
+	{
+		m_tCurFrame = { 6, 10, 30, false };
+		m_vecClipUpdateTime[m_iCurClip] = 0.f;
+		m_bEnd = false;
 	}
 
-	m_dCurTime = m_pVecClip->at(m_iCurClip).dStartTime + m_vecClipUpdateTime[m_iCurClip];
+	m_dCurTime = 0.f;
 
-	double dFrameIdx = m_dCurTime * (double)m_iFrameCount;
+	if (!m_bEnd)
+	{
+		if(!m_bPuase)
+			m_vecClipUpdateTime[m_iCurClip] += (double)(DT * m_fTimeScale);
+	}
 
-	m_iFrameIdx = (int)(dFrameIdx);
+	double dFrameIdx = 0.f;
+
+	if (!m_bPuase)
+	{
+		m_dCurTime = m_pVecClip->at(m_iCurClip).dStartTime + m_vecClipUpdateTime[m_iCurClip];
+
+		dFrameIdx = m_dCurTime * (double)m_iFrameCount + (double)m_tCurFrame.iStart;
+
+		m_iFrameIdx = (int)(dFrameIdx);
+	}
+
+	//총 애니메이션 시간을 넘어가면 초기화
+	
+	if (m_tCurFrame.bRepeat)
+	{
+		if (m_iFrameIdx >= m_tCurFrame.iEnd)
+		{
+			m_vecClipUpdateTime[m_iCurClip] = 0.f;
+		}
+	}
+	else
+	{
+		if (m_iFrameIdx >= m_tCurFrame.iEnd)
+		{
+			m_bEnd = true;
+		}
+	}
 
 	//인덱스가 넘어가면 초기화
 	if (m_iFrameIdx >= m_pVecClip->at(0).iFrameLength - 1)
@@ -81,7 +131,17 @@ void CAnimator3D::finaltick()
 	// 프레임간의 시간에 따른 비율을 구해준다.
 	// double 형 frameidx - int형 framidx
 	// 소수점만 남음
-	m_fRatio = (float)(dFrameIdx - (double)m_iFrameIdx);
+	if (!m_bPuase)
+	{
+		if (m_iFrameIdx >= m_tCurFrame.iEnd)
+		{
+			m_fRatio = 1.f;
+		}
+		else
+		{
+			m_fRatio = (float)(dFrameIdx - (double)m_iFrameIdx);
+		}
+	}
 
 	// 컴퓨트 쉐이더 연산여부
 	m_bFinalMatUpdate = false;
@@ -176,4 +236,55 @@ void CAnimator3D::SaveToFile(FILE* _pFile)
 
 void CAnimator3D::LoadFromFile(FILE* _pFile)
 {
+}
+
+void CAnimator3D::SetCurFrame(const wstring& _Key, tAnim3DFrm _tData)
+{
+	auto iter = m_mapAnimation.find(_Key);
+
+	if (iter != m_mapAnimation.end())
+	{
+		m_tCurFrame = iter->second = _tData;
+		m_bEnd = false;
+	}
+}
+
+void CAnimator3D::SetCurFrameKey(const wstring& _Key)
+{
+	auto iter = m_mapAnimation.find(_Key);
+
+	if (iter != m_mapAnimation.end())
+	{
+		m_tCurFrame = iter->second;
+		m_bEnd = false;
+	}
+}
+
+void CAnimator3D::Add_Frame(const wstring& _key, tAnim3DFrm _tData)
+{
+	wstring str = wstring(_key.begin(), _key.end());
+	m_mapAnimation.emplace(make_vlaue(str.c_str(), { _tData.iStart, _tData.iEnd, _tData.iFrameCount, _tData.bRepeat }));
+}
+
+const string& CAnimator3D::Delete(const wstring& _key)
+{
+	static string str;
+	m_mapAnimation.erase(_key);
+	
+	auto iter = m_mapAnimation.end();
+	--iter;
+	str = string(iter->first.begin(), iter->first.end());
+	return str;
+}
+
+void CAnimator3D::SetTimeScale(float& _dScale)
+{
+	if (0 < _dScale)
+	{
+		m_fTimeScale = (double)_dScale;
+	}
+	else
+	{
+		_dScale = 1.f;
+	}
 }

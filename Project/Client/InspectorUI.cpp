@@ -3,7 +3,7 @@
 
 #include <Engine/CRes.h>
 #include <Engine\CLevelMgr.h>
-#include <Engine\CGameObject.h>
+#include "CGameObjectEx.h"
 
 #include "CAnimator2DUI.h"
 #include "TransformUI.h"
@@ -105,7 +105,7 @@ void InspectorUI::render_update()
 
 }
 
-void InspectorUI::SetTargetObject(CGameObject* _Target)
+void InspectorUI::SetTargetObject(CGameObjectEx* _Target)
 {
 	// 리소스가 타겟인 상태였다면
 	if (nullptr != _Target && nullptr != m_TargetRes)
@@ -113,7 +113,7 @@ void InspectorUI::SetTargetObject(CGameObject* _Target)
 		SetTargetResource(nullptr);
 	}
 
-	if (nullptr == dynamic_cast<CGameObject*>(_Target))
+	if (nullptr == dynamic_cast<CGameObjectEx*>(_Target))
 		return;
 
 	m_TargetObj = _Target;

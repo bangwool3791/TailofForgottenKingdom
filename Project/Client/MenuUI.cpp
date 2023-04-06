@@ -7,8 +7,9 @@
 #include "CEditor.h"
 #include "CImGuiMgr.h"
 #include "OutlinerUI.h"
+#include "AnimationUI.h"
 
-#include <Engine\CGameObject.h>
+#include "CGameObjectEx.h"
 #include <Engine\CEventMgr.h>
 #include <Engine\CLevel.h>
 #include <Engine\CLevelMgr.h>
@@ -16,7 +17,7 @@
 #include <Script\CScriptMgr.h>
 MenuUI::MenuUI()
 	:UI("##MenuUI")
-    , m_eEditMode{EDIT_MODE::ANIMATOR }
+    , m_eEditMode{EDIT_MODE::MAPTOOL }
 {
 
 }
@@ -42,14 +43,29 @@ void MenuUI::render()
         {
             if (ImGui::MenuItem("Animator"))
             {
-                CEditor::GetInst()->SetEditMode(EDIT_MODE::ANIMATOR);
-                m_eEditMode = EDIT_MODE::ANIMATOR;
+                AnimationUI* pUI = (AnimationUI*)CImGuiMgr::GetInst()->FindUI("AnimationUI");
+                InspectorUI* Inspector = (InspectorUI*)CImGuiMgr::GetInst()->FindUI("Inspector");
+
+                CGameObjectEx* pObj = Inspector->GetTargetObject();
+                
+                if (nullptr == pObj)
+                {
+                    MessageBox(nullptr, L"타겟 오브젝트 nullptr", L"Error", MB_OK);
+                }
+                else if (nullptr == pObj->Animator3D())
+                {
+                    MessageBox(nullptr, L"타겟 오브젝트 Animation nullptr", L"Error", MB_OK);
+                }
+                else if (nullptr != pObj)
+                {
+                    CEditor::GetInst()->SetEditMode(EDIT_MODE::ANIMATOR);
+                    pUI->SetTargetObj(pObj);
+                }
             }
 
             if (ImGui::MenuItem("Maptool"))
             {
                 CEditor::GetInst()->SetEditMode(EDIT_MODE::MAPTOOL);
-                m_eEditMode = EDIT_MODE::MAPTOOL;
                 OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
                 pUI->ResetLevel();
             }
@@ -70,7 +86,7 @@ void MenuUI::render()
                     if (ImGui::MenuItem(vecScriptName[i].c_str()))
                     {
                         InspectorUI* pInspector = (InspectorUI*)CImGuiMgr::GetInst()->FindUI("Inspector");
-                        CGameObject* pTargetObject = pInspector->GetTargetObject();
+                        CGameObjectEx* pTargetObject = pInspector->GetTargetObject();
 
                         if (pTargetObject)
                         {

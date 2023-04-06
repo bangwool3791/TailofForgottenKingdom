@@ -1,7 +1,7 @@
 #pragma once
 #include "UI.h"
 
-class CGameObject;
+class CGameObjectEx;
 class ComponentUI;
 class ScriptUI;
 
@@ -15,7 +15,7 @@ class InspectorUI :
 private:
     vector<ScriptUI*>   m_vecScriptUI;
 
-    CGameObject*        m_TargetObj;
+    CGameObjectEx*        m_TargetObj;
     ComponentUI*        m_arrComUI[(UINT)COMPONENT_TYPE::END];
     ComponentUI*        m_arrObjUI[(UINT)OBJECT_TYPE::END];
 
@@ -23,10 +23,10 @@ private:
     ResUI*              m_arrResUI[(UINT)RES_TYPE::END];
 public:
 
-    void SetTargetObject(CGameObject* _Target);
+    void SetTargetObject(CGameObjectEx* _Target);
     void SetTargetResource(CRes* _Resource);
     void InitializeScriptUI();
-    CGameObject* GetTargetObject() { return m_TargetObj; }
+    CGameObjectEx* GetTargetObject() { return m_TargetObj; }
 private:
     virtual void update() override;
     virtual void render_update() override;

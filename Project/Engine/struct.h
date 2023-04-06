@@ -263,8 +263,8 @@ struct tAnim2DFrm
 // ============
 struct tAnim3DFrm
 {
-	double dStart;
-	double dEnd;
+	int iStart;
+	int iEnd;
 	UINT   iFrameCount;
 	bool   bRepeat;
 };

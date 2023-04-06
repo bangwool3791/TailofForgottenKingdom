@@ -44,11 +44,15 @@ private:
 private:
 	void CreateDebugDrawObject();
 	void CreateCamera();
+	void CreateLight();
 	void DebugDraw(tDebugShapeInfo& _info);
+	void Initialize_Outliner();
 public:
 	void UpdateAnimationObject(CGameObject* _pGameObject);
 	void Add_Editobject(EDIT_MODE _emode, CGameObjectEx* _pGameObject);
 	void Add_Editobject(EDIT_MODE _emode, const wchar_t* _pName, CGameObjectEx* _pGameObject);
+	void Delete_Animation3D_Object();
+	UINT Animation3D_Object_Size();
 	array<CComponent*, (UINT)COMPONENT_TYPE::END>& GetArrComponents() { return m_arrCom; }
 	CComponent* GetArrComponent(COMPONENT_TYPE _eType) { return m_arrCom[(UINT)_eType]; }
 	CGameObjectEx* FindByName(const wstring& _strky);

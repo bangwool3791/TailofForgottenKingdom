@@ -9,6 +9,7 @@ class OutlinerUI :
 	public UI
 {
 private:
+	CGameObjectEx* m_pTargetObj;
 	string		 m_strName;
 	string		 m_strComponentName;
 	string	     m_strScriptName;
@@ -27,7 +28,10 @@ private:
 	void AddGameObjectToTree(TreeNode* _ParentNode, CGameObject* _Object);
 
 	void AddChildObject(DWORD_PTR _ChildObject, DWORD_PTR _ParentObject);
-
+public:
+	CGameObjectEx* GetTargetObject() {
+		return m_pTargetObj;
+	}
 public :
 	OutlinerUI();
 	~OutlinerUI();

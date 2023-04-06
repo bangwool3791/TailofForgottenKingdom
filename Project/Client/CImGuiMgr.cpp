@@ -222,11 +222,9 @@ void CImGuiMgr::progress()
                     iter->second->update();
                 if ("Inspector" == iter->first)
                     iter->second->update();
-                if ("ComInspector" == iter->first)
-                    iter->second->update();
                 if ("MenuUI" == iter->first)
                     iter->second->update();
-                if ("ModelComUI" == iter->first)
+                if ("AnimationUI" == iter->first)
                     iter->second->update();
                 break;
             case EDIT_MODE::MAPTOOL:
@@ -278,13 +276,11 @@ void CImGuiMgr::progress()
                     iter->second->render();
                 else if ("Inspector" == iter->first)
                     iter->second->render();
-                else if ("ComInspector" == iter->first)
-                    iter->second->render();
                 else if ("##MenuUI" == iter->first)
                     iter->second->render();
-                else if ("ModelComUI" == iter->first)
-                    iter->second->render();
                 else if ("ListUI" == iter->first)
+                    iter->second->render();
+                if ("AnimationUI" == iter->first)
                     iter->second->render();
                 break;
             case EDIT_MODE::MAPTOOL:
@@ -359,6 +355,7 @@ void CImGuiMgr::clear()
 #include "ModelComUI.h"
 #include "MenuUI.h"
 #include "TileMapUI.h"
+#include "AnimationUI.h"
 #include "CEditor.h"
 
 void CImGuiMgr::CreateUI()
@@ -378,8 +375,8 @@ void CImGuiMgr::CreateUI()
     pUI->SetModal(true);
     m_mapUI.insert(make_pair(pUI->GetName(), pUI));
 
-    //pUI = new ModelComUI;
-    //m_mapUI.insert(make_pair(pUI->GetName(), pUI));
+    pUI = new AnimationUI;
+    m_mapUI.insert(make_pair(pUI->GetName(), pUI));
 
     pUI = new MenuUI;
     m_mapUI.insert(make_pair(pUI->GetName(), pUI));

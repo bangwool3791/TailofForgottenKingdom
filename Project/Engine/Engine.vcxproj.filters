@@ -301,9 +301,6 @@
     <Filter Include="HLSL\Compute\Animation3D">
       <UniqueIdentifier>{61af34b5-c73b-46db-9f7a-c38ecedc7317}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\06. Component\11. Animation3D\CAnimation3D">
-      <UniqueIdentifier>{7e0f4896-824d-446e-87a8-afb17f53d2af}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\06. Component\11. Animation3D\CAnimator3D">
       <UniqueIdentifier>{b12a6319-9037-4118-b66d-0f0347b6bcff}</UniqueIdentifier>
     </Filter>
@@ -621,9 +618,6 @@
     <ClInclude Include="CAnimation3DShader.h">
       <Filter>HLSL\Compute\Animation3D</Filter>
     </ClInclude>
-    <ClInclude Include="CAnimation3D.h">
-      <Filter>Engine\06. Component\11. Animation3D\CAnimation3D</Filter>
-    </ClInclude>
     <ClInclude Include="CAnimator3D.h">
       <Filter>Engine\06. Component\11. Animation3D\CAnimator3D</Filter>
     </ClInclude>
@@ -886,9 +880,6 @@
     </ClCompile>
     <ClCompile Include="CAnimation3DShader.cpp">
       <Filter>HLSL\Compute\Animation3D</Filter>
-    </ClCompile>
-    <ClCompile Include="CAnimation3D.cpp">
-      <Filter>Engine\06. Component\11. Animation3D\CAnimation3D</Filter>
     </ClCompile>
     <ClCompile Include="CAnimator3D.cpp">
       <Filter>Engine\06. Component\11. Animation3D\CAnimator3D</Filter>

@@ -153,6 +153,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationUI.h" />
     <ClInclude Include="CAnimator2DUI.h" />
     <ClInclude Include="CBorderScript.h" />
     <ClInclude Include="CBrushScript.h" />
@@ -212,6 +213,7 @@
     <ClInclude Include="MaterialUI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationUI.cpp" />
     <ClCompile Include="CAnimator2DUI.cpp" />
     <ClCompile Include="CBorderScript.cpp" />
     <ClCompile Include="CBrushScript.cpp" />

@@ -125,6 +125,9 @@
     <Filter Include="03. UI\01. Inspector\ComponentUI\Collider3DUI">
       <UniqueIdentifier>{829cc604-2565-478f-ac33-b18aaea2b9c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. UI\11. Animation3DUI">
+      <UniqueIdentifier>{73991249-785c-41b3-b988-c6fcb1c440fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -298,6 +301,9 @@
     <ClInclude Include="Collider3DUI.h">
       <Filter>03. UI\01. Inspector\ComponentUI\Collider3DUI</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationUI.h">
+      <Filter>03. UI\11. Animation3DUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -452,6 +458,9 @@
     </ClCompile>
     <ClCompile Include="Collider3DUI.cpp">
       <Filter>03. UI\01. Inspector\ComponentUI\Collider3DUI</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationUI.cpp">
+      <Filter>03. UI\11. Animation3DUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,6 +14,7 @@
 
 #include <Engine\Base.h>
 
+#include "CImGuiMgr.h"
 #include <Engine/CTimeMgr.h>
 #include <Engine\CMeshRender.h>
 
@@ -33,6 +34,8 @@
 
 #include <Engine\CMRT.h>
 #include <Engine\CSLight.h>
+
+#include "OutlinerUI.h"
 
 float g_LandScale = 1000.f;
 float g_BrushScale = 0.3f;
@@ -73,6 +76,7 @@ void CEditor::init()
 
 	CreateDebugDrawObject();
 	CreateCamera();
+	CreateLight();
 
 	{
 		// LandScape 추가
@@ -110,26 +114,6 @@ void CEditor::init()
 		pLandScapeUI->begin();
 		ContentUI* pContentUI = (ContentUI*)CImGuiMgr::GetInst()->FindUI("ContentUI");
 		pContentUI->begin();
-	}
-
-	{
-		// Directional Light 추가
-		CGameObjectEx* pDirLight = new CGameObjectEx;
-		pDirLight->SetName(L"DirectionalLight");
-		pDirLight->AddComponent(new CTransform);
-		pDirLight->AddComponent(new CLight3D);
-
-		pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
-		pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
-
-		pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
-		pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
-
-		pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
-		pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
-		pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
-		//pDirLight->SetType(OBJ_TYPE::EDIT);
-		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
 	}
 
 	//test obj
@@ -216,7 +200,15 @@ void CEditor::init()
 	{
 		Ptr<CTexture> pTex = CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga");
 		pTex->GenerateMip(8);
-	}
+	}	
+
+	Initialize_Outliner();
+}
+
+void CEditor::Initialize_Outliner()
+{
+	OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+	pUI->ResetLevel();
 }
 
 /*
@@ -587,5 +579,77 @@ void CEditor::SetEditMode(EDIT_MODE _editmode)
 	break;
 	case EDIT_MODE::MAPTOOL:
 		break;
+	}
+}
+
+void CEditor::Delete_Animation3D_Object()
+{
+	for (auto iter{ m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].begin()}; iter != m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].end(); )
+	{
+		if (nullptr != iter->second && nullptr != iter->second->Animator3D())
+		{
+			iter = m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+UINT CEditor::Animation3D_Object_Size() 
+{
+	UINT iResult = 0;
+
+	for (auto iter{ m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].begin() }; iter != m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].end(); ++iter)
+	{
+		if (nullptr != iter->second && nullptr != iter->second->Animator3D())
+		{
+			++iResult;
+		}
+
+	}
+
+	return iResult;
+}
+
+void CEditor::CreateLight()
+{
+
+	{
+		// Directional Light 추가
+		CGameObjectEx* pDirLight = new CGameObjectEx;
+		pDirLight->SetName(L"DirectionalLight");
+		pDirLight->AddComponent(new CTransform);
+		pDirLight->AddComponent(new CLight3D);
+
+		pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
+		pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
+
+		pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+		pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
+
+		pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+		pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
+		pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
+
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"DirectionalLight", pDirLight);
+
+		pDirLight = new CGameObjectEx;
+		pDirLight->SetName(L"DirectionalLight");
+		pDirLight->AddComponent(new CTransform);
+		pDirLight->AddComponent(new CLight3D);
+
+		pDirLight->Transform()->SetRelativePos(Vec3(-1000.f, 1000.f, 0.f));
+		pDirLight->Transform()->SetRelativeRotation(XM_PI / 4.f, 0.f, 0.f);
+
+		pDirLight->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+		pDirLight->Light3D()->SetLightDirection(Vec3(1.f, -1.f, 1.f));
+
+		pDirLight->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+		pDirLight->Light3D()->SetLightSpecular(Vec3(0.4f, 0.4f, 0.4f));
+		pDirLight->Light3D()->SetLightAmbient(Vec3(0.15f, 0.15f, 0.15f));
+		
+		m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].emplace(L"DirectionalLight", pDirLight);
 	}
 }
