@@ -4,6 +4,8 @@
 #include <Engine\func.h>
 #include <Engine\CPrefab.h>
 #include <Engine\CComponent.h>
+#include <Engine\CMeshRender.h>
+#include <Engine\CAnimator3D.h>
 #include "CGameObjectEx.h"
 #include "CEditor.h"
 // ========
@@ -398,6 +400,77 @@ void TreeUI::SetDropTargetNode(TreeNode* _DropTargetNode)
 				TreeNode* pNode = (TreeNode*)payload->Data;
 				CComponent* pCom = (CComponent*)pNode->GetData();
 				pGameObject->AddComponent(pCom->Clone());
+			}
+		}
+	}
+	else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##ContentTree"))
+	{
+		if ("##OutlinerTree" == m_DropTargetNode->GetTreeName())
+		{
+			TreeNode* pNode = (TreeNode*)payload->Data;
+			CRes* pRes = (CRes*)pNode->GetData();
+
+			RES_TYPE eType = pRes->GetResType();
+
+			switch (eType)
+			{
+			case RES_TYPE::PREFAB:
+				break;
+			case RES_TYPE::MESHDATA:
+			{
+				CMeshData* pMeshData = (CMeshData*)pRes;
+				pMeshData->GetMaterials();
+				CGameObject* pGameObject = (CGameObject*)m_DropTargetNode->GetData();
+
+				if (nullptr != pGameObject)
+				{
+					if (nullptr == pGameObject->MeshRender())
+						pGameObject->AddComponent(new CMeshRender);
+
+					Ptr<CMesh> pMesh = pMeshData->GetMesh();
+					pGameObject->MeshRender()->ClearMaterials();
+					pGameObject->MeshRender()->SetMesh(pMesh);
+					const vector<Ptr<CMaterial>>& vec_mtrls = pMeshData->GetMaterials();
+
+					for (size_t i = 0; i < vec_mtrls.size(); ++i)
+						pGameObject->MeshRender()->SetSharedMaterial(vec_mtrls[i], i);
+
+					if (0 != pMesh->GetBones()->size() && 0 != pMesh->GetAnimClip()->size())
+					{
+						if (nullptr == pGameObject->Animator3D())
+							pGameObject->AddComponent(new CAnimator3D);
+
+						pGameObject->Animator3D()->begin();
+						pGameObject->Animator3D()->SetBones(pMesh->GetBones());
+						pGameObject->Animator3D()->SetAnimClip(pMesh->GetAnimClip());
+						pGameObject->Animator3D()->SetMeshData(pMeshData);
+					}
+					else
+					{
+						if (nullptr != pGameObject->Animator3D())
+						{
+							pGameObject->DestroyComponent(COMPONENT_TYPE::ANIMATOR3D);
+						}
+					}
+				}
+			}
+				break;
+			case RES_TYPE::COMPUTE_SHADER:
+				break;
+			case RES_TYPE::MATERIAL:
+				break;
+			case RES_TYPE::MESH:
+				break;
+			case RES_TYPE::TEXTURE:
+				break;
+			case RES_TYPE::SOUND:
+				break;
+			case RES_TYPE::GRAPHICS_SHADER:
+				break;
+			case RES_TYPE::END:
+				break;
+			default:
+				break;
 			}
 		}
 	}

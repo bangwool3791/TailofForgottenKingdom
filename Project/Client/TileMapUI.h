@@ -28,6 +28,8 @@ private :
     bool                        m_bDialogBrushLoad{};
     bool                        m_bDialogCubemapSave{};
 
+    int                        m_iWeightIdx;
+
     ImFileDialogInfo            m_fileDialogBrushLoad;
     ImFileDialogInfo            m_fileDialogLoad;
     ImFileDialogInfo            m_fileDialogSave;
@@ -50,6 +52,7 @@ private :
     char                       m_szTexArrName[100];
 
     Ptr<CTexture>              m_TextureArray;
+
 private:
     void FindTexture(const wstring& _path, Ptr<CTexture>& pTex);
     void LoadHeightMap(const wstring& _path, ImTextureID& _image);

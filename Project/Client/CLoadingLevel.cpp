@@ -37,39 +37,39 @@ void CLoadingLevel::init()
 
 void CLoadingLevel::progress()
 {
-	CEngine::GetInst()->progress();
+	//CEngine::GetInst()->progress();
 
-	CLevel* pLevel = CLevelMgr::GetInst()->GetCurLevel();
+	//CLevel* pLevel = CLevelMgr::GetInst()->GetCurLevel();
 
-	if (LEVEL_STATE::STOP == pLevel->GetState()
-		|| LEVEL_STATE::PAUSE == pLevel->GetState())
-	{
-		CEditor::GetInst()->progress();
+	//if (LEVEL_STATE::STOP == pLevel->GetState()
+	//	|| LEVEL_STATE::PAUSE == pLevel->GetState())
+	//{
+	//	CEditor::GetInst()->progress();
 
-		auto map = CEditor::GetInst()->GetRenderObj();
+	//	auto map = CEditor::GetInst()->GetRenderObj();
 
-		for (auto iter = map.begin(); iter != map.end(); ++iter)
-		{
-			m_vecEditoShadowObj.push_back((CGameObject*)iter->second);
-		}
-	}
-	else if (LEVEL_STATE::LOADER == pLevel->GetState())
-	{
-		if (m_pLoader->Get_isFinished())
-			pLevel->SetState(LEVEL_STATE::PAUSE);
+	//	for (auto iter = map.begin(); iter != map.end(); ++iter)
+	//	{
+	//		m_vecEditoShadowObj.push_back((CGameObject*)iter->second);
+	//	}
+	//}
+	//else if (LEVEL_STATE::LOADER == pLevel->GetState())
+	//{
+	//	if (m_pLoader->Get_isFinished())
+	//		pLevel->SetState(LEVEL_STATE::PAUSE);
 
-		m_pLoderCamearObj->tick();
-		m_pLoderUIObj->tick();
-		m_pLoderCamearObj->finaltick_module();
-		m_pLoderUIObj->finaltick_module();
+	//	m_pLoderCamearObj->tick();
+	//	m_pLoderUIObj->tick();
+	//	m_pLoderCamearObj->finaltick_module();
+	//	m_pLoderUIObj->finaltick_module();
 
-		CRenderMgr::GetInst()->RegisterLight3D(m_pLightObj->Light3D());
+	//	CRenderMgr::GetInst()->RegisterLight3D(m_pLightObj->Light3D());
 
-	}
-	else
-	{
+	//}
+	//else
+	//{
 
-	}
+	//}
 }
 
 void CLoadingLevel::render()

@@ -33,8 +33,9 @@ public:
 
 	UINT GetMtrlCount() { return (UINT)m_vecMtrls.size(); }
 
+	void ClearMaterials();
 	void SetSharedMaterial(Ptr<CMaterial> _pMtrl, UINT _iIdx);
-
+	const vector<tMtrlSet>& GetMaterials() { return m_vecMtrls; }
 	Ptr<CMaterial> GetCurMaterial(UINT _iIdx);
 	Ptr<CMaterial> GetSharedMaterial(UINT _idx);
 	Ptr<CMaterial> GetDynamicMaterial(UINT _iIdx);

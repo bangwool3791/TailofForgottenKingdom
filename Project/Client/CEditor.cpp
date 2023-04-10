@@ -49,10 +49,16 @@ CEditor::CEditor()
 CEditor::~CEditor()
 {
 
-	for (auto iter{ m_EditorObj.begin() }; iter != m_EditorObj.end(); ++iter)
+	for (UINT i = 0; i < m_EditorObj.size(); ++i)
 	{
-		for (auto iter2{ iter->begin() }; iter2 != iter->end(); ++iter2)
+		for (auto iter2{ m_EditorObj[i].begin() }; iter2 != m_EditorObj[i].end(); ++iter2)
 		{
+			//
+			if ((UINT)EDIT_MODE::ANIMATOR == i && nullptr != iter2->second->Animator3D())
+				continue;
+
+			wstring str = iter2->first;
+
 			Safe_Delete(iter2->second);
 		}
 	}
@@ -101,11 +107,11 @@ void CEditor::init()
 		pObject->AddComponent(new CTransform);
 		pObject->AddComponent(new CDecal);
 		pObject->AddComponent(new CBrushScript);
+		pObject->GetRenderComponent()->SetDynamicShadow(false);
 		pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
 		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
 		pObject->Transform()->SetRelativeScale(Vec3{ fScale, fScale, fScale });
 		pObject->Transform()->SetRelativeRotation(XM_PI / 2.f, 0.f, 0.f);
-		//pObject->Decal()->SetDecalTexture(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\MagicCircle.png"));
 		pObject->Decal()->SetDecalTexture(pLandScape->LandScape()->GetBrushTexture());
 		pObject->Decal()->SetDefaultLit(true);
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"BrushObject", pObject);
@@ -155,27 +161,31 @@ void CEditor::init()
 		// ============	
 		{
 			Ptr<CMeshData> pMeshData = nullptr;
-			CGameObject* pObj = nullptr;
-			pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\monster.fbx");
-			pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\monster.mdat");
+			CGameObjectEx* pObj = nullptr;
 
-			pObj = pMeshData->Instantiate();
-			pObj->SetName(L"Monster");
-			pObj->Transform()->SetRelativeScale(10.f, 10.f, 10.f);
-			CGameObjectEx* pObjEx = new CGameObjectEx(*pObj);
-			delete pObj;
-			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Monster", pObjEx);
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\boss_jug_01.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\boss_jugulus+hammer.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\deuxieme_gun.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\deuxiemie_SmallSword.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\deuxiemie_SpearShield.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\homonculus.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\jug_stage.FBX");
+			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\player_sword.FBX");
+
+
+			//pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\monster.mdat");
+	
+			for (UINT i = 0; i < 12; ++i)
+			{
+				pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\jug_stage.FBX", i);
+
+				pObj = new CGameObjectEx;
+				pObj->SetName(L"Monster" + std::to_wstring(i));
+				pObj->AddComponent(new CTransform);
+				pObj->Transform()->SetRelativeScale(1.f, 1.f, 1.f);
+				m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(pObj->GetName().c_str(), pObj);
+			}
 		}
-
-		//Ptr<CMeshData> pMeshData = nullptr;
-		//CGameObject* pObj = nullptr;
-		//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\Animal_Bass.FBX");
-		//pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\Animal_Bass.mdat");
-		//pObj = pMeshData->Instantiate();
-		//pObj->SetName(L"Animal_Bass");
-		//pObject = new CGameObjectEx(*pObj);
-		//delete pObj;
-		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Animal_Bass", pObject);
 	}
 	/*
 	* Component List

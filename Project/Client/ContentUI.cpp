@@ -173,9 +173,6 @@ void ContentUI::render_update()
 
 				for (auto iter{ map.begin() }; iter != map.end(); ++iter)
 				{
-					//.f (OBJ_TYPE::EDIT == iter->second->GetType())
-					//.	continue;
-
 					if (!iter->second->Transform())
 						continue;
 

@@ -51,6 +51,8 @@ public:
 	Ptr<CTexture> CreateTexture(const wstring& _strKey, ComPtr<ID3D11Texture2D> _Tex2D);
 	Ptr<CTexture> CreateCubeTexture(const wstring& _strKey, const vector<Ptr<CTexture>> vecTex);
 	Ptr<CMeshData> LoadFBX(const wstring& _strPath);
+	Ptr<CMeshData> LoadFBX(const wstring& _strPath, UINT idx);
+
 	const map<wstring, Ptr<CRes>>& GetResource(RES_TYPE _eResType)
 	{
 		return m_arrRes[(UINT)_eResType];

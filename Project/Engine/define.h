@@ -330,7 +330,7 @@ enum class LEVEL_STATE
 	PLAY,
 	STOP,
 	PAUSE,
-	LOADER,
+	//LOADER,
 };
 
 enum TAP_CATEGORY

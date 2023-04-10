@@ -245,7 +245,7 @@ void AnimationUI::Update_FrameListUI()
     else if(0 == mapFrames.size())
     {
         m_tFrame.iStart = 0;
-        m_tFrame.iEnd = 0;
+        m_tFrame.iEnd = m_iMaxFarme - 1;
         m_tFrame.bRepeat = true;
     }
     else
@@ -330,19 +330,30 @@ void AnimationUI::Delete(const wstring& str)
     {
         auto iter = mapFrames.begin();
 
+        bool bCheck = false;
         for (; iter != mapFrames.end(); ++iter)
         {
             if (!lstrcmp(str.c_str(), iter->first.c_str()))
             {
+                bCheck = true;
                 m_strAniCurKey = string(iter->first.begin(), iter->first.end());
                 pAniCom->Delete(str);
                 break;
             }
         }
 
-        if (iter == mapFrames.end())
-        {
+        if (false == bCheck)
             MessageBox(nullptr, L"키를 찾을 수 없습니다.", L"Warning", S_OK);
+
+        //Ui List 삭제
+        for (auto iter = m_vecAniKey.begin(); iter != m_vecAniKey.end(); ++iter)
+        {
+            wstring temp = wstring((*iter).begin(), (*iter).end());
+            if (!lstrcmp(temp.c_str(), str.c_str()))
+            {
+                m_vecAniKey.erase(iter);
+                break;
+            }
         }
     }
 }

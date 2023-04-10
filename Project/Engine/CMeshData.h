@@ -21,10 +21,13 @@ class CMeshData :
 
 public:
 	static CMeshData* LoadFromFBX(const wstring& _strFilePath);
+	static CMeshData* LoadFromFBX(const wstring& _strPath, UINT idx);
 	const vector<Ptr<CMaterial>>& GetMtrls() { return m_vecMtrl; }
 	virtual void Save(const wstring& _strFilePath);
 	virtual int Load(const wstring& _strFilePath);
 
+	Ptr<CMesh> GetMesh() { return m_pMesh; }
+	const vector<Ptr<CMaterial>>& GetMaterials() { return m_vecMtrl; }
 	CGameObject* Instantiate();
 
 	CLONE_ASSERT(CMeshData)

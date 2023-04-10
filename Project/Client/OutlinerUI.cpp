@@ -254,8 +254,6 @@ void OutlinerUI::ResetLevel()
 void OutlinerUI::SetObject(DWORD_PTR _res)
 {
 	m_Node = (TreeNode*)_res;
-	m_pTargetObj = m_Node->GetGameObjectEx();
-	assert(m_pTargetObj);
 }
 
 void OutlinerUI::SetObjectToInspector(DWORD_PTR _res)

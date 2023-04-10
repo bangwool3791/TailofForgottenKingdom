@@ -56,24 +56,28 @@ public:
 
     void SetShadowMap(Ptr<CTexture> _pTex);
     void SetTargetMap(Ptr<CTexture> _pTex);
-
+    void SetBrushScale(const Vec2& _vScale) { m_vBrushScale = _vScale; }
     void SetFaceCount(UINT _X, UINT _Z);
     void SetCameraObj(CGameObject* _pObj) { m_pCameraObj = _pObj; }
+    void SetWeightIndex(UINT _idx) { m_iWeightIdx = _idx; }
+    void SetHeightmapOffset(float _offset);
+    void SetTexArr(Ptr<CTexture> _ptr);
+    void SetDir(int _Dir) { m_pCSHeightMap->SetDir(_Dir); }
+    void SetMode(LANDSCAPE_MOD eType) { m_eMod = eType; }
+
     void SaveTexture(const wstring& path);
     void SaveBmpFile(const wstring& path);
     void LoadBmpFile(const wstring& path);
     pair<UINT, UINT> GetFaceCount() { return pair<UINT, UINT>(m_iXFaceCount, m_iZFaceCount); }
     Vec2 GetBrushScale() { return m_vBrushScale; }
-    void SetBrushScale(const Vec2& _vScale) { m_vBrushScale = _vScale; }
     template<typename T>
     void GetHeightTexture(T& t) { t = m_pHeightMap->GetSRV().Get(); }
     template<typename T>
     void GetBrushSRV(T& t) { t = m_pBrushTex->GetSRV().Get(); }
     Ptr<CTexture> GetBrushTexture() { return m_pBrushTex; }
     const tRaycastOut& GetRay();
-
+    UINT GetWeightIndex() { return m_iWeightIdx; }
     LANDSCAPE_MOD GetMode() { return m_eMod; }
-    void SetMode(LANDSCAPE_MOD eType) { m_eMod = eType; }
 private:
     void CreateMesh();
     void CreateMaterial();
@@ -81,9 +85,6 @@ private:
 public:
     void CreateTexture();
     void Initialize();
-    void SetHeightmapOffset(float _offset);
-    void SetTexArr(Ptr<CTexture> _ptr);
-    void SetDir(int _Dir) { m_pCSHeightMap->SetDir(_Dir); }
     CLONE(CLandScape);
 public:
     CLandScape();

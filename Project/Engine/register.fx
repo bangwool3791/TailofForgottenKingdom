@@ -172,7 +172,6 @@ StructuredBuffer<tTile> g_TileBuffer : register(t56);
 * Instancing object
 */
 StructuredBuffer<tRenderInfo> g_RenderInfo : register(t57);
-StructuredBuffer<Matrix> g_arrBoneMat : register(t58);
 // Noise Texture
 Texture2D g_Noise : register(t58);
 
@@ -180,6 +179,8 @@ Texture2D g_Noise : register(t58);
 Texture2D g_Atals : register(t59);
 // RenderTarget CopyTex
 Texture2D g_RTCopyTex : register(t60);
+
+StructuredBuffer<Matrix> g_arrBoneMat : register(t61);
 
 #define b g_RenderInfo
 // 샘플러 레지스터

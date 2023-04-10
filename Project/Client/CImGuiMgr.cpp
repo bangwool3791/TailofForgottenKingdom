@@ -193,9 +193,7 @@ void CImGuiMgr::Guizmo()
 void CImGuiMgr::progress()
 {
     //알림 확인
-    
-    if(LEVEL_STATE::LOADER != CLevelMgr::GetInst()->GetCurLevel()->GetState())
-        ObserveContent();
+    ObserveContent();
 
     EDIT_MODE mode = CEditor::GetInst()->GetEditMode();
 
@@ -220,11 +218,13 @@ void CImGuiMgr::progress()
             case EDIT_MODE::ANIMATOR:
                 if ("Outliner" == iter->first)
                     iter->second->update();
-                if ("Inspector" == iter->first)
+                else if ("Inspector" == iter->first)
                     iter->second->update();
-                if ("MenuUI" == iter->first)
+                else if ("MenuUI" == iter->first)
                     iter->second->update();
-                if ("AnimationUI" == iter->first)
+                else if ("AnimationUI" == iter->first)
+                    iter->second->update();
+                else if ("ContentUI" == iter->first)
                     iter->second->update();
                 break;
             case EDIT_MODE::MAPTOOL:
@@ -246,17 +246,17 @@ void CImGuiMgr::progress()
             case EDIT_MODE::OBJECT:
                 if ("Outliner" == iter->first)
                     iter->second->update();
-                if ("Inspector" == iter->first)
+                else if ("Inspector" == iter->first)
                     iter->second->update();
-                if ("ContentUI" == iter->first)
+                else if ("ContentUI" == iter->first)
                     iter->second->update();
-                if ("MenuUI" == iter->first)
+                else if ("MenuUI" == iter->first)
                     iter->second->update();
-                if ("ModelComUI" == iter->first)
+                else if ("ModelComUI" == iter->first)
                     iter->second->update();
-                if ("ListUI" == iter->first)
+                else if ("ListUI" == iter->first)
                     iter->second->update();
-                if ("ContentUI" == iter->first)
+                else if ("ContentUI" == iter->first)
                     iter->second->update();
                 break;
             case EDIT_MODE::END:
@@ -280,7 +280,9 @@ void CImGuiMgr::progress()
                     iter->second->render();
                 else if ("ListUI" == iter->first)
                     iter->second->render();
-                if ("AnimationUI" == iter->first)
+                else if ("AnimationUI" == iter->first)
+                    iter->second->render();
+                else if ("ContentUI" == iter->first)
                     iter->second->render();
                 break;
             case EDIT_MODE::MAPTOOL:

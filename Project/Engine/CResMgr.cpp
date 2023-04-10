@@ -145,5 +145,30 @@ Ptr<CMeshData> CResMgr::LoadFBX(const wstring& _strPath)
     pMeshData->m_bEngineRes = true;
     m_arrRes[(UINT)RES_TYPE::MESHDATA].insert(make_pair(strName, pMeshData.Get()));
 
+    pMeshData->Save(strName);
+
+    return pMeshData;
+}
+
+Ptr<CMeshData> CResMgr::LoadFBX(const wstring& _strPath, UINT idx)
+{
+    wstring strFileName = path(_strPath).stem();
+
+    wstring strName = L"meshdata\\";
+    strName += strFileName + std::to_wstring(idx) + L".mdat";
+
+    Ptr<CMeshData> pMeshData = FindRes<CMeshData>(strName);
+
+    if (nullptr != pMeshData)
+        return pMeshData;
+
+    pMeshData = CMeshData::LoadFromFBX(_strPath, idx);
+    pMeshData->SetKey(strName);
+    pMeshData->SetRelativePath(strName);
+    pMeshData->m_bEngineRes = true;
+    m_arrRes[(UINT)RES_TYPE::MESHDATA].insert(make_pair(strName, pMeshData.Get()));
+
+    pMeshData->Save(strName);
+
     return pMeshData;
 }

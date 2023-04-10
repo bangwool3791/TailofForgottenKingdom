@@ -59,6 +59,12 @@ void CRenderComponent::SetSharedMaterial(Ptr<CMaterial> _pMtrl, UINT _iIdx)
 	m_vecMtrls[_iIdx].pCurMtrl = _pMtrl;
 }
 
+void CRenderComponent::ClearMaterials()
+{
+	vector<tMtrlSet> temp;
+	m_vecMtrls.clear();
+	m_vecMtrls.swap(temp);
+}
 
 Ptr<CMaterial> CRenderComponent::GetCurMaterial(UINT _iIdx)
 {

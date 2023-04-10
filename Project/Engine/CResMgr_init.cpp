@@ -714,17 +714,6 @@ void CResMgr::CreateDefaultMesh()
 
 void CResMgr::CreateDefaultTexture()
 {
-	Load<CTexture>(L"texture\\Player.bmp", L"texture\\Player.bmp");
-	Load<CTexture>(L"texture\\smokeparticle.png", L"texture\\smokeparticle.png");
-	Load<CTexture>(L"texture\\Character.png", L"texture\\Character.png");
-	Load<CTexture>(L"texture\\link.png", L"texture\\link.png");
-
-	Load<CTexture>(L"texture\\beheaded.png", L"texture\\beheaded.png");
-	Load<CTexture>(L"texture\\beheaded_n.png", L"texture\\beheaded_n.png");
-
-	Load<CTexture>(L"texture\\particle\\smokeparticle.png", L"texture\\particle\\smokeparticle.png");
-	Load<CTexture>(L"texture\\particle\\CartoonSmoke.png", L"texture\\particle\\CartoonSmoke.png");
-	Load<CTexture>(L"texture\\particle\\Bubbles50px.png", L"texture\\particle\\Bubbles50px.png");
 	// NoiseTexture
 	Load<CTexture>(L"texture\\noise\\noise_01.png", L"texture\\noise\\noise_01.png");
 	Load<CTexture>(L"texture\\noise\\noise_02.png", L"texture\\noise\\noise_02.png");
@@ -766,52 +755,6 @@ void CResMgr::CreateDefaultGraphicsShader()
 	CGraphicsShader* pShader = nullptr;
 
 	pShader = new CGraphicsShader();
-	pShader->CreateVertexShader(L"shader\\test.fx", "VS_DeadCell");
-	pShader->CreatePixelShader(L"shader\\test.fx", "PS_DeadCell");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
-
-	AddRes<CGraphicsShader>(L"TestShader", pShader);
-
-	pShader = new CGraphicsShader();
-	pShader->CreateVertexShader(L"shader\\std2d.fx", "VS_Std2D");
-	pShader->CreatePixelShader(L"shader\\std2d.fx", "PS_Std2D");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetDSType(DS_TYPE::LESS);
-	pShader->SetBSType(BS_TYPE::DEFAULT);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_MASK);
-
-	pShader->AddScalarParam(INT_0, "Test Int");
-	pShader->AddScalarParam(FLOAT_2, "Test Float");
-	pShader->AddScalarParam(VEC2_3, "Test Vec2");
-	pShader->AddScalarParam(VEC4_2, "Test Vec4");
-	pShader->AddTexureParam(TEX_0, "Output Texture 1");
-	pShader->AddTexureParam(TEX_1, "Output Texture 2");
-	pShader->AddTexureParam(TEX_2, "Output Texture 3");
-
-	AddRes<CGraphicsShader>(L"Std2DShader", pShader);
-
-	pShader = new CGraphicsShader();
-	pShader->CreateVertexShader(L"shader\\std2d.fx", "VS_Std2D");
-	pShader->CreatePixelShader(L"shader\\std2d.fx", "PS_Std2D_AlphaBlend");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetDSType(DS_TYPE::NO_WRITE);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
-
-	AddRes<CGraphicsShader>(L"Std2DAlphaBlendShader", pShader);
-
-	pShader = new CGraphicsShader();
-	pShader->CreateVertexShader(L"shader\\editor.fx", "VS_Grid");
-	pShader->CreatePixelShader(L"shader\\editor.fx", "PS_Grid");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetDSType(DS_TYPE::NO_WRITE);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
-
-	AddRes<CGraphicsShader>(L"EditorShader", pShader);
-
-	pShader = new CGraphicsShader();
 	pShader->CreateVertexShader(L"shader\\debugdraw.fx", "VS_DebugDraw");
 	pShader->CreatePixelShader(L"shader\\debugdraw.fx", "PS_DebugDraw");
 	pShader->SetRSType(RS_TYPE::CULL_NONE);
@@ -835,21 +778,6 @@ void CResMgr::CreateDefaultGraphicsShader()
 
 	AddRes<CGraphicsShader>(L"ParticleRenderShader", pShader);
 
-	// Instancing Shader
-	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\objectrenderer.fx", "VS_ObjectRender");
-	pShader->CreatePixelShader(L"shader\\objectrenderer.fx", "PS_ObjectRender");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::DEFAULT);
-	pShader->SetDSType(DS_TYPE::LESS);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_MASK);
-	pShader->AddScalarParam(INT_0, "Use Atlas");
-	pShader->AddScalarParam(VEC2_0, "UV LeftTop");
-	pShader->AddScalarParam(VEC2_1, "UV Slice");
-	pShader->AddTexureParam(TEX_0, "Output Texture 1");
-
-	AddRes<CGraphicsShader>(L"ObjectRenderShader", pShader);
-
 	//Opaque
 	pShader = new CGraphicsShader;
 	pShader->CreateVertexShader(L"shader\\opaque.fx", "VS_Opaque");
@@ -870,39 +798,6 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_POST_PROCESS);
 
 	AddRes<CGraphicsShader>(L"PostProcessShader", pShader);
-
-	// TileMap Shader
-	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\terrain.fx", "VS_TileMap");
-	//pShader->CreateGeometryShader(L"shader\\tilemap.fx", "GS_TileMap");
-	pShader->CreatePixelShader(L"shader\\terrain.fx", "PS_TileMap");
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
-	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
-
-	AddRes<CGraphicsShader>(L"TileMapShader", pShader);
-
-	//Tile Map Border Shader
-	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\bordermap.fx", "VS_Border");
-	pShader->CreatePixelShader(L"shader\\bordermap.fx", "PS_Border");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetDSType(DS_TYPE::LESS);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_MASK);
-	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
-	AddRes<CGraphicsShader>(L"BorderShader", pShader);
-
-	//Building Red, Green
-	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\building.fx", "VS_BuildRender");
-	pShader->CreatePixelShader(L"shader\\building.fx", "PS_BuildRender");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::ONE_ONE);
-	pShader->SetDSType(DS_TYPE::LESS);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
-	AddRes<CGraphicsShader>(L"BuildShader", pShader);
 
 	pShader = new CGraphicsShader;
 	pShader->CreateVertexShader(L"shader\\std3d.fx", "VS_Std3D");

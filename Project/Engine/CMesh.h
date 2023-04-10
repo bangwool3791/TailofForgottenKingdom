@@ -82,6 +82,7 @@ public:
     UINT GetSubsetCount() { return (UINT)m_vecIdxInfo.size(); }
 
     static CMesh* CreateFromContainer(CFBXLoader& _loader);
+    static CMesh* CreateFromContainer(CFBXLoader& _loader, UINT idx);
 public:
     ComPtr<ID3D11Buffer> GetBuffer() { return m_VB; }
 public:

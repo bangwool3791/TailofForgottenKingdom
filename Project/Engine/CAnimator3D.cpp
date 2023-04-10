@@ -17,11 +17,11 @@ CAnimator3D::CAnimator3D()
 	, m_dCurTime{}
 	, m_iFrameCount(30)
 	, m_pBoneFinalMatBuffer{}
-	, m_bFinalMatUpdate{false}
+	, m_bFinalMatUpdate{ false }
 	, m_iFrameIdx{}
 	, m_iNextFrameIdx{}
-	, m_fRatio{0.f}
-	,CComponent(COMPONENT_TYPE::ANIMATOR3D)
+	, m_fRatio{ 0.f }
+	, CComponent(COMPONENT_TYPE::ANIMATOR3D)
 {
 	m_pBoneFinalMatBuffer = new CStructuredBuffer;
 }
@@ -50,18 +50,9 @@ CAnimator3D::~CAnimator3D()
 	SAFE_DELETE(m_pBoneFinalMatBuffer);
 }
 
-void CAnimator3D::begin() 
+void CAnimator3D::begin()
 {
-	/*
-	* 	double dStart;
-	double dEnd;
-	UINT   iFrameCount;
-	bool   bRepeat;
-	*/
-	m_mapAnimation.emplace(std::make_pair<wstring, tAnim3DFrm>(L"1", { 0, 10, 30, true }));
-	m_mapAnimation.emplace(std::make_pair<wstring, tAnim3DFrm>(L"2", { 11, 20, 30, true }));
 
-	m_tCurFrame = { 0, 5, 30, true };
 }
 
 void CAnimator3D::finaltick()
@@ -86,7 +77,7 @@ void CAnimator3D::finaltick()
 
 	if (!m_bEnd)
 	{
-		if(!m_bPuase)
+		if (!m_bPuase)
 			m_vecClipUpdateTime[m_iCurClip] += (double)(DT * m_fTimeScale);
 	}
 
@@ -102,7 +93,7 @@ void CAnimator3D::finaltick()
 	}
 
 	//총 애니메이션 시간을 넘어가면 초기화
-	
+
 	if (m_tCurFrame.bRepeat)
 	{
 		if (m_iFrameIdx >= m_tCurFrame.iEnd)
@@ -195,7 +186,7 @@ void CAnimator3D::UpdateData()
 	}
 
 	// t30 레지스터에 최종행렬 데이터(구조버퍼) 바인딩		
-	m_pBoneFinalMatBuffer->UpdateData(58, PIPELINE_STAGE::VS);
+	m_pBoneFinalMatBuffer->UpdateData(61, PIPELINE_STAGE::VS);
 }
 
 void CAnimator3D::ClearData()
@@ -218,6 +209,21 @@ void CAnimator3D::ClearData()
 	}
 }
 
+void CAnimator3D::Init()
+{
+	m_bEnd = false;
+	m_bPuase = false;
+
+	m_fTimeScale = 1.f;
+	m_strCurKey.clear();
+	m_mapAnimation.clear();
+	std::unordered_map<wstring, tAnim3DFrm> map;
+	m_mapAnimation.swap(map);
+	memset(&m_tCurFrame, 0, sizeof(tAnim3DFrm));
+	m_vecClipUpdateTime.clear();
+	m_vecFinalBoneMat.clear();
+}
+
 /*
 * 메시 뼈 카운트와, 뼈 구조화 버퍼 카운트가 불일치하면 갱신
 */
@@ -232,10 +238,56 @@ void CAnimator3D::check_mesh(Ptr<CMesh> _pMesh)
 
 void CAnimator3D::SaveToFile(FILE* _pFile)
 {
+	SaveResourceRef(m_pMeshData, _pFile);
+	
+	fwrite(&m_fTimeScale, sizeof(float), 1, _pFile);
+
+	SaveWStringToFile(m_strCurKey, _pFile);
+	fwrite(&m_tCurFrame, sizeof(tAnim3DFrm), 1, _pFile);
+
+	size_t iSize = m_mapAnimation.size();
+	fwrite(&iSize, sizeof(size_t), 1, _pFile);
+
+	for (auto iter{ m_mapAnimation.begin() }; iter != m_mapAnimation.end(); ++iter)
+	{
+		SaveWStringToFile(iter->first, _pFile);
+		fwrite(&iter->second, sizeof(tAnim3DFrm), 1, _pFile);
+	}
 }
 
 void CAnimator3D::LoadFromFile(FILE* _pFile)
 {
+	LoadResourceRef(m_pMeshData, _pFile);
+
+	Ptr<CMesh> pMesh = m_pMeshData->GetMesh();
+	
+	MeshRender()->SetMesh(pMesh);
+	
+	const vector<Ptr<CMaterial>>& vec_Mtrls	= m_pMeshData->GetMaterials();
+
+	for (UINT i = 0; i < vec_Mtrls.size(); ++i)
+		MeshRender()->SetSharedMaterial(vec_Mtrls[i], i);
+
+	SetBones(pMesh->GetBones());
+	SetAnimClip(pMesh->GetAnimClip());
+
+	fread(&m_fTimeScale, sizeof(float), 1, _pFile);
+
+	LoadWStringFromFile(m_strCurKey, _pFile);
+	fread(&m_tCurFrame, sizeof(tAnim3DFrm), 1, _pFile);
+
+	size_t iSize = 0;
+	fwrite(&iSize, sizeof(size_t), 1, _pFile);
+
+	wstring strKey;
+	tAnim3DFrm tFrame = {};
+	for (size_t i = 0; i < iSize; ++i)
+	{
+		LoadWStringFromFile(strKey, _pFile);
+		fread(&tFrame, sizeof(tAnim3DFrm), 1, _pFile);
+
+		m_mapAnimation.insert(make_pair(strKey, tFrame));
+	}
 }
 
 void CAnimator3D::SetCurFrame(const wstring& _Key, tAnim3DFrm _tData)
@@ -270,10 +322,12 @@ const string& CAnimator3D::Delete(const wstring& _key)
 {
 	static string str;
 	m_mapAnimation.erase(_key);
+
+	auto iter = m_mapAnimation.begin();
 	
-	auto iter = m_mapAnimation.end();
-	--iter;
-	str = string(iter->first.begin(), iter->first.end());
+	for(; iter != m_mapAnimation.end(); ++iter)
+		str = string(iter->first.begin(), iter->first.end());
+	
 	return str;
 }
 

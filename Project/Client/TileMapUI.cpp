@@ -54,6 +54,8 @@ void TileMapUI::begin()
 	m_pLandScape->GetBrushSRV(m_BrushImage);
 
 	m_pBrushObj = CEditor::GetInst()->FindByName(L"BrushObject");
+
+	m_iWeightIdx = m_pLandScape->GetWeightIndex();
 }
 
 void TileMapUI::update()
@@ -449,6 +451,7 @@ void TileMapUI::render_update()
 	default:
 		break;
 	}
+
 	ImGui::PushItemWidth(150.f);
 	if (ImGui::InputFloat("Brush Scale", &g_BrushScale, 0.01, 0.01, "%.3f"))
 	{
@@ -459,6 +462,15 @@ void TileMapUI::render_update()
 		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
 		m_pBrushObj->Transform()->SetRelativeScale(Vec3(fScale, fScale, fScale));
 	}
+
+	if (ImGui::RadioButton("1 weight", &m_iWeightIdx, 0))
+		m_pLandScape->SetWeightIndex(m_iWeightIdx);
+	ImGui::SameLine();
+	if (ImGui::RadioButton("2 weight", &m_iWeightIdx, 1))
+		m_pLandScape->SetWeightIndex(m_iWeightIdx);
+	ImGui::SameLine();
+	if (ImGui::RadioButton("3 weight", &m_iWeightIdx, 2))
+		m_pLandScape->SetWeightIndex(m_iWeightIdx);
 
 	static bool bDir = false;
 	if (ImGui::Checkbox("Dir - ", &bDir))

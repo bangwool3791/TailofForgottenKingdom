@@ -39,12 +39,67 @@ CGameObject* CMeshData::Instantiate()
 
 	CAnimator3D* pAnimator = new CAnimator3D;
 	pNewObj->AddComponent(pAnimator);
-	pAnimator->begin();
 	pAnimator->SetBones(m_pMesh->GetBones());
 	pAnimator->SetAnimClip(m_pMesh->GetAnimClip());
-
+	pAnimator->SetMeshData(this);
 
 	return pNewObj;
+}
+
+CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath, UINT idx)
+{
+	wstring strFullPath = CPathMgr::GetInst()->GetContentPath();
+	strFullPath += _strPath;
+
+	CFBXLoader loader;
+	loader.init();
+	loader.LoadFbx(strFullPath);
+
+	// 메쉬 가져오기
+	CMesh* pMesh = nullptr;
+	pMesh = CMesh::CreateFromContainer(loader, idx);
+	//멀티스레드에서 Read시 문제 발생
+	//pMesh->ReadByConsole();
+
+	// ResMgr 에 메쉬 등록
+	if (nullptr != pMesh)
+	{
+		wstring strMeshKey = L"mesh\\";
+		strMeshKey += path(strFullPath).stem();
+		strMeshKey += std::to_wstring(idx) + L".mesh";
+		CResMgr::GetInst()->AddRes<CMesh>(strMeshKey, pMesh);
+
+		// 메시를 실제 파일로 저장
+		// Rev 105 AddRes only -> Save
+		pMesh->Save(strMeshKey);
+	}
+
+
+	vector<Ptr<CMaterial>> vecMtrl;
+
+	// 메테리얼 가져오기
+
+	for (UINT i = 0; i < loader.GetContainer(idx).vecMtrl.size(); ++i)
+	{
+		// 예외처리 (material 이름이 입력 안되어있을 수도 있다.)
+		/*
+		* Loading 시 Material 생성
+		* Contanier Mtrl vec 에서 스트링 저장
+		* Res Load
+		*/
+		/*
+		Loading 된 Material을 Find
+		*/
+		Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(loader.GetContainer(idx).vecMtrl[i].strMtrlName);
+		assert(pMtrl.Get());
+		vecMtrl.push_back(pMtrl);
+	}
+
+	CMeshData* pMeshData = new CMeshData(true);
+	pMeshData->m_pMesh = pMesh;
+	pMeshData->m_vecMtrl = vecMtrl;
+
+	return pMeshData;
 }
 
 CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath)
@@ -79,6 +134,7 @@ CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath)
 	vector<Ptr<CMaterial>> vecMtrl;
 
 	// 메테리얼 가져오기
+
 	for (UINT i = 0; i < loader.GetContainer(0).vecMtrl.size(); ++i)
 	{
 		// 예외처리 (material 이름이 입력 안되어있을 수도 있다.)
