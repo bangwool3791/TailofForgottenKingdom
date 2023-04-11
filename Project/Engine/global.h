@@ -1,5 +1,16 @@
 #pragma once
 
+#pragma warning(push, 0)
+#include <FBXLoader/fbxsdk/scene/geometry/fbxnurbs.h>
+#include <FBXLoader/fbxsdk.h>
+#include <xstring>
+#include <DirectXTex/DirectXTex.h>
+#pragma warning(pop)
+
+#pragma warning(push)
+#pragma warning( disable : X4717 C26813 C26495)
+#pragma warning(pop)
+
 #include <Windows.h>
 #include <minwindef.h>
 #include <thread>

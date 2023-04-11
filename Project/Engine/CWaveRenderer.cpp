@@ -133,6 +133,10 @@ void CWaveRenderer::render()
 	CMaterial::Clear();
 }
 
+void CWaveRenderer::render(UINT _iSubset) 
+{
+	render();
+}
 
 void CWaveRenderer::SaveToFile(FILE* _File)
 {

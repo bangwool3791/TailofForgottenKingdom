@@ -4,6 +4,7 @@
 #include "CFrustum.h"
 
 class CSLight;
+class CRenderComponent;
 
 class CStructuredBuffer;
 enum PROJ_TYPE
@@ -45,17 +46,16 @@ private:
     UINT                    m_iLayerMask;
     int                     m_iCamIdx;
 
-    vector<CGameObject*>                     m_vecDeferred;
-    vector<CGameObject* >                    m_vecOpaque;
-    vector<CGameObject* >                    m_vecMask;
+    std::unordered_map<ULONG64, vector<tInstObj>>		m_mapInstGroup_D;	    // Deferred
+    std::unordered_map<ULONG64, vector<tInstObj>>		m_mapInstGroup_F;	    // Foward ( Opaque, Mask )	
+    std::unordered_map<INT_PTR, vector<tInstObj>>		m_mapSingleObj;		    // Single Object
+
+    //vector<CGameObject*>    m_vecDeferred;
+    //vector<CGameObject*>    m_vecQpaque;
+    //vector<CGameObject*>    m_vecMask;
     vector<CGameObject*>                     m_vecDecal;
     vector<CGameObject* >                    m_vecTransparent;
     vector<CGameObject*>                     m_vecDynamicShadow;     // 동적 그림자 물체
-    map<const wstring, vector<CGameObject*>> m_mapOpaqueVec;
-    map<const wstring, vector<CGameObject*>> m_mapMaskVec;
-    map<const wstring, vector<CGameObject*>> m_mapDecalVec;
-
-    map<const wstring, vector<CGameObject*>> m_mapTransparentVec;
     vector<CGameObject* >                    m_vecPostProcess;
     vector<CGameObject* >                    m_vecUi;
 
@@ -64,9 +64,12 @@ private:
 private:
     void begin();
     void SortObject();
+    void Process_Sort(const vector<CGameObject*>& vecGameObject);
+    void Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj);
     void render_deferred();
-    void render_opaque();
-    void render_mask();
+    //void render_opaque();
+    //void render_mask();
+    void render_forward();
     void render_decal();
     void render_transparent();
     void render_postprocess();

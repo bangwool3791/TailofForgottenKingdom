@@ -147,8 +147,6 @@ void TreeNode::DeleteChild(TreeNode* _ChildeNode)
 	{
 		if (!strcmp((*iter)->GetName().c_str(), _ChildeNode->GetName().c_str()))
 		{
-			delete *iter;
-			*iter = nullptr;
 			m_vecChildNode.erase(iter);
 			break;
 		}
@@ -382,7 +380,15 @@ void TreeUI::SetDropTargetNode(TreeNode* _DropTargetNode)
 	{
 		if (m_DragDropInst && m_DragDropFunc)
 		{
+			CGameObjectEx* pObj = (CGameObjectEx*)m_BeginDragNode->GetData();
+			
 			(m_DragDropInst->*m_DragDropFunc)((DWORD_PTR)m_BeginDragNode, (DWORD_PTR)m_DropTargetNode);
+			DeleteNode(m_DropTargetNode);
+
+			EDIT_MODE eMode = CEditor::GetInst()->GetEditMode();
+
+			CEditor::GetInst()->PopByName(eMode, pObj->GetName());
+
 		}
 	}
 	else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##ModelComTree"))

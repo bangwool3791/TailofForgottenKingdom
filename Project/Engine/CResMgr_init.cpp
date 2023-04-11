@@ -743,14 +743,31 @@ void CResMgr::CreateDefaultSound()
 
 void CResMgr::CreateDefaultGraphicsShader()
 {
-	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "POSITION");
-	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "COLOR");
-	AddInputLayout(DXGI_FORMAT_R32G32_FLOAT, "TEXCOORD");
-	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "TANGENT");
-	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "BINORMAL");
-	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "NORMAL");
-	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "BLENDWEIGHT");
-	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "BLENDINDICES");
+	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "POSITION", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "COLOR", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32_FLOAT, "TEXCOORD", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "TANGENT", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "BINORMAL", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32_FLOAT, "NORMAL", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "BLENDWEIGHT", 0, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "BLENDINDICES", 0, 0);
+
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WORLD", 1, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WORLD", 1, 1);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WORLD", 1, 2);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WORLD", 1, 3);
+
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WV", 1, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WV", 1, 1);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WV", 1, 2);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WV", 1, 3);
+
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WVP", 1, 0);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WVP", 1, 1);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WVP", 1, 2);
+	AddInputLayout(DXGI_FORMAT_R32G32B32A32_FLOAT, "WVP", 1, 3);
+
+	AddInputLayout(DXGI_FORMAT_R32_UINT, "ROWINDEX", 1, 0);
 
 	CGraphicsShader* pShader = nullptr;
 
@@ -1024,6 +1041,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 #include "CParticleUpdateShader.h"
 #include "CSLight.h"
 #include "CAnimation3DShader.h"
+#include "CCopyBoneShader.h"
 
 void CResMgr::CreateDefaultComputeShader()
 {
@@ -1040,38 +1058,21 @@ void CResMgr::CreateDefaultComputeShader()
 	pShader = new CAnimation3DShader;
 	pShader->CreateComputeShader(L"shader\\animation3d.fx", "CS_Animation3D");
 	AddRes<CComputeShader>(L"Animation3DUpdateShader", pShader);
+
+	// CopyBone Shader	
+	pShader = new CCopyBoneShader;
+	pShader->CreateComputeShader(L"shader\\copybone.fx", "CS_CopyBoneMatrix");
+	AddRes<CComputeShader>(L"CopyBoneShader", pShader);
 }
 
 void CResMgr::CreateDefaultMaterial()
 {
 
-	CMaterial* pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"TestShader"));
-	AddRes(L"TestMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"Std2DShader"));
-	AddRes(L"Std2DMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"Std2DAlphaBlendShader"));
-	AddRes(L"Std2DAlphaBlendMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"EditorShader"));
-	AddRes(L"EditMaterial", pMaterial);
+	CMaterial* pMaterial{};
 
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ParticleRenderShader"));
 	AddRes(L"ParticleRenderMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ParticleRenderShader"));
-	AddRes(L"ParticleRenderWoodMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ObjectRenderShader"));
-	AddRes(L"ObjectMtrl", pMaterial);
 
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"PostProcessShader"));
@@ -1084,20 +1085,8 @@ void CResMgr::CreateDefaultMaterial()
 	AddRes<CMaterial>(L"DebugDrawMtrl", pMaterial);
 
 	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"TileMapShader"));
-	AddRes<CMaterial>(L"TileMapMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BorderShader"));
-	AddRes<CMaterial>(L"BorderMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"OpaqueShader"));
 	AddRes<CMaterial>(L"OpaqueMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"BuildShader"));
-	AddRes<CMaterial>(L"BuildMtrl", pMaterial);
 
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"Std3DShader"));
@@ -1303,20 +1292,6 @@ int GetSizeofFormat(DXGI_FORMAT _eFormat)
 	return iRetByte / 8;
 }
 
-void CResMgr::AddInputLayout(DXGI_FORMAT _eFormat, const char* _strSemanticName)
-{
-	D3D11_INPUT_ELEMENT_DESC LayoutDesc = {};
-	LayoutDesc.AlignedByteOffset = m_iLayoutOffset;
-	LayoutDesc.Format = _eFormat;
-	LayoutDesc.InputSlot = 0;
-	LayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	LayoutDesc.SemanticName = _strSemanticName;
-	LayoutDesc.SemanticIndex = 0;
-	m_vecLayoutInfo.push_back(LayoutDesc);
-
-	m_iLayoutOffset += GetSizeofFormat(_eFormat);
-}
-
 void CResMgr::initSound()
 {
 	//FMOD::System_Create(&CSound::g_pFMOD);
@@ -1503,3 +1478,36 @@ void CResMgr::BuildCylinderBottomCap(float bottomRadius, float topRadius, float 
 		Indices.push_back(baseIndex + i + 1);
 	}
 }
+
+void CResMgr::AddInputLayout(DXGI_FORMAT _eFormat, const char* _strSemanticName, UINT _iSlotNum, UINT _iSemanticIdx)
+{
+	D3D11_INPUT_ELEMENT_DESC LayoutDesc = {};
+
+	if (0 == _iSlotNum)
+	{
+		LayoutDesc.AlignedByteOffset = m_iLayoutOffset_0;
+		LayoutDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		LayoutDesc.InstanceDataStepRate = 0;
+	}
+	else if (1 == _iSlotNum)
+	{
+		LayoutDesc.AlignedByteOffset = m_iLayoutOffset_1;
+		LayoutDesc.InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+		LayoutDesc.InstanceDataStepRate = 1;
+	}
+
+	LayoutDesc.Format = _eFormat;
+	LayoutDesc.InputSlot = _iSlotNum;
+	LayoutDesc.SemanticName = _strSemanticName;
+	LayoutDesc.SemanticIndex = _iSemanticIdx;
+
+	m_vecLayoutInfo.push_back(LayoutDesc);
+
+
+	// Offset ¡ı∞°
+	if (0 == _iSlotNum)
+		m_iLayoutOffset_0 += GetSizeofFormat(_eFormat);
+	else if (1 == _iSlotNum)
+		m_iLayoutOffset_1 += GetSizeofFormat(_eFormat);
+}
+

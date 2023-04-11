@@ -5,7 +5,6 @@
 #include <Engine/CComponent.h>
 
 CGameObjectEx::CGameObjectEx()
-	//:m_eType(OBJ_TYPE::WORLD)
 {
 }
 

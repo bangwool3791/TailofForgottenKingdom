@@ -48,7 +48,6 @@ private:
 	void DebugDraw(tDebugShapeInfo& _info);
 	void Initialize_Outliner();
 public:
-	void UpdateAnimationObject(CGameObject* _pGameObject);
 	void Add_Editobject(EDIT_MODE _emode, CGameObjectEx* _pGameObject);
 	void Add_Editobject(EDIT_MODE _emode, const wchar_t* _pName, CGameObjectEx* _pGameObject);
 	void Delete_Animation3D_Object();
@@ -59,6 +58,8 @@ public:
 	const map<const wchar_t*, CGameObjectEx*>& GetRenderObj() { return m_EditorObj[(UINT)m_editmode]; }
 	const map<const wchar_t*, CGameObjectEx*>& GetEdiotrObj(EDIT_MODE _eType) { return m_EditorObj[(UINT)_eType]; }
 	void PopByName(const wstring& _strky);
+	void PopByName(EDIT_MODE eMode, const wstring& _strky);
+	void DeleteByName(EDIT_MODE eMode, CGameObjectEx* pObj);
 private:
 	CEditor();
 	virtual ~CEditor();

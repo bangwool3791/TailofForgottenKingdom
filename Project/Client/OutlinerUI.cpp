@@ -11,7 +11,10 @@
 #include "PopupUI.h"
 #include "TreeUI.h"
 #include "InspectorUI.h"
+
 #include "CImGuiMgr.h"
+
+#include "CGameObjectEx.h"
 
 OutlinerUI::OutlinerUI()
 	: UI("Outliner")
@@ -27,9 +30,9 @@ OutlinerUI::OutlinerUI()
 	m_Tree->AddDynamic_LBtn_Selected(this, (FUNC_1)&OutlinerUI::SetObjectToInspector);
 	m_Tree->AddDynamic_DragDrop(this, (FUNC_2)&OutlinerUI::AddChildObject);
 
-	m_strName.resize(100);
-	m_strComponentName.resize(100);
-	m_strScriptName.resize(100);
+	m_strName.resize(255);
+	m_strComponentName.resize(255);
+	m_strScriptName.resize(255);
 	// 레벨 오브젝트 갱신
 	//ResetLevel();
 }
@@ -50,8 +53,6 @@ void OutlinerUI::render_update()
 {
 	if (EDIT_MODE::ANIMATOR == CEditor::GetInst()->GetEditMode())
 		return;
-
-	//m_Tree->render_update();
 
 	static bool toggles[] = { true, false, false, false, false };
 	static const char* names[] = { "Create Empty","Destroy", "Create Prefab", "Edit Name", "Delete Component", "Delete Script" ,"Close" };
@@ -81,33 +82,71 @@ void OutlinerUI::render_update()
 		{
 		case 0:
 		{
-			tEvent evn = {};
-			evn.eType = EVENT_TYPE::CREATE_OBJECT;
-			CGameObject* pGameObject = new CGameObject;
-			evn.wParam = (DWORD_PTR)pGameObject;
-			evn.lParam = (DWORD_PTR)(ILayerIndex);
+			EDIT_MODE eMode = CEditor::GetInst()->GetEditMode();
 
-			if (m_strName.empty())
+			if (EDIT_MODE::MAPTOOL == eMode)
 			{
-				m_strName = "DummyObject";
-				m_strName += std::to_string(IobjectIndex);
-				++IobjectIndex;
+				CGameObjectEx* pGameObject = new CGameObjectEx;
+
+				wstring wstr = StringToWString(m_strName);
+
+				if (!lstrcmp(L"", wstr.c_str()))
+				{
+					m_strName = "DummyObject";
+					m_strName += std::to_string(IobjectIndex);
+					++IobjectIndex;
+				}
+				pGameObject->SetName(StringToWString(m_strName));
+
+				m_strName.clear();
+
+				CEditor::GetInst()->Add_Editobject(eMode, pGameObject);
 			}
-			pGameObject->SetName(StringToWString(m_strName));
-			CEventMgr::GetInst()->AddEvent(evn);
+			else if (EDIT_MODE::OBJECT == eMode)
+			{
+				tEvent evn = {};
+				evn.eType = EVENT_TYPE::CREATE_OBJECT;
+				CGameObject* pGameObject = new CGameObject;
+				evn.wParam = (DWORD_PTR)pGameObject;
+				evn.lParam = (DWORD_PTR)(ILayerIndex);
+
+				wstring wstr = StringToWString(m_strName);
+
+				if (!lstrcmp(L"", wstr.c_str()))
+				{
+					m_strName = "DummyObject";
+					m_strName += std::to_string(IobjectIndex);
+					++IobjectIndex;
+				}
+
+				m_strName.clear();
+				
+				pGameObject->SetName(StringToWString(m_strName));
+				CEventMgr::GetInst()->AddEvent(evn);
+			}
 		}
 		break;
 		case 1:
 		{
 			if (nullptr != m_Node)
 			{
-				tEvent evn = {};
-				evn.eType = EVENT_TYPE::DELETE_OBJECT;
-				evn.wParam = m_Node->GetData();
-				CEventMgr::GetInst()->AddEvent(evn);
-				m_Tree->DeleteNode(m_Node);
+				EDIT_MODE eMode = CEditor::GetInst()->GetEditMode();
 
-				//인스펙터 타겟 오브젝트 삭제 시 
+				if (EDIT_MODE::MAPTOOL == eMode)
+				{
+					CEditor::GetInst()->DeleteByName(eMode, (CGameObjectEx*)m_Node->GetData());
+					CImGuiMgr::GetInst()->SetNullPickingObj();
+
+				}
+				else if (EDIT_MODE::OBJECT == eMode)
+				{
+					tEvent evn = {};
+					evn.eType = EVENT_TYPE::DELETE_OBJECT;
+					evn.wParam = m_Node->GetData();
+					CEventMgr::GetInst()->AddEvent(evn);
+					m_Tree->DeleteNode(m_Node);
+				}
+
 				InspectorUI* Inspector = (InspectorUI*)CImGuiMgr::GetInst()->FindUI("Inspector");
 				Inspector->SetTargetObject(nullptr);
 				m_Node = nullptr;

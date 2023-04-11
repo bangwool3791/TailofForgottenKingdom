@@ -59,7 +59,7 @@ CMeshData* CMeshData::LoadFromFBX(const wstring& _strPath, UINT idx)
 	CMesh* pMesh = nullptr;
 	pMesh = CMesh::CreateFromContainer(loader, idx);
 	//멀티스레드에서 Read시 문제 발생
-	//pMesh->ReadByConsole();
+	pMesh->Read();
 
 	// ResMgr 에 메쉬 등록
 	if (nullptr != pMesh)

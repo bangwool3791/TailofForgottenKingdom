@@ -22,6 +22,8 @@
 
 #include "frustum_culling.h"
 
+#include "CAnimator3D.h"
+#include "CInstancingBuffer.h"
 //스레드 A종류
 //스레드 B종류
 /*
@@ -289,8 +291,8 @@ void CCamera::render()
 	pRectMesh->render(0);
 	CMaterial::Clear();
 
-	render_opaque();
-	render_mask();
+	// Forward Rendering
+	render_forward();
 
 	render_transparent();
 	render_postprocess();
@@ -332,9 +334,6 @@ void CCamera::EditorRender()
 	pMergeMtrl->UpdateData();
 	pRectMesh->render(0);
 	CMaterial::Clear();
-
-	render_opaque();
-	render_mask();
 
 	render_transparent();
 	render_postprocess();
@@ -380,9 +379,6 @@ void CCamera::render(MRT_TYPE _eType)
 	pRectMesh->render(0);
 	CMaterial::Clear();
 	
-	render_opaque();
-	render_mask();
-	
 	render_transparent();
 	render_postprocess();
 	
@@ -398,109 +394,237 @@ void CCamera::render(MRT_TYPE _eType)
 
 void CCamera::render_deferred()
 {
-	for (auto iter{ m_vecDeferred.begin() }; iter != m_vecDeferred.end(); ++iter)
+	for (auto& pair : m_mapSingleObj)
 	{
-		(*iter)->render();
+		pair.second.clear();
+	}
+
+	// Deferred object render
+	tInstancingData tInstData = {};
+
+	for (auto& pair : m_mapInstGroup_D)
+	{
+		// 그룹 오브젝트가 없거나, 쉐이더가 없는 경우
+		if (pair.second.empty())
+			continue;
+
+		// instancing 개수 조건 미만이거나
+		// Animation2D 오브젝트거나(스프라이트 애니메이션 오브젝트)
+		// Shader 가 Instancing 을 지원하지 않는경우
+		if (pair.second.size() <= 1
+			|| pair.second[0].pObj->Animator2D()
+			|| pair.second[0].pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx)->GetShader()->GetVSInst() == nullptr)
+		{
+			// 해당 물체들은 단일 랜더링으로 전환
+			for (UINT i = 0; i < pair.second.size(); ++i)
+			{
+				std::unordered_map<INT_PTR, vector<tInstObj>>::iterator iter
+					= m_mapSingleObj.find((INT_PTR)pair.second[i].pObj);
+
+				if (iter != m_mapSingleObj.end())
+					iter->second.push_back(pair.second[i]);
+				else
+				{
+					m_mapSingleObj.insert(make_pair((INT_PTR)pair.second[i].pObj, vector<tInstObj>{pair.second[i]}));
+				}
+			}
+			continue;
+		}
+
+		CGameObject* pObj = pair.second[0].pObj;
+		Ptr<CMesh> pMesh = pObj->GetRenderComponent()->GetMesh();
+		Ptr<CMaterial> pMtrl = pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx);
+
+		// Instancing 버퍼 클리어
+		CInstancingBuffer::GetInst()->Clear();
+
+		int iRowIdx = 0;
+		bool bHasAnim3D = false;
+		//동일 Mesh, Mtrl 
+		for (UINT i = 0; i < pair.second.size(); ++i)
+		{
+			//오브젝트 World, WV, WVP 받아온다.
+			tInstData.matWorld = pair.second[i].pObj->Transform()->GetWorldMat();
+			tInstData.matWV = tInstData.matWorld * m_matView;
+			tInstData.matWVP = tInstData.matWV * m_matProj;
+
+			//애니메이션이 있다면 애니메이션 정보도 Compute 셰이더로 업데이트 시킨다.
+			if (pair.second[i].pObj->Animator3D())
+			{
+				pair.second[i].pObj->Animator3D()->UpdateData();
+				//결과로 전달할 인스턴싱 데이터 
+				tInstData.iRowIdx = iRowIdx++;
+				//뼈 행렬 정보도 결과 구조화 버퍼에 취합 후, GPU 전달
+				CInstancingBuffer::GetInst()->AddInstancingBoneMat(pair.second[i].pObj->Animator3D()->GetFinalBoneMat());
+				bHasAnim3D = true;
+			}
+			else
+				tInstData.iRowIdx = -1;
+
+			//WVP 데이터 임시 버퍼 저장
+			CInstancingBuffer::GetInst()->AddInstancingData(tInstData);
+		}
+
+		// 인스턴싱에 필요한 데이터를 세팅(SysMem -> GPU Mem)
+		CInstancingBuffer::GetInst()->SetData();
+
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(true); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(pMesh->GetBoneCount());
+		}
+
+		pMtrl->UpdateData_Inst();
+		
+		//Index에서 사용 Idx Set
+		pMesh->render_instancing(pair.second[0].iMtrlIdx);
+
+		// 정리
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(false); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(0);
+		}
+	}
+
+	// 개별 랜더링
+	for (auto& pair : m_mapSingleObj)
+	{
+		if (pair.second.empty())
+			continue;
+
+		pair.second[0].pObj->Transform()->UpdateData();
+
+		for (auto& instObj : pair.second)
+		{
+			instObj.pObj->GetRenderComponent()->render(instObj.iMtrlIdx);
+		}
+
+		if (pair.second[0].pObj->Animator3D())
+		{
+			pair.second[0].pObj->Animator3D()->ClearData();
+		}
 	}
 }
-/*
-* 랜더가 아닌 벡터안에 정보를 집어 넣는 과정 후 Shader 돌리는 코드가 들어가야한다.
-*/
-void CCamera::render_opaque()
+
+void CCamera::render_forward()
 {
-	for (auto iter{ m_vecOpaque.begin() }; iter != m_vecOpaque.end(); ++iter)
+	for (auto& pair : m_mapSingleObj)
 	{
-		(*iter)->render();
+		pair.second.clear();
 	}
 
-	for (auto elem{ m_mapOpaqueVec.begin() }; elem != m_mapOpaqueVec.end(); ++elem)
+	// Deferred object render
+	tInstancingData tInstData = {};
+
+	for (auto& pair : m_mapInstGroup_F)
 	{
-		auto iterbegin = elem->second.begin();
-		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		//인스턴싱 객체 중에서 Mtrl 정보가 바뀔 경우 예외 처리 안됨
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
+		// 그룹 오브젝트가 없거나, 쉐이더가 없는 경우
+		if (pair.second.empty())
+			continue;
 
-		//머터리얼 구해서 
-		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
+		// instancing 개수 조건 미만이거나
+		// Animation2D 오브젝트거나(스프라이트 애니메이션 오브젝트)
+		// Shader 가 Instancing 을 지원하지 않는경우
+		if (pair.second.size() <= 1
+			|| pair.second[0].pObj->Animator2D()
+			|| pair.second[0].pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx)->GetShader()->GetVSInst() == nullptr)
 		{
-			(*elem2)->GetRenderComponent()->render_Instancing();
-		}
-		if (!g_vecInfoObject.empty())
-		{
-			//머터리얼 업데이트
-			pMtrl->UpdateData();
-			m_pObjectRenderBuffer->SetData(g_vecInfoObject.data(), (UINT)g_vecInfoObject.size());
-			m_pObjectRenderBuffer->UpdateData(57, PIPELINE_STAGE::VS | PIPELINE_STAGE::PS);
-			if (pMesh.Get())
-				pMesh->render_particle((UINT)g_vecInfoObject.size());
+			// 해당 물체들은 단일 랜더링으로 전환
+			for (UINT i = 0; i < pair.second.size(); ++i)
+			{
+				std::unordered_map<INT_PTR, vector<tInstObj>>::iterator iter
+					= m_mapSingleObj.find((INT_PTR)pair.second[i].pObj);
+
+				if (iter != m_mapSingleObj.end())
+					iter->second.push_back(pair.second[i]);
+				else
+				{
+					m_mapSingleObj.insert(make_pair((INT_PTR)pair.second[i].pObj, vector<tInstObj>{pair.second[i]}));
+				}
+			}
+			continue;
 		}
 
-		CMaterial::Clear();
-		m_pObjectRenderBuffer->Clear();
-		g_vecInfoObject.clear();
+		CGameObject* pObj = pair.second[0].pObj;
+		Ptr<CMesh> pMesh = pObj->GetRenderComponent()->GetMesh();
+		Ptr<CMaterial> pMtrl = pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx);
+
+		// Instancing 버퍼 클리어
+		CInstancingBuffer::GetInst()->Clear();
+
+		int iRowIdx = 0;
+		bool bHasAnim3D = false;
+		//동일 Mesh, Mtrl 
+		for (UINT i = 0; i < pair.second.size(); ++i)
+		{
+			//오브젝트 World, WV, WVP 받아온다.
+			tInstData.matWorld = pair.second[i].pObj->Transform()->GetWorldMat();
+			tInstData.matWV = tInstData.matWorld * m_matView;
+			tInstData.matWVP = tInstData.matWV * m_matProj;
+
+			//애니메이션이 있다면 애니메이션 정보도 Compute 셰이더로 업데이트 시킨다.
+			if (pair.second[i].pObj->Animator3D())
+			{
+				pair.second[i].pObj->Animator3D()->UpdateData();
+				//결과로 전달할 인스턴싱 데이터 
+				tInstData.iRowIdx = iRowIdx++;
+				//뼈 행렬 정보도 결과 구조화 버퍼에 취합 후, GPU 전달
+				CInstancingBuffer::GetInst()->AddInstancingBoneMat(pair.second[i].pObj->Animator3D()->GetFinalBoneMat());
+				bHasAnim3D = true;
+			}
+			else
+				tInstData.iRowIdx = -1;
+
+			//WVP 데이터 임시 버퍼 저장
+			CInstancingBuffer::GetInst()->AddInstancingData(tInstData);
+		}
+
+		// 인스턴싱에 필요한 데이터를 세팅(SysMem -> GPU Mem)
+		CInstancingBuffer::GetInst()->SetData();
+
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(true); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(pMesh->GetBoneCount());
+		}
+
+		pMtrl->UpdateData_Inst();
+		//Matrerial 개수 만큼 render
+		pMesh->render_instancing(pair.second[0].iMtrlIdx);
+
+		// 정리
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(false); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(0);
+		}
+	}
+
+	// 개별 랜더링
+	for (auto& pair : m_mapSingleObj)
+	{
+		if (pair.second.empty())
+			continue;
+
+		pair.second[0].pObj->Transform()->UpdateData();
+
+		for (auto& instObj : pair.second)
+		{
+			instObj.pObj->GetRenderComponent()->render(instObj.iMtrlIdx);
+		}
+
+		if (pair.second[0].pObj->Animator3D())
+		{
+			pair.second[0].pObj->Animator3D()->ClearData();
+		}
 	}
 }
-
-void CCamera::render_mask()
-{
-
-	for (auto iter{ m_vecMask.begin() }; iter != m_vecMask.end(); ++iter)
-	{
-		(*iter)->render();
-	}
-
-	for (auto elem{ m_mapMaskVec.begin() }; elem != m_mapMaskVec.end(); ++elem)
-	{
-		auto iterbegin = elem->second.begin();
-
-		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
-
-		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
-		{
-			(*elem2)->GetRenderComponent()->render_Instancing();
-		}
-		pMtrl->UpdateData();
-		m_pObjectRenderBuffer->SetData(g_vecInfoObject.data(), (UINT)g_vecInfoObject.size());
-		m_pObjectRenderBuffer->UpdateData(57, PIPELINE_STAGE::VS | PIPELINE_STAGE::PS);
-
-		if (pMesh.Get())
-			pMesh->render_particle((UINT)g_vecInfoObject.size());
-
-		CMaterial::Clear();
-		m_pObjectRenderBuffer->Clear();
-		g_vecInfoObject.clear();
-	}
-}
-
 void CCamera::render_decal()
 {
 	for (auto iter{ m_vecDecal.begin() }; iter != m_vecDecal.end(); ++iter)
 	{
 		(*iter)->render();
-	}
-
-	for (auto elem{ m_mapDecalVec.begin() }; elem != m_mapDecalVec.end(); ++elem)
-	{
-		auto iterbegin = elem->second.begin();
-
-		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
-
-		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
-		{
-			(*elem2)->GetRenderComponent()->render_Instancing();
-		}
-		m_pObjectRenderBuffer->SetData(g_vecInfoObject.data(), (UINT)g_vecInfoObject.size());
-		m_pObjectRenderBuffer->UpdateData(57, PIPELINE_STAGE::VS | PIPELINE_STAGE::PS);
-		pMtrl->UpdateData();
-
-		if (pMesh.Get())
-			pMesh->render_particle((UINT)g_vecInfoObject.size());
-
-		CMaterial::Clear();
-		m_pObjectRenderBuffer->Clear();
-		g_vecInfoObject.clear();
 	}
 }
 
@@ -509,29 +633,6 @@ void CCamera::render_transparent()
 	for (auto iter{ m_vecTransparent.begin() }; iter != m_vecTransparent.end(); ++iter)
 	{
 		(*iter)->render();
-	}
-
-	for (auto elem{ m_mapTransparentVec.begin() }; elem != m_mapTransparentVec.end(); ++elem)
-	{
-		auto iterbegin = elem->second.begin();
-
-		Ptr<CMesh> pMesh = (*iterbegin)->GetRenderComponent()->GetMesh();
-		Ptr<CMaterial> pMtrl = (*iterbegin)->GetRenderComponent()->GetCurMaterial(0);
-
-		for (auto elem2{ elem->second.begin() }; elem2 != elem->second.end(); ++elem2)
-		{
-			(*elem2)->GetRenderComponent()->render_Instancing();
-		}
-		m_pObjectRenderBuffer->SetData(g_vecInfoObject.data(), (UINT)g_vecInfoObject.size());
-		m_pObjectRenderBuffer->UpdateData(57, PIPELINE_STAGE::VS | PIPELINE_STAGE::PS);
-		pMtrl->UpdateData();
-
-		if (pMesh.Get())
-			pMesh->render_particle((UINT)g_vecInfoObject.size());
-
-		CMaterial::Clear();
-		m_pObjectRenderBuffer->Clear();
-		g_vecInfoObject.clear();
 	}
 }
 
@@ -573,17 +674,14 @@ void CCamera::SetLayerMask(int _iLayerIdx)
 
 void CCamera::SortObject()
 {
-	m_vecDeferred.clear();
-	m_vecOpaque.clear();
-	m_vecMask.clear();
+	for (auto& pair : m_mapInstGroup_D)
+		pair.second.clear();
+	for (auto& pair : m_mapInstGroup_F)
+		pair.second.clear();
+
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
 	m_vecUi.clear();
-
-	Clear_VecOfMap(m_mapOpaqueVec);
-	Clear_VecOfMap(m_mapMaskVec);
-	Clear_VecOfMap(m_mapDecalVec);
-	Clear_VecOfMap(m_mapTransparentVec);
 	m_vecPostProcess.clear();
 
 	auto pLevel = CLevelMgr::GetInst()->GetCurLevel();
@@ -596,231 +694,24 @@ void CCamera::SortObject()
 
 			const vector<CGameObject*>& vecGameObject = pLayer->GetObjects();
 
-			for (size_t j{ 0 }; j < (size_t)vecGameObject.size(); ++j)
-			{
-				CRenderComponent* RenderCompoent = vecGameObject[j]->GetRenderComponent();
-				CTransform* pTransform = vecGameObject[j]->Transform();
-
-				if (RenderCompoent == nullptr ||
-					RenderCompoent->GetCurMaterial(0) == nullptr ||
-					RenderCompoent->GetCurMaterial(0)->GetShader() == nullptr ||
-					RenderCompoent->GetMesh() == nullptr)
-				{
-					continue;
-				}
-
-				//CFrustum* pFrustum = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera()->GetFrustum();
-				//
-				//Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
-				//
-				//float radius = vScale.x > vScale.y ? vScale.x : vScale.y > vScale.z ? vScale.y : vScale.z;
-				//radius *= 0.5f;
-				//if (!pFrustum->CheckFrustumRadius(vecGameObject[j]->Transform()->GetWorldPos(), radius))
-				//{
-				//	DebugDrawSphere(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
-				//	continue;
-				//}
-
-				//DebugDrawSphere(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
-				frustum_t frus;
-				Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
-				Vec3 vRot = vecGameObject[j]->Transform()->GetRelativeRotation();
-				aabb_t arrayAABB{ {-vScale.x, -vScale.y, -vScale.z},{vScale.x, vScale.y, vScale.z} };
-				// Calculate Frustum
-				//CCamera* pCamera = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera();
-				//Matrix matVP = pCamera->GetViewMat() * pCamera->GetProjMat();
-				//Matrix matWorld = pCamera->GetOwner()->Transform()->GetWorldMat();
-				//calculate_frustum(frus, matVP, matWorld);
-
-				//평면 뒤에 있으면 false
-				//bool didHit = aabb_to_frustum(arrayAABB, frus);
-				//
-				//if (!didHit)
-				//{
-				//	DebugDrawCube(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
-				//	continue;
-				//}
-				//
-				DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
-				Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial(0)->GetShader();
-
-				SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();
-
-				auto Type = vecGameObject[j]->GetRenderComponent()->GetInstancingType();
-
-				switch (eDomain)
-				{
-				case SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE:
-				case SHADER_DOMAIN::DOMAIN_DEFERRED_MASK:
-					m_vecDeferred.push_back(vecGameObject[j]);
-					break;
-				case SHADER_DOMAIN::DOMAIN_OPAQUE:
-				{
-
-					if (INSTANCING_TYPE::NONE == Type)
-					{
-						m_vecOpaque.push_back(vecGameObject[j]);
-					}
-					else
-					{
-						m_mapOpaqueVec[vecGameObject[j]->GetName()].push_back(vecGameObject[j]);
-					}
-				}
-				break;
-				case SHADER_DOMAIN::DOMAIN_MASK:
-				{
-					auto Type = vecGameObject[j]->GetRenderComponent()->GetInstancingType();
-
-					if (INSTANCING_TYPE::NONE == Type)
-					{
-						m_vecMask.push_back(vecGameObject[j]);
-					}
-					else
-					{
-						m_mapMaskVec[vecGameObject[j]->GetName()].push_back(vecGameObject[j]);
-					}
-				}
-				break;
-				case SHADER_DOMAIN::DOMAIN_DEFERRED_DECAL:
-				case SHADER_DOMAIN::DOMAIN_DECAL:
-				{
-					auto Type = vecGameObject[j]->GetRenderComponent()->GetInstancingType();
-
-					if (INSTANCING_TYPE::NONE == Type)
-					{
-						m_vecDecal.push_back(vecGameObject[j]);
-					}
-					else
-					{
-						m_mapDecalVec[vecGameObject[j]->GetName()].push_back(vecGameObject[j]);
-					}
-				}
-					break;
-				case SHADER_DOMAIN::DOMAIN_TRANSPARENT:
-				{
-					auto Type = vecGameObject[j]->GetRenderComponent()->GetInstancingType();
-
-					if (INSTANCING_TYPE::NONE == Type)
-					{
-						m_vecTransparent.push_back(vecGameObject[j]);
-					}
-					else
-					{
-						m_mapTransparentVec[vecGameObject[j]->GetName()].push_back(vecGameObject[j]);
-					}
-				}
-				break;
-				case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
-					m_vecPostProcess.push_back(vecGameObject[j]);
-					break;
-				case SHADER_DOMAIN::DOMAIN_UI:
-					m_vecUi.push_back(vecGameObject[j]);
-					break;
-				}
-			}
+			Process_Sort(vecGameObject);
 		}
 	}
 }
 
-void CCamera::SortObject(const vector<CGameObject*>& vec)
+void CCamera::SortObject(const vector<CGameObject*>& vecGameObject)
 {
-	m_vecDeferred.clear();
-	m_vecOpaque.clear();
-	m_vecMask.clear();
+	for (auto& pair : m_mapInstGroup_D)
+		pair.second.clear();
+	for (auto& pair : m_mapInstGroup_F)
+		pair.second.clear();
+
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
-	Clear_VecOfMap(m_mapOpaqueVec);
-	Clear_VecOfMap(m_mapMaskVec);
-	Clear_VecOfMap(m_mapDecalVec);
-	Clear_VecOfMap(m_mapTransparentVec);
+	m_vecUi.clear();
 	m_vecPostProcess.clear();
 
-	for (size_t j{ 0 }; j < (size_t)vec.size(); ++j)
-	{
-		CRenderComponent* RenderCompoent = vec[j]->GetRenderComponent();
-		CTransform* pTransform = vec[j]->Transform();
-
-		if (RenderCompoent == nullptr ||
-			RenderCompoent->GetCurMaterial(0) == nullptr ||
-			RenderCompoent->GetCurMaterial(0)->GetShader() == nullptr ||
-			RenderCompoent->GetMesh() == nullptr)
-		{
-			continue;
-		}
-
-		Ptr<CGraphicsShader> GraphicsShader = RenderCompoent->GetCurMaterial(0)->GetShader();
-
-		SHADER_DOMAIN eDomain = GraphicsShader->GetDomain();
-
-		auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
-
-		switch (eDomain)
-		{
-		case SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE:
-		case SHADER_DOMAIN::DOMAIN_DEFERRED_MASK:
-			m_vecDeferred.push_back(vec[j]);
-			break;
-		case SHADER_DOMAIN::DOMAIN_OPAQUE:
-		{
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecOpaque.push_back(vec[j]);
-			}
-			else
-			{
-				m_mapOpaqueVec[vec[j]->GetName()].push_back(vec[j]);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_MASK:
-		{
-			auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecMask.push_back(vec[j]);
-			}
-			else
-			{
-				m_mapMaskVec[vec[j]->GetName()].push_back(vec[j]);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_DEFERRED_DECAL:
-		case SHADER_DOMAIN::DOMAIN_DECAL:
-		{
-			auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecDecal.push_back(vec[j]);
-			}
-			else
-			{
-				m_mapDecalVec[vec[j]->GetName()].push_back(vec[j]);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_TRANSPARENT:
-		{
-			auto Type = vec[j]->GetRenderComponent()->GetInstancingType();
-
-			if (INSTANCING_TYPE::NONE == Type)
-			{
-				m_vecTransparent.push_back(vec[j]);
-			}
-			else
-			{
-				m_mapTransparentVec[vec[j]->GetName()].push_back(vec[j]);
-			}
-		}
-		break;
-		case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
-			m_vecPostProcess.push_back(vec[j]);
-			break;
-		}
-	}
+	Process_Sort(vecGameObject);
 }
 
 void CCamera::render_depthmap()
@@ -833,6 +724,14 @@ void CCamera::render_depthmap()
 	for (size_t i = 0; i < m_vecDynamicShadow.size(); ++i)
 	{
 		m_vecDynamicShadow[i]->GetRenderComponent()->render_depthmap();
+	
+
+		const vector<CGameObject*>& vecChilds = m_vecDynamicShadow[i]->GetChilds();
+
+		for (size_t j = 0; j < vecChilds.size(); ++j)
+		{
+			vecChilds[j]->GetRenderComponent()->render_depthmap();
+		}
 	}
 }
 
@@ -859,6 +758,153 @@ void CCamera::SortShadowObject()
 	}
 }
 
+void CCamera::Process_Sort(const vector<CGameObject*>& vecGameObject)
+{
+	for (size_t j{ 0 }; j < (size_t)vecGameObject.size(); ++j)
+	{
+		CRenderComponent* RenderCompoent = vecGameObject[j]->GetRenderComponent();
+		CTransform* pTransform = vecGameObject[j]->Transform();
+
+		if (nullptr == RenderCompoent || nullptr == RenderCompoent->GetMesh())
+		{
+			continue;
+		}
+
+		//CFrustum* pFrustum = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera()->GetFrustum();
+		//
+		//Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
+		//
+		//float radius = vScale.x > vScale.y ? vScale.x : vScale.y > vScale.z ? vScale.y : vScale.z;
+		//radius *= 0.5f;
+		//if (!pFrustum->CheckFrustumRadius(vecGameObject[j]->Transform()->GetWorldPos(), radius))
+		//{
+		//	DebugDrawSphere(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
+		//	continue;
+		//}
+
+		//DebugDrawSphere(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
+		frustum_t frus;
+		Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
+		Vec3 vRot = vecGameObject[j]->Transform()->GetRelativeRotation();
+		aabb_t arrayAABB{ {-vScale.x, -vScale.y, -vScale.z},{vScale.x, vScale.y, vScale.z} };
+		// Calculate Frustum
+		//CCamera* pCamera = CLevelMgr::GetInst()->GetCurLevel()->GetLayer(0)->FindParent(L"MainCamera")->Camera();
+		//Matrix matVP = pCamera->GetViewMat() * pCamera->GetProjMat();
+		//Matrix matWorld = pCamera->GetOwner()->Transform()->GetWorldMat();
+		//calculate_frustum(frus, matVP, matWorld);
+
+		//평면 뒤에 있으면 false
+		//bool didHit = aabb_to_frustum(arrayAABB, frus);
+		//
+		//if (!didHit)
+		//{
+		//	DebugDrawCube(Vec4(1.f, 1.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
+		//	continue;
+		//}
+		//
+		DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
+
+		Mtrl_Sort(RenderCompoent, vecGameObject[j]);
+
+		const vector<CGameObject*>& Childs = vecGameObject[j]->GetChilds();
+
+		for (size_t k{ 0 }; k < (size_t)Childs.size(); ++k)
+		{
+			CRenderComponent* ChildRenderCompoent = Childs[k]->GetRenderComponent();
+			CTransform* pChildTransform = Childs[k]->Transform();
+
+			if (nullptr == ChildRenderCompoent || nullptr == ChildRenderCompoent->GetMesh())
+			{
+				continue;
+			}
+
+			Mtrl_Sort(ChildRenderCompoent, Childs[k]);
+		}
+	}
+}
+
+void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
+{
+	UINT iMtrlCount = RenderCompoent->GetMtrlCount();
+	// 메테리얼 개수만큼 반복
+	for (UINT iMtrl = 0; iMtrl < iMtrlCount; ++iMtrl)
+	{
+		//RenderComponent 현재 인덱스의 머터리얼을 가져온다.
+		if (nullptr != RenderCompoent->GetCurMaterial(iMtrl) || nullptr != RenderCompoent->GetCurMaterial(iMtrl)->GetShader())
+		{
+			//현재 인덱스의 셰이더를 가져온다.
+			Ptr<CGraphicsShader> pShader = RenderCompoent->GetCurMaterial(iMtrl)->GetShader();
+
+			SHADER_DOMAIN eDomain = pShader->GetDomain();
+
+			switch (eDomain)
+			{
+			case SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE:
+			case SHADER_DOMAIN::DOMAIN_DEFERRED_MASK:
+			case SHADER_DOMAIN::DOMAIN_OPAQUE:
+			case SHADER_DOMAIN::DOMAIN_MASK:
+			{
+				// Shader 의 POV 에 따라서 인스턴싱 그룹을 분류한다.
+				// Domain에 따라 받을 Map 포인터 선언
+				std::unordered_map<ULONG64, vector<tInstObj>>* pMap = NULL;
+				Ptr<CMaterial> pMtrl = RenderCompoent->GetCurMaterial(iMtrl);
+
+				//인스턴싱 그룹 Defferd or Forward
+				if (pShader->GetDomain() == SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE
+					|| pShader->GetDomain() == SHADER_DOMAIN::DOMAIN_DEFERRED_MASK)
+				{
+					//디퍼드 그룹
+					pMap = &m_mapInstGroup_D;
+				}
+				else if (pShader->GetDomain() == SHADER_DOMAIN::DOMAIN_OPAQUE
+					|| pShader->GetDomain() == SHADER_DOMAIN::DOMAIN_MASK)
+				{
+					//포워드 그룹
+					pMap = &m_mapInstGroup_F;
+				}
+				else
+				{
+					//그룹이 없다면 assert
+					assert(nullptr);
+					continue;
+				}
+
+				uInstID uID = {};
+				//Res(CEntity) 마다 부여되는 Mesh ID, Material ID, Material Idx -> Union Get
+				//vecGameObject에 담긴 객체 중 같은 Mesh, Material, Idx 사용하면 같은 ID-> unorderd_map Push
+				uID.llID = RenderCompoent->GetInstID(iMtrl);
+
+				// ID 가 0 다 ==> Mesh 나 Material 이 셋팅되지 않았다.
+				if (0 == uID.llID)
+					continue;
+
+				//이미 map 안에 있는지 찾는다.
+				std::unordered_map<ULONG64, vector<tInstObj>>::iterator iter = pMap->find(uID.llID);
+				if (iter == pMap->end())
+				{
+					//없으면 Insert
+					pMap->insert(make_pair(uID.llID, vector<tInstObj>{tInstObj{ pObj, iMtrl }}));
+				}
+				else
+				{
+					//있으면 같은 객체가 있는 것이므로 Vector PushBack
+					iter->second.push_back(tInstObj{ pObj, iMtrl });
+				}
+			}
+			break;
+			case SHADER_DOMAIN::DOMAIN_DECAL:
+				m_vecDecal.push_back(pObj);
+				break;
+			case SHADER_DOMAIN::DOMAIN_TRANSPARENT:
+				m_vecTransparent.push_back(pObj);
+				break;
+			case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
+				m_vecPostProcess.push_back(pObj);
+				break;
+			}
+		}
+	}
+}
 void CCamera::SortShadowObject(const vector<CGameObject*>& obj)
 {
 	m_vecDynamicShadow.clear();

@@ -134,15 +134,14 @@ void ContentUI::render_update()
 
 	if (ImGui::Button("Save", Vec2(100.f, 50.f)))
 	{
-		CSaveLoadMgr::GetInst()->SavePrefab(L"prefab\\prefab.dat");
+		CSaveLoadMgr::GetInst()->SavePrefab();
 	}
 
 	ImGui::SameLine();
 
 	if (ImGui::Button("Load", Vec2(100.f, 50.f)))
 	{
-		//CSaveLoadMgr::GetInst()->LoadPrefab(L"prefab\\prefab.dat");
-		m_pTargetPrefab = nullptr;
+		CSaveLoadMgr::GetInst()->LoadPrefab();
 		ResetContent();
 	}
 
@@ -168,47 +167,47 @@ void ContentUI::render_update()
 			{
 				ray.direction =  CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vDir;
 				ray.position = CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vStart;
+			}
 
-				const map<const wchar_t*, CGameObjectEx*>  map = CEditor::GetInst()->GetEdiotrObj(CEditor::GetInst()->GetEditMode());
+			const map<const wchar_t*, CGameObjectEx*>  map = CEditor::GetInst()->GetEdiotrObj(CEditor::GetInst()->GetEditMode());
 
-				for (auto iter{ map.begin() }; iter != map.end(); ++iter)
+			for (auto iter{ map.begin() }; iter != map.end(); ++iter)
+			{
+				if (!iter->second->Transform())
+					continue;
+
+				if (iter->second->Transform()->Picking(ray, vTarget))
 				{
-					if (!iter->second->Transform())
-						continue;
+					LengthObj = vTarget - ray.position;
+					LengthLandscape = vPos - ray.position;
 
-					if (iter->second->Transform()->Picking(ray, vTarget))
+					if (LengthObj.Length() < LengthLandscape.Length())
 					{
-						LengthObj = vTarget - ray.position;
-						LengthLandscape = vPos - ray.position;
-
-						if (LengthObj.Length() < LengthLandscape.Length())
-						{
-							bLand = false;
-							pTargetObj = iter->second;
-						}
+						bLand = false;
+						pTargetObj = iter->second;
 					}
 				}
-
-				if (bLand)
-				{
-					pGameObject = m_pTargetPrefab->Instantiate();
-					pObj = new CGameObjectEx(*pGameObject);
-					vPos.y += pGameObject->Transform()->GetRelativeScale().y * 0.5f;
-				}
-				else
-				{
-					pGameObject = m_pTargetPrefab->Instantiate();
-					pObj = new CGameObjectEx(*pGameObject);
-					vPos = pTargetObj->Transform()->GetRelativePos();
-					vPos.y += pTargetObj->Transform()->GetRelativeScale().y * 0.5f;
-				}
-
-				pObj->Transform()->SetRelativePos(vPos);
-				pObj->SetName(L"Test" + std::to_wstring(cnt));
-				++cnt;
-				CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObj);
-				delete pGameObject;
 			}
+
+			if (bLand)
+			{
+				pGameObject = m_pTargetPrefab->Instantiate();
+				pObj = new CGameObjectEx(*pGameObject);
+				vPos.y += pGameObject->Transform()->GetRelativeScale().y * 0.5f;
+			}
+			else
+			{
+				pGameObject = m_pTargetPrefab->Instantiate();
+				pObj = new CGameObjectEx(*pGameObject);
+				vPos = pTargetObj->Transform()->GetRelativePos();
+				vPos.y += pTargetObj->Transform()->GetRelativeScale().y * 0.5f;
+			}
+
+			pObj->Transform()->SetRelativePos(vPos);
+			pObj->SetName(L"Test" + std::to_wstring(cnt));
+			++cnt;
+			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObj);
+			delete pGameObject;
 		}
 	}
 }
@@ -252,7 +251,7 @@ void ContentUI::ReloadContent()
 		switch (resType)
 		{
 		case RES_TYPE::PREFAB:
-			CResMgr::GetInst()->Load<CPrefab>(m_vecContentName[i]);
+			//CResMgr::GetInst()->Load<CPrefab>(m_vecContentName[i]);
 			break;
 		case RES_TYPE::MESHDATA:
 			CResMgr::GetInst()->Load<CMeshData>(m_vecContentName[i], m_vecContentName[i]);
@@ -332,8 +331,13 @@ void ContentUI::SetDragObject(DWORD_PTR _res)
 {
 	// _res : 클릭한 노드
 	TreeNode* pSelectedNode = (TreeNode*)_res;
-	m_pTargetPrefab = (CPrefab*)pSelectedNode->GetData();
+
 	m_bDragEvent = true;
+
+	CRes* pRes = (CRes*)pSelectedNode->GetData();
+
+	if (RES_TYPE::PREFAB == pRes->GetResType())
+		m_pTargetPrefab = (CPrefab*)pRes;
 }
 
 void ContentUI::SetResourceToInspector(DWORD_PTR _res)
@@ -362,7 +366,7 @@ void ContentUI::FindContentFileName(const wstring& _strFolderPath)
 
 	while (FindNextFile(hFindHandle, &data))
 	{
-		if (FILE_ATTRIBUTE_DIRECTORY == data.dwFileAttributes && wcscmp(data.cFileName, L".."))
+		if ((FILE_ATTRIBUTE_DIRECTORY & data.dwFileAttributes) && wcscmp(data.cFileName, L".."))
 		{
 			FindContentFileName(_strFolderPath + data.cFileName + L"\\");
 		}

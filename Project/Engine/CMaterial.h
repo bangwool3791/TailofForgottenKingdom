@@ -34,6 +34,7 @@ public :
 	void SetBoneCount(int _iBoneCount) { m_tConst.arrAnimData[1] = _iBoneCount; }
 
 	void UpdateData();
+	void UpdateData_Inst();
 	static void Clear();
 
 	virtual void Save(const wstring& _strRelativePath);

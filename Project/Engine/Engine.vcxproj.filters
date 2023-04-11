@@ -151,17 +151,8 @@
     <Filter Include="Engine\07. Resource\05. Sound">
       <UniqueIdentifier>{3169efc9-9abd-43ef-bbe9-06fb5c7c16ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\06. Component\08. Map">
-      <UniqueIdentifier>{f80f3f2b-ca66-4f5e-a6a4-4d32ec9878df}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\03. Manager\11. JPSMgr">
       <UniqueIdentifier>{4db505c0-9b0b-472e-aadd-5df7784c398a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\06. Component\08. Map\01. Terrain">
-      <UniqueIdentifier>{e656da3f-9970-43f2-af37-8cdcccef7913}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\06. Component\08. Map\02. TileMap">
-      <UniqueIdentifier>{e1663176-bf51-405c-a7ed-945abac83735}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\10. XML">
       <UniqueIdentifier>{28786064-22d5-4cf0-9aa3-77dbd0edc5c5}</UniqueIdentifier>
@@ -303,6 +294,9 @@
     </Filter>
     <Filter Include="Engine\06. Component\11. Animation3D\CAnimator3D">
       <UniqueIdentifier>{b12a6319-9037-4118-b66d-0f0347b6bcff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\07. Resource\03. Shader\CopyBoneShader">
+      <UniqueIdentifier>{ba3211e3-ee5a-4c4a-ac33-7618c59e1da8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -489,9 +483,6 @@
     <ClInclude Include="CSound.h">
       <Filter>Engine\07. Resource\05. Sound</Filter>
     </ClInclude>
-    <ClInclude Include="CTerrain.h">
-      <Filter>Engine\06. Component\08. Map\01. Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="BitArray.h">
       <Filter>Engine\03. Manager\11. JPSMgr</Filter>
     </ClInclude>
@@ -509,9 +500,6 @@
     </ClInclude>
     <ClInclude Include="JPSPath.h">
       <Filter>Engine\03. Manager\11. JPSMgr</Filter>
-    </ClInclude>
-    <ClInclude Include="CTileMap.h">
-      <Filter>Engine\06. Component\08. Map\02. TileMap</Filter>
     </ClInclude>
     <ClInclude Include="tinystr.h">
       <Filter>Engine\10. XML</Filter>
@@ -620,6 +608,12 @@
     </ClInclude>
     <ClInclude Include="CAnimator3D.h">
       <Filter>Engine\06. Component\11. Animation3D\CAnimator3D</Filter>
+    </ClInclude>
+    <ClInclude Include="CInstancingBuffer.h">
+      <Filter>Engine\02. Device\01. Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="CCopyBoneShader.h">
+      <Filter>Engine\07. Resource\03. Shader\CopyBoneShader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -764,17 +758,11 @@
     <ClCompile Include="CSound.cpp">
       <Filter>Engine\07. Resource\05. Sound</Filter>
     </ClCompile>
-    <ClCompile Include="CTerrain.cpp">
-      <Filter>Engine\06. Component\08. Map\01. Terrain</Filter>
-    </ClCompile>
     <ClCompile Include="JPSCollision.cpp">
       <Filter>Engine\03. Manager\11. JPSMgr</Filter>
     </ClCompile>
     <ClCompile Include="JPSPath.cpp">
       <Filter>Engine\03. Manager\11. JPSMgr</Filter>
-    </ClCompile>
-    <ClCompile Include="CTileMap.cpp">
-      <Filter>Engine\06. Component\08. Map\02. TileMap</Filter>
     </ClCompile>
     <ClCompile Include="tinystr.cpp">
       <Filter>Engine\10. XML</Filter>
@@ -883,6 +871,12 @@
     </ClCompile>
     <ClCompile Include="CAnimator3D.cpp">
       <Filter>Engine\06. Component\11. Animation3D\CAnimator3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CInstancingBuffer.cpp">
+      <Filter>Engine\02. Device\01. Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="CCopyBoneShader.cpp">
+      <Filter>Engine\07. Resource\03. Shader\CopyBoneShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1038,6 +1032,9 @@
     </FxCompile>
     <FxCompile Include="animation3d.fx">
       <Filter>HLSL\Compute\Animation3D</Filter>
+    </FxCompile>
+    <FxCompile Include="copybone.fx">
+      <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -135,7 +135,35 @@ void CMaterial::UpdateData()
 	pCB->SetData(&m_tConst);
 	pCB->UpdateData(PIPELINE_STAGE::ALL_STAGE);
 	
-	m_pShader->UpdateData();
+	// 쉐이더 업데이트
+	if (nullptr != m_pShader)
+		m_pShader->UpdateData();
+}
+
+void CMaterial::UpdateData_Inst()
+{
+	// 텍스쳐 업데이트
+	for (UINT i = 0; i < TEX_END; ++i)
+	{
+		if (nullptr != m_arrTex[i])
+		{
+			m_arrTex[i]->UpdateData(i, ALL_STAGE);
+			m_tConst.HasTex[i] = 1;
+		}
+		else
+		{
+			m_tConst.HasTex[i] = 0;
+		}
+	}
+
+	// 상수 업데이트
+	CConstBuffer* pCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::MATERIAL);
+	pCB->SetData(&m_tConst);
+	pCB->UpdateData(PIPELINE_STAGE::ALL_STAGE);
+
+	// 쉐이더 업데이트
+	if (nullptr != m_pShader)
+		m_pShader->UpdateData_Inst();
 }
 
 void CMaterial::SetTexParam(TEX_PARAM _eTex, Ptr<CTexture> _pTex)

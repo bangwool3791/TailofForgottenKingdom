@@ -19,6 +19,7 @@ public:
 	void progress();
 	void Guizmo();
 	void SetPickingObj(CGameObjectEx* pObj) { m_pSelectedObj = pObj; }
+	void SetNullPickingObj() { m_pSelectedObj = nullptr; }
 private:
 	void clear();
 	void CreateUI();

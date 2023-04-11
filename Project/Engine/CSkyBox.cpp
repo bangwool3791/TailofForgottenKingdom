@@ -47,6 +47,11 @@ void CSkyBox::render()
 	CMaterial::Clear();
 }
 
+void CSkyBox::render(UINT _iSubset)
+{
+	render();
+}
+
 void CSkyBox::SetType(SKYBOX_TYPE _type)
 {
 	m_Type = _type;

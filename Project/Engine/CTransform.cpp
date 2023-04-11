@@ -195,6 +195,7 @@ bool CTransform::Picking(const Ray& _ray, Vec3& _vPos)
 		return false;
 
 	Ptr<CMesh> pMesh = GetOwner()->MeshRender()->GetMesh();
+	pMesh->Read();
 	Vec3 vResult{ -1.f, -1.f, -1.f };
 	size_t verts;
 	Vtx* vertices = pMesh->GetVertices(verts);

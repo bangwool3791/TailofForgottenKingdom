@@ -63,26 +63,10 @@ void CDecal::render()
 	CMaterial::Clear();
 }
 
-void CDecal::render_Instancing()
+void CDecal::render(UINT _iSubset)
 {
-	if (!IsActive())
-		return;
-
-	if (nullptr == GetCurMaterial(0) || nullptr == GetMesh() || nullptr == Transform())
-		return;
-
-	//월드 정보만 갱신 후
-	Transform()->Update();
-
-	tTransform transform = g_transform;
-	tMtrlConst tMtrl = GetCurMaterial(0)->GetMaterial();
-	tAnim2DInfo tAnimInfo{};
-
-	tObjectRender tObjectInfo = { transform, tMtrl, tAnimInfo };
-
-	g_vecInfoObject.push_back(tObjectInfo);
+	render();
 }
-
 
 void CDecal::SaveToFile(FILE * _File)
 {

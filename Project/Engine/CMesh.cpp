@@ -3,6 +3,7 @@
 
 #include "CDevice.h"
 #include "CFBXLoader.h"
+#include "CInstancingBuffer.h"
 #include <minmax.h>
 
 CMesh::CMesh(bool _bEngineRes)
@@ -13,7 +14,6 @@ CMesh::CMesh(bool _bEngineRes)
     , m_pVtxSys(nullptr)
 {
 }
-
 
 CMesh::~CMesh()
 {
@@ -186,7 +186,6 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
     pMesh->m_tVBDesc = tVtxDesc;
     pMesh->m_pVtxSys = pSys;
 
-    // 인덱스 정보
     UINT iIdxBufferCount = (UINT)container->vecIdx.size();
     D3D11_BUFFER_DESC tIdxDesc = {};
 
@@ -476,12 +475,37 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader, UINT idx)
 
     return pMesh;
 }
+
+void CMesh::UpdateData_Inst(UINT _iSubset)
+{
+    if (_iSubset >= m_vecIdxInfo.size())
+        assert(nullptr);
+
+    //Instacing WVP, RowIdx 정보 2번 슬롯 전달
+    ID3D11Buffer* arrBuffer[2] = { m_VB.Get(), CInstancingBuffer::GetInst()->GetBuffer().Get() };
+    UINT		  iStride[2] = { sizeof(Vtx), sizeof(tInstancingData) };
+    UINT		  iOffset[2] = { 0, 0 };
+
+    CONTEXT->IASetVertexBuffers(0, 2, arrBuffer, iStride, iOffset);
+    CONTEXT->IASetIndexBuffer(m_vecIdxInfo[_iSubset].pIB.Get(), DXGI_FORMAT_R32_UINT, 0);
+}
+
+
+
 void CMesh::render(UINT _iSubset)
 {
     //인덱스 정보 업데이트
     UpdateData(_iSubset);
     //draw
     CONTEXT->DrawIndexed(m_vecIdxInfo[_iSubset].iIdxCount, 0, 0);
+}
+
+void CMesh::render_instancing(UINT _iSubset)
+{
+    UpdateData_Inst(_iSubset);
+
+    CONTEXT->DrawIndexedInstanced(m_vecIdxInfo[_iSubset].iIdxCount
+        , CInstancingBuffer::GetInst()->GetInstanceCount(), 0, 0, 0);
 }
 
 void CMesh::render_particle(UINT _iCount)
@@ -497,7 +521,7 @@ void CMesh::Read()
         m_readVB = nullptr;
     }
 
-    D3D11_BUFFER_DESC VbufferDesc;
+    D3D11_BUFFER_DESC VbufferDesc{};
 
     VbufferDesc.Usage = D3D11_USAGE_STAGING;
     VbufferDesc.ByteWidth = m_tVBDesc.ByteWidth;
@@ -525,15 +549,6 @@ void CMesh::Read()
     else
     {
         memcpy(m_vertices.get(), msV.pData, nVerts * sizeof(Vtx));
-       //cout << m_VB.Get() << endl; //Current Buffer veing processed
-        //for (size_t i = 0; i < nVerts; i++)
-        //{
-        //   cout << m_vertices[i].vPos.x << ", "
-        //       << m_vertices[i].vPos.y << ", "
-        //       << m_vertices[i].vPos.z << endl; //
-        //} 
-        //cout << "buffer end" << endl; //
-        //cout << "" << endl; // 
     }
 
     CONTEXT->Unmap(m_readVB.Get(), 0);
@@ -626,40 +641,6 @@ void CMesh::UpdateVertex(Vtx* vtx, size_t size)
     Write();
 }
 
-bool CMesh::SetTextureID(Ray _ray, float _id)
-{
-	Read();
-
-    size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
-
-    for (UINT i = 0; i < nVerts; i+= 4)
-    {
-        float fDist;
-        if (_ray.Intersects(m_vertices[i].vPos, m_vertices[i + 1].vPos, m_vertices[i + 2].vPos, fDist))
-        {
-            int a = 0;
-            m_vertices[i].vColor.y = _id;
-            m_vertices[i + 1].vColor.y = _id;
-            m_vertices[i + 2].vColor.y = _id;
-            m_vertices[i + 3].vColor.y = _id;
-            Write();
-            return true;
-        }
-
-        if (_ray.Intersects(m_vertices[i].vPos, m_vertices[i + 2].vPos, m_vertices[i + 3].vPos, fDist))
-        {
-            int a = 0;
-            m_vertices[i].vColor.y = _id;
-            m_vertices[i + 1].vColor.y = _id;
-            m_vertices[i + 2].vColor.y = _id;
-            m_vertices[i + 3].vColor.y = _id;
-            Write();
-            return true;
-        }
-    } 
-	return false;
-}
-
 Vec3 CMesh::GetPosition(Ray _ray)
 {
     size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
@@ -726,46 +707,6 @@ void CMesh::InitializeTerrainJps(vector<Vec3>& _vec)
         _vec[index].z = (m_vertices[i + 1].vPos.z + m_vertices[i + 3].vPos.z) * 0.5f;
         ++index;
     }
-}
-
-// 정점과 충돌 체크
-// vOrig는 카메라 원점, vDir는 Ray 방향
-// v0, v1, v2 는 삼각형의 정점
-// t 는 vOrig에서 v0 까지의 거리
-// u 는 v0에서 v1 이고, v 는 v0에서 v2 이다.
-bool CMesh::IntersectTriangle(const Vec3& orig, const Vec3& dir, Vec3& v0, Vec3& v1, Vec3& v2, FLOAT* t, FLOAT* u, FLOAT* v)
-{     // Find vectors for two edges sharing vert0     
-    Vec3 edge1 = v1 - v0;
-    Vec3 edge2 = v2 - v0;
-    // Begin calculating determinant - also used to calculate U parameter     
-    Vec3 pvec;    
-    pvec = dir.Cross(edge2);
-    // If determinant is near zero, ray lies in plane of triangle     
-    FLOAT det = edge1.Dot(pvec);
-    Vec3 tvec;
-    if( det > 0 )     
-    {         tvec = orig - v0;     }     
-    else     {         tvec = v0 - orig;         det = -det;     }    
-    if( det < 0.0001f )         
-        return FALSE;     
-    // Calculate U parameter and test bounds     
-    *u = tvec.Dot(pvec);     
-    if( *u < 0.0f || *u > det )         
-        return FALSE;    
-    // Prepare to test V parameter    
-    Vec3 qvec;     
-    qvec = tvec.Cross(edge1);    
-    // Calculate V parameter and test bounds    
-    *v = dir.Dot(qvec);     
-    if( *v < 0.0f || *u + *v > det )         
-        return FALSE;     
-    // Calculate t, scale parameters, ray intersects triangle     
-    *t = edge2.Dot(qvec);     
-    FLOAT fInvDet = 1.0f / det;     
-    *t *= fInvDet;     
-    *u *= fInvDet;     
-    *v *= fInvDet;     
-    return TRUE; 
 }
 
 void CMesh::Save(const wstring& _strRelativePath)
@@ -883,6 +824,8 @@ int CMesh::Load(const wstring& _strFilePath)
     {
         assert(nullptr);
     }
+
+    m_tVBDesc = tDesc;
 
     // 인덱스 정보
     UINT iMtrlCount = 0;

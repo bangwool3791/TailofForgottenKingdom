@@ -45,11 +45,10 @@ private:
 public:
     virtual void finaltick() override;
     virtual void render() override;
+    virtual void render(UINT _iSubset) override;
 public:
     virtual void SaveToFile(FILE* _File) override;
     virtual void LoadFromFile(FILE* _File) override;
-public:
-    virtual void render_Instancing() override {}
 public:
     void SetBrushMap(Ptr<CTexture> _pTex);
     void SetHeightMap(Ptr<CTexture> _pTex);

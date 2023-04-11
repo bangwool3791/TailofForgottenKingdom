@@ -34,11 +34,14 @@ public:
 	UINT GetMtrlCount() { return (UINT)m_vecMtrls.size(); }
 
 	void ClearMaterials();
+
 	void SetSharedMaterial(Ptr<CMaterial> _pMtrl, UINT _iIdx);
+
 	const vector<tMtrlSet>& GetMaterials() { return m_vecMtrls; }
 	Ptr<CMaterial> GetCurMaterial(UINT _iIdx);
 	Ptr<CMaterial> GetSharedMaterial(UINT _idx);
 	Ptr<CMaterial> GetDynamicMaterial(UINT _iIdx);
+	ULONG64 GetInstID(UINT _iMtrlIdx);
 
 	void SetFrustumCulling(bool _Use) { m_bUseFrustumCulling = _Use; }
 	bool IsUseFrustumCulling() { return m_bUseFrustumCulling; }
@@ -57,5 +60,5 @@ public:
 public:
 	virtual void render() = 0;
 	virtual void render_depthmap();
-	virtual void render_Instancing() = 0;
+	virtual void render(UINT _iSubset) = 0;
 };

@@ -163,6 +163,11 @@ void CLandScape::render()
 	m_pWeightMapBuffer->Clear();
 }
 
+void CLandScape::render(UINT _iSubset)
+{
+	render();
+}
+
 void CLandScape::SetFaceCount(UINT _X, UINT _Z)
 {
 	m_iXFaceCount = _X;
@@ -226,7 +231,7 @@ void CLandScape::SaveToFile(FILE* _File)
 	SaveResourceRef(m_pTileArrTex, _File);
 
 	UINT iElemCnt = m_pWeightMapBuffer->GetElementCount();
-	UINT iElemSize = m_pWeightMapBuffer->GetElementsSize();
+	UINT iElemSize = m_pWeightMapBuffer->GetElementSize();
 
 	fwrite(&iElemCnt, sizeof(UINT), 1, _File);
 	fwrite(&iElemSize, sizeof(UINT), 1, _File);

@@ -21,7 +21,7 @@ public:
     virtual void LoadFromFile(FILE* _File) override;
 public:
     virtual void render();
-    virtual void render_Instancing();
+    virtual void render(UINT _iSubset) override;
 public:
     CLONE(CDecal);
 public:

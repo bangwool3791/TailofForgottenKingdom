@@ -17,7 +17,8 @@ class CResMgr
 private:
 	map<wstring, Ptr<CRes>>				m_arrRes[(UINT)RES_TYPE::END];
 	vector<D3D11_INPUT_ELEMENT_DESC>	m_vecLayoutInfo;
-	UINT								m_iLayoutOffset;
+	UINT								m_iLayoutOffset_0;
+	UINT								m_iLayoutOffset_1;
 	bool								m_bChanged;
 public:
 	template<typename T>
@@ -70,7 +71,7 @@ private:
 	void CreateDefaultGraphicsShader();
 	void CreateDefaultMaterial();
 	void CreateDefaultComputeShader();
-	void AddInputLayout(DXGI_FORMAT _eFormat, const char* _strSemanticName);
+	void AddInputLayout(DXGI_FORMAT _eFormat, const char* _strSemanticName, UINT _iSlotNum, UINT _iSemanticIdx);
 	Vec3 GetCircleVector(size_t i, size_t tessellation);
 	void CreateConeMesh(float radius, float height, size_t tessellation) noexcept;
 private:

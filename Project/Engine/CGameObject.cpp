@@ -159,9 +159,12 @@ void CGameObject::finaltick()
 			++iter;
 		}
 	}
-	CLevel* pLevel = CLevelMgr::GetInst()->GetCurLevel();
-	CLayer* pLayer = pLevel->GetLayer(m_iLayerIdx);
-	pLayer->RegisterObject(this);
+	if (-1 != m_iLayerIdx)
+	{
+		CLevel* pLevel = CLevelMgr::GetInst()->GetCurLevel();
+		CLayer* pLayer = pLevel->GetLayer(m_iLayerIdx);
+		pLayer->RegisterObject(this);
+	}
 }
 
 void CGameObject::finaltick_module()
@@ -196,6 +199,12 @@ void CGameObject::render()
 		return;
 
 	m_pRenderComponent->render();
+
+	for (auto Iter{ m_vecChild.begin() }; Iter != m_vecChild.end(); ++Iter)
+	{
+		if ((*Iter))
+			(*Iter)->render();
+	}
 }
 
 void CGameObject::AddComponent(CComponent* _pComponent)

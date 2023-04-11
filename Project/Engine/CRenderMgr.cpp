@@ -222,7 +222,7 @@ void CRenderMgr::UpdateLight2D()
 {
 	if (m_pLight2DBuffer->GetElementCount() < m_vecLight2D.size())
 	{
-		m_pLight2DBuffer->Create(m_pLight2DBuffer->GetElementsSize(), (UINT)m_vecLight2D.size(), SB_TYPE::SRV_ONLY, nullptr, true);
+		m_pLight2DBuffer->Create(m_pLight2DBuffer->GetElementSize(), (UINT)m_vecLight2D.size(), SB_TYPE::SRV_ONLY, nullptr, true);
 	}
 
 	/*
@@ -247,7 +247,7 @@ void CRenderMgr::UpdateLight3D()
 {
 	if (m_pLight3DBuffer->GetElementCount() < m_vecLight3D.size())
 	{
-		m_pLight3DBuffer->Create(m_pLight3DBuffer->GetElementsSize(), (UINT)m_vecLight3D.size(), SB_TYPE::SRV_ONLY, nullptr, true);
+		m_pLight3DBuffer->Create(m_pLight3DBuffer->GetElementSize(), (UINT)m_vecLight3D.size(), SB_TYPE::SRV_ONLY, nullptr, true);
 	}
 
 	static vector<tLightInfo> vecLight3D{};

@@ -19,7 +19,7 @@ public:
     virtual void tick() override;
     virtual void finaltick() override;
     virtual void render() override;
-    virtual void render_Instancing() {};
+    virtual void render(UINT _iSubset) override;
 public:
     virtual void SaveToFile(FILE* _File) override;
     virtual void LoadFromFile(FILE* _File) override;

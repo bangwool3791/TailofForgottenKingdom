@@ -4,7 +4,8 @@
 
 CResMgr::CResMgr()
     :m_vecLayoutInfo{}
-    , m_iLayoutOffset{ 0 }
+    , m_iLayoutOffset_0(0)
+    , m_iLayoutOffset_1(0)
 {
     for (UINT i{ 0 }; i < (UINT)RES_TYPE::END; ++i)
     {

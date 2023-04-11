@@ -13,6 +13,7 @@
 #include "CDevice.h"
 #include "CEventMgr.h"
 #include "CCollisionMgr.h"
+#include "CInstancingBuffer.h"
 #include "CSound.h"
 
 #include "CAnimator2D.h"
@@ -59,6 +60,9 @@ int CEngine::init(HWND _hWnd, UINT _iWidth, UINT _iHeight)
 	CRenderMgr::GetInst()->init();
 	CLevelMgr::GetInst()->init();
 	CFontMgr::GetInst()->init();
+
+	CInstancingBuffer::GetInst()->init();
+
 	return S_OK;
 }
 

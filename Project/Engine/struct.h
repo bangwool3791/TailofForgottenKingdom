@@ -353,6 +353,38 @@ struct tMTAnimClip
 	FbxTime::EMode	eMode;
 };
 
+// ===========
+// Instancing
+// ===========
+//인스턴싱 unorderd_map Key
+union uInstID
+{
+	struct {
+		UINT iMesh;
+		WORD iMtrl;
+		WORD iMtrlIdx;
+	};
+	ULONG64 llID;
+};
+
+class CGameObject;
+//인스턴싱에서 사용
+struct tInstObj
+{
+	//월드행렬, Animator3D 가져오는 용도
+	CGameObject* pObj;
+	//
+	UINT		 iMtrlIdx;
+};
+
+struct tInstancingData
+{
+	Matrix matWorld;
+	Matrix matWV;
+	Matrix matWVP;
+	int    iRowIdx;
+};
+
 extern tGlobalData g_global;
 extern  tTransform g_transform;
 extern  std::vector<tObjectRender>	g_vecInfoObject;

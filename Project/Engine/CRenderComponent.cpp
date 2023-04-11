@@ -131,6 +131,20 @@ void CRenderComponent::render_depthmap()
 	pMtrl->SetBoneCount(0);
 }
 
+ULONG64 CRenderComponent::GetInstID(UINT _iMtrlIdx)
+{
+	if (m_pMesh == NULL || m_vecMtrls[_iMtrlIdx].pCurMtrl == NULL)
+		return 0;
+
+	/*
+	* 	UINT iMesh;
+		WORD iMtrl;
+		WORD iMtrlIdx;
+	*/
+	uInstID id{ (UINT)m_pMesh->GetID(), (WORD)m_vecMtrls[_iMtrlIdx].pCurMtrl->GetID(), (WORD)_iMtrlIdx };
+	return id.llID;
+}
+
 void CRenderComponent::SaveToFile(FILE* _File)
 {
 	COMPONENT_TYPE type = GetType();
@@ -154,6 +168,8 @@ void CRenderComponent::SaveToFile(FILE* _File)
 void CRenderComponent::LoadFromFile(FILE* _File)
 {
 	LoadResourceRef(m_pMesh, _File);
+
+	SetMesh(m_pMesh);
 
 	UINT iMtrlCount = GetMtrlCount();
 	fread(&iMtrlCount, sizeof(UINT), 1, _File);

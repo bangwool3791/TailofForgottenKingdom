@@ -198,7 +198,7 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 			pComponent = new CAnimator2D;
 			break;
 		case COMPONENT_TYPE::ANIMATOR3D:
-			//pComponent = new CAnimator3D;
+			pComponent = new CAnimator3D;
 			break;
 		case COMPONENT_TYPE::LIGHT2D:
 			pComponent = new CLight2D;
@@ -208,12 +208,6 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 			break;
 		case COMPONENT_TYPE::MESHRENDER:
 			pComponent = new CMeshRender;
-			break;
-		case COMPONENT_TYPE::TERRAIN:
-			pComponent = new CTerrain;
-			break;
-		case COMPONENT_TYPE::TILEMAP:
-			pComponent = new CTileMap;
 			break;
 		case COMPONENT_TYPE::PARTICLESYSTEM:
 			pComponent = new CParticleSystem;
@@ -266,10 +260,10 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 	return pObject;
 }
 
-void CSaveLoadMgr::SavePrefab(wstring _strRelativePath)
+void CSaveLoadMgr::SavePrefab()
 {
 	wstring strContentPath = CPathMgr::GetInst()->GetContentPath();
-	wstring strFilePath = strContentPath + _strRelativePath;
+	wstring strFilePath = strContentPath + L"prefab\\PrefabCount.dat";
 
 	FILE* pFile = nullptr;
 	_wfopen_s(&pFile, strFilePath.c_str(), L"wb");
@@ -304,11 +298,11 @@ void CSaveLoadMgr::SavePrefab(wstring _strRelativePath)
 	}
 }
 
-void CSaveLoadMgr::LoadPrefab(wstring _strRelativePath)
+void CSaveLoadMgr::LoadPrefab()
 {
 
 	wstring strContentPath = CPathMgr::GetInst()->GetContentPath();
-	wstring strFilePath = strContentPath + _strRelativePath;
+	wstring strFilePath = strContentPath + L"PrefabCount.dat";
 
 	FILE* pFile = nullptr;
 	_wfopen_s(&pFile, strFilePath.c_str(), L"rb");
@@ -326,7 +320,7 @@ void CSaveLoadMgr::LoadPrefab(wstring _strRelativePath)
 
 	for (const auto& entry : fs::directory_iterator(strContentPath + L"prefab\\"))
 	{
-		if(std::string::npos == entry.path().string().find(".dat"))
+		if(std::string::npos == entry.path().string().find(".pref"))
 			continue;
 
 		if (entry.path() == strFilePath)

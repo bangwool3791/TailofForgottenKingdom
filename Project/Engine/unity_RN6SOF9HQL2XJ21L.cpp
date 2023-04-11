@@ -36,6 +36,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CConstBuffer.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CCopyBoneShader.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CDecal.cpp"
 
 
@@ -55,7 +58,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFontMgr.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFrustum.cpp"
 

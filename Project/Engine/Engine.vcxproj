@@ -211,6 +211,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CComponent.h" />
     <ClInclude Include="CComputeShader.h" />
     <ClInclude Include="CConstBuffer.h" />
+    <ClInclude Include="CCopyBoneShader.h" />
     <ClInclude Include="CDecal.h" />
     <ClInclude Include="CDevice.h" />
     <ClInclude Include="CEngine.h" />
@@ -221,6 +222,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CFrustum.h" />
     <ClInclude Include="CHeightMapShader.h" />
     <ClInclude Include="CImage.h" />
+    <ClInclude Include="CInstancingBuffer.h" />
     <ClInclude Include="CJpsMgr.h" />
     <ClInclude Include="CLandScape.h" />
     <ClInclude Include="CLight3D.h" />
@@ -264,7 +266,6 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CSLight.h" />
     <ClInclude Include="CSound.h" />
     <ClInclude Include="CStructuredBuffer.h" />
-    <ClInclude Include="CTileMap.h" />
     <ClInclude Include="CUIMgr.h" />
     <ClInclude Include="CWeightMapShader.h" />
     <ClInclude Include="d3dUtil.h" />
@@ -316,7 +317,6 @@ call EngineCopy.bat</Command>
     <ClInclude Include="smallobjallocator.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="struct.h" />
-    <ClInclude Include="CTerrain.h" />
     <ClInclude Include="tinystr.h" />
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="CWaveRenderer.h" />
@@ -338,6 +338,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CComponent.cpp" />
     <ClCompile Include="CComputeShader.cpp" />
     <ClCompile Include="CConstBuffer.cpp" />
+    <ClCompile Include="CCopyBoneShader.cpp" />
     <ClCompile Include="CDecal.cpp" />
     <ClCompile Include="CDevice.cpp" />
     <ClCompile Include="CEngine.cpp" />
@@ -348,6 +349,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CFrustum.cpp" />
     <ClCompile Include="CHeightMapShader.cpp" />
     <ClCompile Include="CImage.cpp" />
+    <ClCompile Include="CInstancingBuffer.cpp" />
     <ClCompile Include="CJpsMgr.cpp" />
     <ClCompile Include="CLandScape.cpp" />
     <ClCompile Include="CLandScape_init.cpp" />
@@ -389,8 +391,6 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CSound.cpp" />
     <ClCompile Include="CStructuredBuffer.cpp" />
     <ClCompile Include="CTexture.cpp" />
-    <ClCompile Include="CTileMap.cpp" />
-    <ClCompile Include="CTerrain.cpp" />
     <ClCompile Include="CTimeMgr.cpp" />
     <ClCompile Include="CTransform.cpp" />
     <ClCompile Include="CUIMgr.cpp" />
@@ -445,6 +445,7 @@ call EngineCopy.bat</Command>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="copybone.fx" />
     <FxCompile Include="debugdraw.fx" />
     <FxCompile Include="decal.fx" />
     <FxCompile Include="DragEffect.fx" />

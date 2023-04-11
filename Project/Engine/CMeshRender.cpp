@@ -99,53 +99,49 @@ void CMeshRender::render()
 		Animator3D()->ClearData();
 }
 
-void CMeshRender::render_Instancing()
+void CMeshRender::render(UINT _iSubset)
 {
-	if (!IsActive())
+	if (nullptr == GetMesh() || nullptr == GetCurMaterial(_iSubset))
 		return;
 
-	//여기서 왜 트랜스폼?
-	if (nullptr == GetMesh())
-		return;
-	/*
-	* 텍스처 버퍼 업데이트 처리
-	*
-	* CRenderMgr::UpdateLight2D() 참고
-	* 싱글 톤 또는 static vector 처리
-	*/
-	//월드 정보만 갱신 후
-	Transform()->Update();
+	// ==========
+	// UpdateData
+	// ==========
+	// Transform 업데이트
+	Transform()->UpdateData();
 
-	//삭제 예정
-	//GetCurMaterial()->UpdateData();
-
+	// Animation2D 업데이트
 	if (Animator2D())
 	{
-		//삭제 예정
-		//업데이트만 시키고
-		Animator2D()->Update();
+		Animator2D()->UpdateData();
 	}
 
-	tTransform transform = g_transform;
-	tMtrlConst tMtrl = GetCurMaterial(0)->GetMaterial();
-	tAnim2DInfo tAnimInfo{};
-
-	if (Animator2D())
+	// Animator3D 업데이트
+	if (Animator3D())
 	{
-		tAnimInfo = Animator2D()->GetAniInfo();
+		Animator3D()->UpdateData();
+		GetCurMaterial(_iSubset)->SetAnim3D(true); // Animation Mesh 알리기
+		GetCurMaterial(_iSubset)->SetBoneCount(Animator3D()->GetBoneCount());
 	}
 
-	tObjectRender tObjectInfo = { transform, tMtrl, tAnimInfo };
+	// ======
+	// Render
+	// ======
+	GetCurMaterial(_iSubset)->UpdateData();
+	GetMesh()->render(_iSubset);
 
-	g_vecInfoObject.push_back(tObjectInfo);
+	// =====
+	// Clear
+	// =====	
+	if (Animator2D())
+		Animator2D()->Clear();
+
+	if (Animator3D())
+		Animator3D()->ClearData();
 }
 
 void CMeshRender::SaveToFile(FILE* _File)
 {
-	COMPONENT_TYPE eType = GetType();
-
-	fwrite(&eType, sizeof(COMPONENT_TYPE), 1, _File);
-
 	__super::SaveToFile(_File);
 }
 

@@ -175,9 +175,9 @@ void CEditor::init()
 
 			//pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\monster.mdat");
 	
-			for (UINT i = 0; i < 12; ++i)
+			for (UINT i = 0; i < 4; ++i)
 			{
-				pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\jug_stage.FBX", i);
+				pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\arene_stage.FBX", i);
 
 				pObj = new CGameObjectEx;
 				pObj->SetName(L"Monster" + std::to_wstring(i));
@@ -468,7 +468,6 @@ void CEditor::CreateCamera()
 		m_pEnvCameraObj->AddComponent(new CCollider3D);
 		m_pEnvCameraObj->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 		m_pEnvCameraObj->Camera()->SetProjType(PERSPECTIVE);
-		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
 		CRenderMgr::GetInst()->SetEnvCamera(m_pEnvCameraObj->Camera());
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EnvCamera", m_pEnvCameraObj);
 	}
@@ -515,11 +514,9 @@ void CEditor::Add_Editobject(EDIT_MODE _emode, CGameObjectEx* _pGameObject)
 	}
 
 	map.emplace(make_pair(wstrName.c_str(), _pGameObject));
-}
 
-void CEditor::UpdateAnimationObject(CGameObject* _pGameObject)
-{
-	m_pAnimationObject = _pGameObject;
+	OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+	pUI->ResetLevel();
 }
 
 void CEditor::Add_Editobject(EDIT_MODE _emode, const wchar_t* _pName, CGameObjectEx* _pGameObject)
@@ -533,6 +530,9 @@ void CEditor::Add_Editobject(EDIT_MODE _emode, const wchar_t* _pName, CGameObjec
 	}
 
 	map.emplace(make_pair(_pName, _pGameObject));
+
+	OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+	pUI->ResetLevel();
 }
 
 CGameObjectEx* CEditor::FindByName(const wstring& _strky)
@@ -570,6 +570,46 @@ void CEditor::PopByName(const wstring& _strky)
 			}
 		}
 	}
+
+	OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+	pUI->ResetLevel();
+}
+
+void CEditor::PopByName(EDIT_MODE eMode, const wstring& _strky)
+{
+	map<const wchar_t*, CGameObjectEx*>& _map = m_EditorObj[(UINT)eMode];
+
+	for (auto iter{ _map.begin() }; iter != _map.end(); ++iter)
+	{
+		if (!lstrcmp(_strky.c_str(), iter->first))
+		{
+			_map.erase(iter);
+			break;
+		}
+	}
+
+	OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+	pUI->ResetLevel();
+}
+
+void CEditor::DeleteByName(EDIT_MODE eMode, CGameObjectEx* pObj)
+{
+	const wstring& str = pObj->GetName();
+
+	map<const wchar_t*, CGameObjectEx*>& _map = m_EditorObj[(UINT)eMode];
+
+	for (auto iter{ _map.begin()}; iter != _map.end(); ++iter)
+	{
+		if (!lstrcmp(str.c_str(), iter->first))
+		{
+			delete iter->second;
+			_map.erase(iter);
+			break;
+		}
+	}
+
+	OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+	pUI->ResetLevel();
 }
 
 void CEditor::SetEditMode(EDIT_MODE _editmode)

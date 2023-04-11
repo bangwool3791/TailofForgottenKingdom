@@ -147,6 +147,11 @@ void CParticleSystem::render()
 	CMaterial::Clear();
 }
 
+void CParticleSystem::render(UINT _iSubset)
+{
+	render();
+}
+
 void CParticleSystem::SaveToFile(FILE* _File)
 {
 	CRenderComponent::SaveToFile(_File);

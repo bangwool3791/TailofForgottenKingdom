@@ -16,11 +16,11 @@ class CMesh :
     public CRes
 {
 private:
-
     ComPtr<ID3D11Buffer>     m_readVB;
     ComPtr<ID3D11Buffer>     m_VB;
     D3D11_BUFFER_DESC        m_tVBDesc;
     UINT                     m_iVtxCount;
+    //깊은 복사 필요
     void*                    m_pVtxSys;
 
     // 하나의 버텍스버퍼에 여러개의 인덱스버퍼가 연결
@@ -30,6 +30,7 @@ private:
     D3D11_BUFFER_DESC        m_tIBDesc;
     UINT                     m_iIdxCount;
 
+    //깊은 복사 ? 
     std::unique_ptr<Vtx[]>   m_vertices;
 
     //Ray
@@ -54,17 +55,20 @@ public :
 
     void UpdateVertex(Vtx* vtx, size_t size);
     void render(UINT _iSubset);
-    void UpdateData(UINT _iSubset);
+    void render_instancing(UINT _iSubset);
     void render_particle(UINT _iCount);
+    void UpdateData(UINT _iSubset);
+    void UpdateData_Inst(UINT _iSubset);
+
     void Read();
     void ReadByConsole();
     void Write();
+
     bool GetPosition(Ray _ray, Vec3& _vPos);
     Vec3 GetPosition(Ray _ray);
-    bool SetTextureID(Ray _ray, float _id);
     Vtx* GetVertices(size_t& nVerts);
-    bool IntersectTriangle(const Vec3& orig, const Vec3& dir, Vec3& v0, Vec3& v1, Vec3& v2, FLOAT* t, FLOAT* u, FLOAT* v);
     void InitializeTerrainJps(vector<Vec3>& _vec);
+
     virtual void Save(const wstring& _strRelativePath);
     virtual int Load(const wstring& _strFilePath) override;
     CLONE_ASSERT(CMesh);

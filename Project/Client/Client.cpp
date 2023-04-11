@@ -10,6 +10,7 @@
 #include "CSaveLoadMgr.h"
 #include "CImGuiMgr.h"
 
+#include <Engine\CGameObject.h>
 #ifdef UNICODE
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 #else
@@ -33,7 +34,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //_CrtSetBreakAlloc(10223);
+    //_CrtSetBreakAlloc(2416741);
 
     srand(0);
 
@@ -96,7 +97,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             for (auto iter = map.begin(); iter != map.end(); ++iter)
             {
                 vec.push_back((CGameObject*)iter->second);
+
+                //const vector<CGameObject*>& childs = ((CGameObject*)iter->second)->GetChilds();
+                
+                //for (UINT i = 0; i < childs.size(); ++i)
+                //    vec.push_back(childs[i]);
             }
+
             CEngine::GetInst()->render(vec);
 
             vec.clear();
@@ -121,7 +128,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-    WNDCLASSEXW wcex;
+    WNDCLASSEXW wcex{};
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
