@@ -1,9 +1,18 @@
 #include "pch.h"
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFBXLoader.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFontMgr.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFrustum.cpp"
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CHeightMapShader.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\ChunkyTriMesh.cpp"
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CImage.cpp"
@@ -43,19 +52,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLayer.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLevel.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLevelMgr.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLight2D.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMaterial.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMesh.cpp"
 

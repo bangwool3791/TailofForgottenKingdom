@@ -128,6 +128,12 @@
     <Filter Include="03. UI\11. Animation3DUI">
       <UniqueIdentifier>{73991249-785c-41b3-b988-c6fcb1c440fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. UI\01. Inspector\ComponentUI\ParticleComponentUI">
+      <UniqueIdentifier>{b5df8c5e-cd3f-4bea-8521-c8965401df48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. NaviMeshMgr">
+      <UniqueIdentifier>{87b65bb6-58ed-4717-b4bc-4443672bf784}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -304,6 +310,12 @@
     <ClInclude Include="AnimationUI.h">
       <Filter>03. UI\11. Animation3DUI</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleSystemUI.h">
+      <Filter>03. UI\01. Inspector\ComponentUI\ParticleComponentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviMeshMgr.h">
+      <Filter>05. NaviMeshMgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -461,6 +473,12 @@
     </ClCompile>
     <ClCompile Include="AnimationUI.cpp">
       <Filter>03. UI\11. Animation3DUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystemUI.cpp">
+      <Filter>03. UI\01. Inspector\ComponentUI\ParticleComponentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="NaviMeshMgr.cpp">
+      <Filter>05. NaviMeshMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

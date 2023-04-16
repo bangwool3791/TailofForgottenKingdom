@@ -72,8 +72,8 @@ private:
 	UI*						m_DragDropInst;
 	FUNC_2					m_DragDropFunc;
 
-	vector<CGameObjectEx*>  m_vecGameObjectEx;
-
+private:
+	TreeNode* GetNode(TreeNode* _pNode, const string& _name);
 public:
 	virtual void update() override;
 	virtual void render_update() override;
@@ -91,6 +91,8 @@ public:
 	void SetUpdate(bool _bUpdate) { m_bUpdate = _bUpdate; }
 	void CreateChild(const string& _name, const vector<string>& _vec);
 	TreeNode* GetSelectedNode() { return m_SelectedNode; }
+	void SetSelectNode(const string& _name);
+	TreeNode* GetNode(const string& _name);
 
 	void AddDynamic_LBtn_Selected(UI* _Inst, FUNC_1 _Func)
 	{

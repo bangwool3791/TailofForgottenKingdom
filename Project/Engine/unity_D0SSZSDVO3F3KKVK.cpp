@@ -53,9 +53,3 @@
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CEventMgr.cpp"
 
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFBXLoader.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFontMgr.cpp"
-

@@ -39,6 +39,12 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Collider3DUI.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\NaviMeshMgr.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ParticleSystemUI.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CSaveLoadMgr.cpp"
 
 
@@ -46,7 +52,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Collider2DUI.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CreateTestLevel.cpp"
 

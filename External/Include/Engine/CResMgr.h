@@ -11,6 +11,9 @@
 #include "CPrefab.h"
 #include "CMeshData.h"
 
+class dtMeshHeader;
+class dtMeshTile;
+
 class CResMgr
 	:public CSingleton<CResMgr>
 {
@@ -64,6 +67,7 @@ public:
 		return m_arrRes[(UINT)_eResType];
 	}
 
+	Ptr<CMesh> CreateNaviMesh(dtMeshTile* pMeshTile);
 private:
 	void CreateDefaultMesh();
 	void CreateDefaultSound();
@@ -212,14 +216,14 @@ inline Ptr<T> CResMgr::Load(const wstring& _strKey, const wstring& _strRelativeP
 	{
 		if (FAILED(pResource->LoadHeightMap(strFilePath)))
 		{
-			MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
+			MessageBoxW(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
 			delete pResource;
 			return nullptr;
 		} 
 	}
 	else if (FAILED(pResource->Load(strFilePath)))
 	{
-		MessageBox(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
+		MessageBoxW(nullptr, strFilePath.c_str(), L"리소스 로딩 실패", MB_OK);
 		delete pResource;
 		return nullptr;
 	}

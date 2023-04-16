@@ -55,7 +55,8 @@ void TreeNode::render_update()
 		iFlag |= ImGuiTreeNodeFlags_Leaf;
 
 
-	string strName = m_strName;
+	static string strName{};
+	strName = m_strName;
 	//제목 표시 노드이면서 Leaf노드이면
 	//한칸 Shift
 	if (m_bFrame && m_vecChildNode.empty())
@@ -179,7 +180,6 @@ TreeUI::TreeUI(const string& _strName)
 
 TreeUI::~TreeUI()
 {
-	Safe_Del_Vec(m_vecGameObjectEx);
 	Clear();
 }
 
@@ -383,7 +383,7 @@ void TreeUI::SetDropTargetNode(TreeNode* _DropTargetNode)
 			CGameObjectEx* pObj = (CGameObjectEx*)m_BeginDragNode->GetData();
 			
 			(m_DragDropInst->*m_DragDropFunc)((DWORD_PTR)m_BeginDragNode, (DWORD_PTR)m_DropTargetNode);
-			DeleteNode(m_DropTargetNode);
+			DeleteNode(m_BeginDragNode);
 
 			EDIT_MODE eMode = CEditor::GetInst()->GetEditMode();
 
@@ -424,7 +424,7 @@ void TreeUI::SetDropTargetNode(TreeNode* _DropTargetNode)
 				break;
 			case RES_TYPE::MESHDATA:
 			{
-				CMeshData* pMeshData = (CMeshData*)pRes;
+				Ptr<CMeshData> pMeshData = (CMeshData*)pRes;
 				pMeshData->GetMaterials();
 				CGameObject* pGameObject = (CGameObject*)m_DropTargetNode->GetData();
 
@@ -480,4 +480,50 @@ void TreeUI::SetDropTargetNode(TreeNode* _DropTargetNode)
 			}
 		}
 	}
+}
+
+void TreeUI::SetSelectNode(const string& _name)
+{
+	TreeNode* pNode = GetNode(_name);
+
+	assert(pNode);
+
+	SetLBtnSelectedNode(pNode);
+}
+
+TreeNode* TreeUI::GetNode(const string& _name)
+{
+	const vector<TreeNode*> vecNode = m_RootNode->GetChild();
+
+	TreeNode* pNode = nullptr;
+
+	for (UINT i = 0; i < vecNode.size(); ++i)
+	{
+		pNode = GetNode(vecNode[i], _name);
+
+		if (nullptr != pNode)
+			return pNode;
+	}
+
+	return nullptr;
+}
+
+TreeNode* TreeUI::GetNode(TreeNode* _pNode, const string& _name)
+{
+	if (!strcmp(_pNode->GetName().c_str(), _name.c_str()))
+		return _pNode;
+
+	const vector<TreeNode*> vecNode = _pNode->GetChild();
+
+	TreeNode* pNode = nullptr;
+
+	for (UINT i = 0; i < vecNode.size(); ++i)
+	{
+		pNode = GetNode(vecNode[i], _name);
+
+		if (nullptr != pNode)
+			return pNode;
+	}
+
+	return nullptr;
 }

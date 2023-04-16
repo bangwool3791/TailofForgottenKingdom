@@ -22,6 +22,7 @@ private:
 	Matrix		m_matWorld;
 	Matrix		m_matWorldInv;
 	Matrix		m_matRelativeRot;
+
 	vector<Vec3> m_vecPoint;
 	//부모 행렬의 영향을 받을지 않받을지 결정하는 bool 변수
 	bool		m_blgnParentScale;

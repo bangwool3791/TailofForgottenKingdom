@@ -37,10 +37,15 @@ CAnimator3D::CAnimator3D(const CAnimator3D& _origin)
 	, m_iFrameIdx(_origin.m_iFrameIdx)
 	, m_iNextFrameIdx(_origin.m_iNextFrameIdx)
 	, m_fRatio(_origin.m_fRatio)
+	, m_tCurFrame(_origin.m_tCurFrame)
+	, m_bPuase(_origin.m_bPuase)
+	, m_fTimeScale(_origin.m_fTimeScale)
+	, m_strCurKey(_origin.m_strCurKey)
+	, m_mapAnimation(_origin.m_mapAnimation)
+	, m_pMeshData(_origin.m_pMeshData)
 	, CComponent(COMPONENT_TYPE::ANIMATOR3D)
 {
 	m_pBoneFinalMatBuffer = new CStructuredBuffer;
-
 	SetBones(m_pVecBones);
 	SetAnimClip(m_pVecClip);
 }
@@ -78,7 +83,7 @@ void CAnimator3D::finaltick()
 	if (!m_bEnd)
 	{
 		if (!m_bPuase)
-			m_vecClipUpdateTime[m_iCurClip] += (double)(DT * m_fTimeScale);
+			m_vecClipUpdateTime[m_iCurClip] += DT;
 	}
 
 	double dFrameIdx = 0.f;
@@ -126,7 +131,7 @@ void CAnimator3D::finaltick()
 	{
 		if (m_iFrameIdx >= m_tCurFrame.iEnd)
 		{
-			m_fRatio = 1.f;
+			m_fRatio = 0.f;
 		}
 		else
 		{
@@ -164,6 +169,7 @@ void CAnimator3D::UpdateData()
 
 		//CS Set
 		//뼈 프레임 Set
+		const vector<tMTBone>* vecBones = pMesh->GetBones();
 		pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBuffer());
 		//뼈 Offset 행렬 Set
 		pUpdateShader->SetOffsetMatBuffer(pMesh->GetBoneOffsetBuffer());
@@ -227,6 +233,11 @@ void CAnimator3D::Init()
 /*
 * 메시 뼈 카운트와, 뼈 구조화 버퍼 카운트가 불일치하면 갱신
 */
+void CAnimator3D::SetMeshData(Ptr<CMeshData> _pMeshData)
+{ 
+	m_pMeshData = _pMeshData; 
+}
+
 void CAnimator3D::check_mesh(Ptr<CMesh> _pMesh)
 {
 	UINT iBoneCount = _pMesh->GetBoneCount();
@@ -238,6 +249,10 @@ void CAnimator3D::check_mesh(Ptr<CMesh> _pMesh)
 
 void CAnimator3D::SaveToFile(FILE* _pFile)
 {
+	COMPONENT_TYPE eType = GetType();
+
+	fwrite(&eType, sizeof(COMPONENT_TYPE), 1, _pFile);
+
 	SaveResourceRef(m_pMeshData, _pFile);
 	
 	fwrite(&m_fTimeScale, sizeof(float), 1, _pFile);
@@ -277,7 +292,7 @@ void CAnimator3D::LoadFromFile(FILE* _pFile)
 	fread(&m_tCurFrame, sizeof(tAnim3DFrm), 1, _pFile);
 
 	size_t iSize = 0;
-	fwrite(&iSize, sizeof(size_t), 1, _pFile);
+	fread(&iSize, sizeof(size_t), 1, _pFile);
 
 	wstring strKey;
 	tAnim3DFrm tFrame = {};
@@ -298,6 +313,8 @@ void CAnimator3D::SetCurFrame(const wstring& _Key, tAnim3DFrm _tData)
 	{
 		m_tCurFrame = iter->second = _tData;
 		m_bEnd = false;
+
+		m_iFrameIdx = m_tCurFrame.iStart;
 	}
 }
 
@@ -315,7 +332,13 @@ void CAnimator3D::SetCurFrameKey(const wstring& _Key)
 void CAnimator3D::Add_Frame(const wstring& _key, tAnim3DFrm _tData)
 {
 	wstring str = wstring(_key.begin(), _key.end());
-	m_mapAnimation.emplace(make_vlaue(str.c_str(), { _tData.iStart, _tData.iEnd, _tData.iFrameCount, _tData.bRepeat }));
+
+	auto iter = m_mapAnimation.find(str);
+
+	if (iter == m_mapAnimation.end())
+		m_mapAnimation.emplace(make_vlaue(str.c_str(), { _tData.iStart, _tData.iEnd, _tData.iFrameCount, _tData.bRepeat }));
+	else
+		m_mapAnimation[str] = _tData;
 }
 
 const string& CAnimator3D::Delete(const wstring& _key)

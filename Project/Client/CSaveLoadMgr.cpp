@@ -232,10 +232,11 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 		if (!bProgess)
 			break;
 
-		pComponent->LoadFromFile(_File);
-		if (COMPONENT_TYPE::ANIMATOR2D == type)
-			((CAnimator2D*)pComponent)->Play();
+
 		pObject->AddComponent(pComponent);
+
+		pComponent->LoadFromFile(_File);
+
 	}
 	size_t iScriptCount = 0;
 	fread(&iScriptCount, sizeof(size_t), 1, _File);
@@ -350,4 +351,9 @@ void CSaveLoadMgr::LoadPrefab()
 	//{
 	//	iter->second->Save(_strRelativePath);
 	//}
+}
+
+void CSaveLoadMgr::LoadNaviMesh(const char* path)
+{
+
 }

@@ -122,7 +122,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_RECT;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_RECT;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -221,6 +221,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CFontMgr.h" />
     <ClInclude Include="CFrustum.h" />
     <ClInclude Include="CHeightMapShader.h" />
+    <ClInclude Include="ChunkyTriMesh.h" />
     <ClInclude Include="CImage.h" />
     <ClInclude Include="CInstancingBuffer.h" />
     <ClInclude Include="CJpsMgr.h" />
@@ -273,9 +274,22 @@ call EngineCopy.bat</Command>
     <ClInclude Include="d3dx11core.h" />
     <ClInclude Include="d3dx11tex.h" />
     <ClInclude Include="debug_renderer.h" />
+    <ClInclude Include="DetourAssert.h" />
+    <ClInclude Include="DetourNavMeshBuilder.h" />
+    <ClInclude Include="DetourNavMeshQuery.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="DetourNode.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="DetourStatus.h" />
+    <ClInclude Include="DetourTileCache.h" />
+    <ClInclude Include="DetourTileCacheBuilder.h" />
     <ClInclude Include="extern.cpp" />
     <ClInclude Include="frustum_culling.h" />
+    <ClInclude Include="GlobalNavi.h" />
     <ClInclude Include="GlobalScript.h" />
+    <ClInclude Include="InputGeom.h" />
     <ClInclude Include="JPSCollision.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -286,6 +300,16 @@ call EngineCopy.bat</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Memorypool.h" />
+    <ClInclude Include="MeshLoaderObj.h" />
+    <ClInclude Include="NaviDefine.h" />
+    <ClInclude Include="NaviFunction.h" />
+    <ClInclude Include="NaviStruct.h" />
+    <ClInclude Include="NavMesh.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="NavMeshQuery.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="particle.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -297,6 +321,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="random.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Sample.h" />
     <ClInclude Include="SaveBitmapToFile.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -348,6 +373,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CFontMgr.cpp" />
     <ClCompile Include="CFrustum.cpp" />
     <ClCompile Include="CHeightMapShader.cpp" />
+    <ClCompile Include="ChunkyTriMesh.cpp" />
     <ClCompile Include="CImage.cpp" />
     <ClCompile Include="CInstancingBuffer.cpp" />
     <ClCompile Include="CJpsMgr.cpp" />
@@ -396,12 +422,28 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CUIMgr.cpp" />
     <ClCompile Include="CWeightMapShader.cpp" />
     <ClCompile Include="debug_renderer.cpp" />
+    <ClCompile Include="DetourAssert.cpp" />
+    <ClCompile Include="DetourNavMeshBuilder.cpp" />
+    <ClCompile Include="DetourTileCacheBuilder.cpp" />
+    <ClCompile Include="DetoutTileCache.cpp" />
+    <ClCompile Include="DetourNode.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="func.cpp" />
+    <ClCompile Include="globalNavi.cpp" />
+    <ClCompile Include="InputGeom.cpp" />
     <ClCompile Include="JPSCollision.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="JPSPath.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="MeshLoaderObj.cpp" />
+    <ClCompile Include="NavMesh.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="NavMeshQuery.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="particle.cpp">
@@ -418,6 +460,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="random.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Sample.cpp" />
     <ClCompile Include="SaveBitmapToFile.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>

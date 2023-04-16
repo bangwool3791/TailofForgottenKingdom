@@ -9,6 +9,8 @@
 
 #include "CSound.h"
 
+#include "GlobalNavi.h"
+
 void CResMgr::init()
 {
 	initSound();
@@ -85,6 +87,40 @@ void CResMgr::CreateDefaultMesh()
 
 	CMesh* pMesh = nullptr;
 
+	//삼각형 메쉬 만들기
+	v.vPos = Vec3(-0.5f * 1000.f, 0.f, 0.5f * 1000.f);
+	v.vNormal = Vec3(0.f, 0.f, -1.f);
+	v.vTangent = Vec3(1.f, 0.f, 0.f);
+	v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	v.vColor = Vec4(1.f, 0.f, 0.f, 1.f);
+	v.vUV = Vec2(0.f, 0.f);
+	*iterVtx = v;
+
+	v.vPos = Vec3(0.5f * 1000.f, 0.f, 0.5f * 1000.f);
+	v.vNormal = Vec3(0.f, 0.f, -1.f);
+	v.vTangent = Vec3(1.f, 0.f, 0.f);
+	v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	v.vColor = Vec4(0.f, 0.f, 1.f, 1.f);
+	v.vUV = Vec2(1.f, 0.f);
+	*iterVtx = v;
+
+	v.vPos = Vec3(0.5f * 1000.f, 0.f, -0.5f * 1000.f);
+	v.vNormal = Vec3(0.f, 0.f, -1.f);
+	v.vTangent = Vec3(1.f, 0.f, 0.f);
+	v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	v.vColor = Vec4(0.f, 1.f, 0.f, 1.f);
+	v.vUV = Vec2(1.f, 1.f);
+	*iterVtx = v;
+
+	*iterIdx = 0;
+	*iterIdx = 1;
+	*iterIdx = 2;
+
+	pMesh = new CMesh(true);
+	pMesh->Create(vecVtx.data(), vecVtx.size(), vecIdx.data(), vecIdx.size());
+	AddRes<CMesh>(L"TriangleMesh", pMesh);
+	vecVtx.clear();
+	vecIdx.clear();
 	// 사각형 메쉬 만들기
 	v.vPos = Vec3(-0.5f, 0.5f, 0.f);
 	v.vNormal = Vec3(0.f, 0.f, -1.f);
@@ -1017,10 +1053,11 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader = new CGraphicsShader;
 	pShader->CreateVertexShader(L"shader\\color.fx", "VS");
 	pShader->CreatePixelShader(L"shader\\color.fx", "PS");
-	pShader->SetRSType(RS_TYPE::WIRE_FRAME);
+	pShader->SetRSType(RS_TYPE::CULL_NONE);
 	pShader->SetBSType(BS_TYPE::DEFAULT);
 	pShader->SetDSType(DS_TYPE::LESS);
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
+	pShader->SetTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	AddRes<CGraphicsShader>(L"ColorShader", pShader);
 
@@ -1477,6 +1514,59 @@ void CResMgr::BuildCylinderBottomCap(float bottomRadius, float topRadius, float 
 		Indices.push_back(baseIndex + i);
 		Indices.push_back(baseIndex + i + 1);
 	}
+}
+
+Ptr<CMesh> CResMgr::CreateNaviMesh(dtMeshTile* tile)
+{
+	vector<Vtx> vecVtx;
+	vector<UINT> vecIdx;
+
+	back_insert_iterator iterVtx{ vecVtx };
+	back_insert_iterator iterIdx{ vecIdx };
+
+	Vtx v;
+
+	CMesh* pMesh = nullptr;
+
+	UINT idx = 0;
+
+	v.vColor = Vec4{ 0.f ,1.f, 0.f, 1.f };
+	v.vNormal = Vec3{ 0.f , 1.f, 0.f };
+	v.vTangent = Vec3{ 1.f , 0.f, 0.f };
+	v.vBinormal = Vec3{ 0.f , 0.f, 1.f };
+
+	for (int i = 0; i < tile->header->polyCount; ++i)
+	{
+		const dtPoly* p = &tile->polys[i];
+
+		const dtPolyDetail* pd = &tile->detailMeshes[i];
+
+		for (int j = 0; j < pd->triCount; ++j)
+		{
+			const unsigned char* t = &tile->detailTris[(pd->triBase + j) * 4];
+			for (int k = 0; k < 3; ++k)
+			{
+				if (t[k] < p->vertCount)
+				{
+					v.vPos.x = tile->verts[p->verts[t[k]] * 3];
+					v.vPos.y = tile->verts[p->verts[t[k]] * 3 + 1];
+					v.vPos.z = tile->verts[p->verts[t[k]] * 3 + 2];
+
+					iterVtx = v;
+					iterIdx = idx;
+					++idx;
+				}
+			}
+		}
+	}
+
+	pMesh = new CMesh(true);
+	pMesh->Create(vecVtx.data(), vecVtx.size(), vecIdx.data(), vecIdx.size());
+	AddRes<CMesh>(L"AreneStage_Navi_Mesh", pMesh);
+	vecVtx.clear();
+	vecIdx.clear();
+
+	return pMesh;
 }
 
 void CResMgr::AddInputLayout(DXGI_FORMAT _eFormat, const char* _strSemanticName, UINT _iSlotNum, UINT _iSemanticIdx)

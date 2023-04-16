@@ -335,6 +335,7 @@ void CCamera::EditorRender()
 	pRectMesh->render(0);
 	CMaterial::Clear();
 
+	render_forward();
 	render_transparent();
 	render_postprocess();
 }
@@ -723,14 +724,16 @@ void CCamera::render_depthmap()
 
 	for (size_t i = 0; i < m_vecDynamicShadow.size(); ++i)
 	{
-		m_vecDynamicShadow[i]->GetRenderComponent()->render_depthmap();
+		if(m_vecDynamicShadow[i]->GetRenderComponent())
+			m_vecDynamicShadow[i]->GetRenderComponent()->render_depthmap();
 	
 
 		const vector<CGameObject*>& vecChilds = m_vecDynamicShadow[i]->GetChilds();
 
 		for (size_t j = 0; j < vecChilds.size(); ++j)
 		{
-			vecChilds[j]->GetRenderComponent()->render_depthmap();
+			if(vecChilds[j]->GetRenderComponent())
+				vecChilds[j]->GetRenderComponent()->render_depthmap();
 		}
 	}
 }
@@ -892,7 +895,8 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 				}
 			}
 			break;
-			case SHADER_DOMAIN::DOMAIN_DECAL:
+			//case SHADER_DOMAIN::DOMAIN_DECAL:
+			case SHADER_DOMAIN::DOMAIN_DEFERRED_DECAL:
 				m_vecDecal.push_back(pObj);
 				break;
 			case SHADER_DOMAIN::DOMAIN_TRANSPARENT:

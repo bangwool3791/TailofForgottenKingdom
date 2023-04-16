@@ -1,5 +1,20 @@
 #include "pch.h"
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLevel.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLevelMgr.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLight2D.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMaterial.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMesh.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMeshRender.cpp"
 
 
@@ -37,25 +52,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CResMgr.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CResMgr_init.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CScript.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShader.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShadowMapShader.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSkyBox.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSLight.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSound.cpp"
 

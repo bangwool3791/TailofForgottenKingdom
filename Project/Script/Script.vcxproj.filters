@@ -29,11 +29,14 @@
     <Filter Include="Scripts\06. TestScript">
       <UniqueIdentifier>{13ffbc90-9a64-43ed-a529-357786cbf76e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\07. Game">
+      <UniqueIdentifier>{08139335-cf0e-4d5c-a0f1-449abb5e42a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\07. Game\Player">
+      <UniqueIdentifier>{08986e0b-4420-401c-ab28-56c4c896b45c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPlayerScript.h">
-      <Filter>Scripts</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>Default</Filter>
     </ClInclude>
@@ -55,11 +58,11 @@
     <ClInclude Include="CEngineBrushScript.h">
       <Filter>Scripts\06. TestScript</Filter>
     </ClInclude>
+    <ClInclude Include="CPlayerScript.h">
+      <Filter>Scripts\07. Game\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CPlayerScript.cpp">
-      <Filter>Scripts</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Default</Filter>
     </ClCompile>
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="CEngineBrushScript.cpp">
       <Filter>Scripts\06. TestScript</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerScript.cpp">
+      <Filter>Scripts\07. Game\Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

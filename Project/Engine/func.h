@@ -209,6 +209,8 @@ void LoadResourceRef(Ptr<T>& _Res, FILE* _pFile)
 	}
 }
 
+
+
 const char* ToString(COMPONENT_TYPE);
 const wchar_t* ToWString(COMPONENT_TYPE);
 

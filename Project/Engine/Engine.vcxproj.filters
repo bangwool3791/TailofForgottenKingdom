@@ -298,6 +298,30 @@
     <Filter Include="Engine\07. Resource\03. Shader\CopyBoneShader">
       <UniqueIdentifier>{ba3211e3-ee5a-4c4a-ac33-7618c59e1da8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh">
+      <UniqueIdentifier>{79835ad4-8464-44c7-b5f4-402bcd65bd64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh\Detour">
+      <UniqueIdentifier>{674af7e0-6fe3-4079-8414-92fd5dd98c78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh\Filter">
+      <UniqueIdentifier>{0732e9e8-fa9f-4746-8d11-46a36a2cf54b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh\Sample">
+      <UniqueIdentifier>{770fc7bd-5619-4781-8c8d-ca7409fcbb4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh\MeshLoaderObj">
+      <UniqueIdentifier>{45322017-d835-4ecc-848a-1344658de3cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh\ChunkyTriMesh">
+      <UniqueIdentifier>{9657032c-4bef-44ad-9c44-617e726783fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\12. NaviMesh\InputGeom">
+      <UniqueIdentifier>{77e9b87f-aa56-44e5-86ad-ea95390608f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\00. Header\NaviMesh">
+      <UniqueIdentifier>{90d92d04-4972-4c82-914b-b1a3a38a132e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -615,6 +639,57 @@
     <ClInclude Include="CCopyBoneShader.h">
       <Filter>Engine\07. Resource\03. Shader\CopyBoneShader</Filter>
     </ClInclude>
+    <ClInclude Include="GlobalNavi.h">
+      <Filter>Engine\00. Header\NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviStruct.h">
+      <Filter>Engine\00. Header\NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviDefine.h">
+      <Filter>Engine\00. Header\NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="NaviFunction.h">
+      <Filter>Engine\00. Header\NaviMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourAssert.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourNavMeshBuilder.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourTileCacheBuilder.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourNavMeshQuery.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourNode.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourTileCache.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMeshQuery.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClInclude>
+    <ClInclude Include="Sample.h">
+      <Filter>Engine\06. Component\12. NaviMesh\Sample</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkyTriMesh.h">
+      <Filter>Engine\06. Component\12. NaviMesh\ChunkyTriMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshLoaderObj.h">
+      <Filter>Engine\06. Component\12. NaviMesh\MeshLoaderObj</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGeom.h">
+      <Filter>Engine\06. Component\12. NaviMesh\InputGeom</Filter>
+    </ClInclude>
+    <ClInclude Include="DetourStatus.h">
+      <Filter>Engine\00. Header\NaviMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -877,6 +952,42 @@
     </ClCompile>
     <ClCompile Include="CCopyBoneShader.cpp">
       <Filter>Engine\07. Resource\03. Shader\CopyBoneShader</Filter>
+    </ClCompile>
+    <ClCompile Include="globalNavi.cpp">
+      <Filter>Engine\00. Header\NaviMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourAssert.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourNavMeshBuilder.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourTileCacheBuilder.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="DetoutTileCache.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="DetourNode.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMeshQuery.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Detour</Filter>
+    </ClCompile>
+    <ClCompile Include="Sample.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\Sample</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkyTriMesh.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\ChunkyTriMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoaderObj.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\MeshLoaderObj</Filter>
+    </ClCompile>
+    <ClCompile Include="InputGeom.cpp">
+      <Filter>Engine\06. Component\12. NaviMesh\InputGeom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

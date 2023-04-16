@@ -160,6 +160,8 @@
     <ClInclude Include="CLoader.h" />
     <ClInclude Include="CLoadingLevel.h" />
     <ClInclude Include="Collider3DUI.h" />
+    <ClInclude Include="NaviMeshMgr.h" />
+    <ClInclude Include="ParticleSystemUI.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="CCameraScript.h" />
     <ClInclude Include="CEditor.h" />
@@ -226,6 +228,8 @@
     <ClCompile Include="CLoader.cpp" />
     <ClCompile Include="CLoadingLevel.cpp" />
     <ClCompile Include="Collider3DUI.cpp" />
+    <ClCompile Include="NaviMeshMgr.cpp" />
+    <ClCompile Include="ParticleSystemUI.cpp" />
     <ClCompile Include="CSaveLoadMgr.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Collider2DUI.cpp" />

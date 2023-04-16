@@ -7,6 +7,7 @@
 #include "CImGuiMgr.h"
 
 #include "ContentUI.h"
+#include "OutlinerUI.h"
 
 #include "CCameraScript.h"
 #include "CBorderScript.h"
@@ -29,13 +30,13 @@
 #include <Engine\CRenderMgr.h>
 #include <Engine/CLevel.h>
 #include <Engine\CLevelMgr.h>
-#include <Engine\CUitileMap.h>
+
 #include <Engine\CAnimator2D.h>
 
 #include <Engine\CMRT.h>
 #include <Engine\CSLight.h>
 
-#include "OutlinerUI.h"
+#include <Engine\Sample.h>
 
 float g_LandScale = 1000.f;
 float g_BrushScale = 0.3f;
@@ -187,6 +188,11 @@ void CEditor::init()
 			}
 		}
 	}
+
+	//Navi Mesh
+	{
+		CreateNaviMesh();
+	}
 	/*
 	* Component List
 	*/
@@ -306,8 +312,8 @@ void CEditor::tick()
 void CEditor::picking()
 {
 	static Ray raycast{};
-
-	if (KEY_PRESSED(KEY::LBTN))
+	
+	if (KEY_TAP(KEY::LBTN) && EDIT_MODE::MAPTOOL == m_editmode)
 	{
 		Vec3 vPos{};
 		const tRay& ray = m_pCameraObject->Camera()->GetRay();
@@ -328,6 +334,9 @@ void CEditor::picking()
 					{
 						fMaximum = fDist;
 						CImGuiMgr::GetInst()->SetPickingObj(iter->second);
+						OutlinerUI* pOutlinerUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+						string str = WStringToString(iter->second->GetName());
+						pOutlinerUI->SetCurrentNode(str);
 					}
 				}
 			}
@@ -453,7 +462,7 @@ void CEditor::CreateCamera()
 		m_pCameraObject->AddComponent(new CTransform);
 		m_pCameraObject->AddComponent(new CCamera);
 		m_pCameraObject->AddComponent(new CCameraScript);
-		m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -1000.f));
+		m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, -1000.f));
 		m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
 		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
 		CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
@@ -470,6 +479,34 @@ void CEditor::CreateCamera()
 		m_pEnvCameraObj->Camera()->SetProjType(PERSPECTIVE);
 		CRenderMgr::GetInst()->SetEnvCamera(m_pEnvCameraObj->Camera());
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EnvCamera", m_pEnvCameraObj);
+	}
+}
+
+#include "NaviMeshMgr.h"
+
+void CEditor::CreateNaviMesh()
+{
+	CGameObjectEx* pObject{};
+
+	{
+		//ColorMtrl
+		pObject = new CGameObjectEx;
+		pObject->SetName(L"NaviMesh");
+		pObject->AddComponent(new CTransform);
+		pObject->AddComponent(new CMeshRender);
+
+		pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+		pObject->Transform()->SetRelativeScale(Vec3(1.f, 1.f, 1.f));
+
+		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"TriangleMesh"));
+		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"NaviMesh", pObject);
+		//pObject = NaviMeshMgr::GetInst()->loadAll(L"navimesh\\Arene_Stage_Navi.bin");
+		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Arene_Stage_Navi", pObject);
+
+		Sample* pSample = new Sample;
+		pSample->initToolStates(pSample);
+		pSample->loadAll("navimesh\\Arene_Stage_Navi.bin");
 	}
 }
 

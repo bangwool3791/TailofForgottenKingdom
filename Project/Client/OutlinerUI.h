@@ -21,13 +21,16 @@ private:
 
 public:
 	void ResetLevel();
-
+public:
+	void SetCurrentNode(const string& _name);
 private:
 	void SetObject(DWORD_PTR _res);
 	void SetObjectToInspector(DWORD_PTR _res);
 	void AddGameObjectToTree(TreeNode* _ParentNode, CGameObject* _Object);
 
 	void AddChildObject(DWORD_PTR _ChildObject, DWORD_PTR _ParentObject);
+
+	bool IsOverlapObject(const string& _name);
 public:
 	CGameObjectEx* GetTargetObject() {
 		return m_pTargetObj;

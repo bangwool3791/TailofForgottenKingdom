@@ -21,6 +21,8 @@ public :
 	void LoadPrefab();
 	static void SaveGameObject(CGameObject* _Object, FILE* _File);
 	static CGameObject* LoadGameObject(FILE* _File);
+
+	void LoadNaviMesh(const char* path);
 private:
 	CSaveLoadMgr();
 	~CSaveLoadMgr();

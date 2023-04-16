@@ -57,7 +57,7 @@ public:
 	void SetCurFrame(const wstring& _Key, tAnim3DFrm _tData);
 	void SetCurFrameKey(const wstring& _Key);
 	void SetCurFrameIdx(int _iFrame) { m_iFrameIdx = _iFrame; }
-	void SetMeshData(Ptr<CMeshData> _pMeshData) { m_pMeshData = _pMeshData; }
+	void SetMeshData(Ptr<CMeshData> _pMeshData);
 	void SetPuase(bool _bPause) { m_bPuase = _bPause; }
 	void SetTimeScale(float& _dScale);
 

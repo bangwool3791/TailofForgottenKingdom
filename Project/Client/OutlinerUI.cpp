@@ -56,7 +56,7 @@ void OutlinerUI::render_update()
 
 	static bool toggles[] = { true, false, false, false, false };
 	static const char* names[] = { "Create Empty","Destroy", "Create Prefab", "Edit Name", "Delete Component", "Delete Script" ,"Close" };
-	static int IobjectIndex = 0;
+	static int IDummyObjectIdx = 0;
 	static int ILayerIndex = 0;
 	int selected_fish = -1;
 	
@@ -88,17 +88,14 @@ void OutlinerUI::render_update()
 			{
 				CGameObjectEx* pGameObject = new CGameObjectEx;
 
-				wstring wstr = StringToWString(m_strName);
-
-				if (!lstrcmp(L"", wstr.c_str()))
+				if(IsOverlapObject(m_strName) || !strcmp("", m_strName.c_str()))
 				{
 					m_strName = "DummyObject";
-					m_strName += std::to_string(IobjectIndex);
-					++IobjectIndex;
+					m_strName += std::to_string(IDummyObjectIdx);
+					++IDummyObjectIdx;
 				}
-				pGameObject->SetName(StringToWString(m_strName));
 
-				m_strName.clear();
+				pGameObject->SetName(StringToWString(m_strName));
 
 				CEditor::GetInst()->Add_Editobject(eMode, pGameObject);
 			}
@@ -115,13 +112,11 @@ void OutlinerUI::render_update()
 				if (!lstrcmp(L"", wstr.c_str()))
 				{
 					m_strName = "DummyObject";
-					m_strName += std::to_string(IobjectIndex);
-					++IobjectIndex;
+					m_strName += std::to_string(IDummyObjectIdx);
+					++IDummyObjectIdx;
 				}
 
-				m_strName.clear();
-				
-				pGameObject->SetName(StringToWString(m_strName));
+				pGameObject->SetName(StringToWString(m_strName).c_str());
 				CEventMgr::GetInst()->AddEvent(evn);
 			}
 		}
@@ -171,10 +166,13 @@ void OutlinerUI::render_update()
 		{
 			if (nullptr != m_Node)
 			{
-				m_Node->SetNodeName(m_strName);
-				wstring lstrname = wstring(m_strName.begin(), m_strName.end());
-				((CGameObject*)(m_Node->GetData()))->SetName(lstrname);
-				m_Node = nullptr;
+				if (!IsOverlapObject(m_strName))
+				{
+					m_Node->SetNodeName(m_strName);
+					wstring lstrname = wstring(m_strName.begin(), m_strName.end());
+					((CGameObject*)(m_Node->GetData()))->SetName(lstrname.c_str());
+					m_Node = nullptr;
+				}
 			}
 		}
 		break;
@@ -224,11 +222,6 @@ void OutlinerUI::render_update()
 
 	if (ImGui::InputText("##ObjectName", m_strName.data(), m_strName.size()))
 	{
-		if ('\0' == m_strName[0])
-		{
-			m_strName.clear();
-			m_strName.shrink_to_fit();
-		}
 	}
 
 	ImGui::NewLine();
@@ -330,4 +323,18 @@ void OutlinerUI::AddChildObject(DWORD_PTR _ChildObject, DWORD_PTR _ParentObject)
 	evt.wParam = pChildNode->GetData();
 	evt.lParam = pParentNode->GetData();
 	CEventMgr::GetInst()->AddEvent(evt);
+}
+
+void OutlinerUI::SetCurrentNode(const string& _name)
+{
+	m_Tree->SetSelectNode(_name);
+}
+
+bool OutlinerUI::IsOverlapObject(const string& _name)
+{
+	string str = string(_name.begin(), _name.end());
+
+	m_Tree->GetNode(str);
+
+	return m_Tree->GetNode(str);
 }
