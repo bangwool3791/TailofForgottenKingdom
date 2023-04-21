@@ -384,6 +384,9 @@ struct tInstancingData
 	Matrix matWVP;
 	int    iRowIdx;
 };
+/**
+ * Holds a single ammunition round record.
+ */
 
 extern tGlobalData g_global;
 extern  tTransform g_transform;

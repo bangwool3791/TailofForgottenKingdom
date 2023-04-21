@@ -17,10 +17,9 @@
   * be used in place of rigid bodies for simpler simulations or
   * assemblies.
   */
-#ifndef CYCLONE_PARTICLE_H
-#define CYCLONE_PARTICLE_H
+#pragma once
 
-#include "PxCore.h"
+#include "core.h"
 
 namespace cyclone {
 
@@ -78,31 +77,31 @@ namespace cyclone {
          /**
           * Holds the inverse of the mass of the particle. It
           * is more useful to hold the inverse mass because
-          * integration is simpler, and because in real time
+          * integration is simpler, and because in PhysXReal time
           * simulation it is more useful to have objects with
           * infinite mass (immovable) than zero mass
           * (completely unstable in numerical simulation).
           */
-        real inverseMass;
+        PhysXReal inverseMass;
 
         /**
          * Holds the amount of damping applied to linear
          * motion. Damping is required to remove energy added
          * through numerical instability in the integrator.
          */
-        real damping;
+        PhysXReal damping;
 
         /**
          * Holds the linear position of the particle in
          * world space.
          */
-        PxVec3 position;
+        PhysXVec3 position;
 
         /**
          * Holds the linear velocity of the particle in
          * world space.
          */
-        PxVec3 velocity;
+        PhysXVec3 velocity;
 
         /*@}*/
 
@@ -120,14 +119,14 @@ namespace cyclone {
           * simulation iteration only. This value is zeroed at each
           * integration step.
           */
-        PxVec3 forceAccum;
+        PhysXVec3 forceAccum;
 
         /**
          * Holds the acceleration of the particle.  This value
          * can be used to set acceleration due to gravity (its primary
          * use), or any other constant acceleration.
          */
-        PxVec3 acceleration;
+        PhysXVec3 acceleration;
 
         /*@}*/
 
@@ -162,8 +161,7 @@ namespace cyclone {
            * linear approximation to the correct integral. For this reason it
            * may be inaccurate in some cases.
            */
-        void integrate(real duration);
-
+        void integrate(PhysXReal duration);
         /*@}*/
 
 
@@ -187,14 +185,14 @@ namespace cyclone {
           * function should be called before trying to get any settings
           * from the particle.
           */
-        void setMass(const real mass);
+        void setMass(const PhysXReal mass);
 
         /**
          * Gets the mass of the particle.
          *
          * @return The current mass of the particle.
          */
-        real getMass() const;
+        PhysXReal getMass() const;
 
         /**
          * Sets the inverse mass of the particle.
@@ -208,14 +206,14 @@ namespace cyclone {
          * function should be called before trying to get any settings
          * from the particle.
          */
-        void setInverseMass(const real inverseMass);
+        void setInverseMass(const PhysXReal inverseMass);
 
         /**
          * Gets the inverse mass of the particle.
          *
          * @return The current inverse mass of the particle.
          */
-        real getInverseMass() const;
+        PhysXReal getInverseMass() const;
 
         /**
          * Returns true if the mass of the particle is not-infinite.
@@ -225,19 +223,19 @@ namespace cyclone {
         /**
          * Sets both the damping of the particle.
          */
-        void setDamping(const real damping);
+        void setDamping(const PhysXReal damping);
 
         /**
          * Gets the current damping value.
          */
-        real getDamping() const;
+        PhysXReal getDamping() const;
 
         /**
          * Sets the position of the particle.
          *
          * @param position The new position of the particle.
          */
-        void setPosition(const PxVec3& position);
+        void setPosition(const PhysXVec3& position);
 
         /**
          * Sets the position of the particle by component.
@@ -251,7 +249,7 @@ namespace cyclone {
          * @param z The z coordinate of the new position of the rigid
          * body.
          */
-        void setPosition(const real x, const real y, const real z);
+        void setPosition(const PhysXReal x, const PhysXReal y, const PhysXReal z);
 
         /**
          * Fills the given vector with the position of the particle.
@@ -259,21 +257,21 @@ namespace cyclone {
          * @param position A pointer to a vector into which to write
          * the position.
          */
-        void getPosition(PxVec3* position) const;
+        void getPosition(PhysXVec3* position) const;
 
         /**
          * Gets the position of the particle.
          *
          * @return The position of the particle.
          */
-        PxVec3 getPosition() const;
+        PhysXVec3 getPosition() const;
 
         /**
          * Sets the velocity of the particle.
          *
          * @param velocity The new velocity of the particle.
          */
-        void setVelocity(const PxVec3& velocity);
+        void setVelocity(const PhysXVec3& velocity);
 
         /**
          * Sets the velocity of the particle by component.
@@ -287,7 +285,7 @@ namespace cyclone {
          * @param z The z coordinate of the new velocity of the rigid
          * body.
          */
-        void setVelocity(const real x, const real y, const real z);
+        void setVelocity(const PhysXReal x, const PhysXReal y, const PhysXReal z);
 
         /**
          * Fills the given vector with the velocity of the particle.
@@ -295,7 +293,7 @@ namespace cyclone {
          * @param velocity A pointer to a vector into which to write
          * the velocity. The velocity is given in world local space.
          */
-        void getVelocity(PxVec3* velocity) const;
+        void getVelocity(PhysXVec3* velocity) const;
 
         /**
          * Gets the velocity of the particle.
@@ -303,14 +301,14 @@ namespace cyclone {
          * @return The velocity of the particle. The velocity is
          * given in world local space.
          */
-        PxVec3 getVelocity() const;
+        PhysXVec3 getVelocity() const;
 
         /**
          * Sets the constant acceleration of the particle.
          *
          * @param acceleration The new acceleration of the particle.
          */
-        void setAcceleration(const PxVec3& acceleration);
+        void setAcceleration(const PhysXVec3& acceleration);
 
         /**
          * Sets the constant acceleration of the particle by component.
@@ -324,7 +322,7 @@ namespace cyclone {
          * @param z The z coordinate of the new acceleration of the rigid
          * body.
          */
-        void setAcceleration(const real x, const real y, const real z);
+        void setAcceleration(const PhysXReal x, const PhysXReal y, const PhysXReal z);
 
         /**
          * Fills the given vector with the acceleration of the particle.
@@ -332,7 +330,7 @@ namespace cyclone {
          * @param acceleration A pointer to a vector into which to write
          * the acceleration. The acceleration is given in world local space.
          */
-        void getAcceleration(PxVec3* acceleration) const;
+        void getAcceleration(PhysXVec3* acceleration) const;
 
         /**
          * Gets the acceleration of the particle.
@@ -340,7 +338,7 @@ namespace cyclone {
          * @return The acceleration of the particle. The acceleration is
          * given in world local space.
          */
-        PxVec3 getAcceleration() const;
+        PhysXVec3 getAcceleration() const;
 
         /*@}*/
 
@@ -364,10 +362,14 @@ namespace cyclone {
          *
          * @param force The force to apply.
          */
-        void addForce(const PxVec3& force);
-
-
+        void addForce(const PhysXVec3& force);
+    };
+    struct AmmoRound
+    {
+        
+        Particle particle;
+        PhysType type;
+        UINT idx = 0xffff;
+        unsigned startTime;
     };
 }
-
-#endif // CYCLONE_BODY_H

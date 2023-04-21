@@ -21,6 +21,7 @@ const Vector3 Vector3::Forward;
 const Vector3 Vector3::Front{ 0.f, 0.f, -1.f };
 const Vector3 Vector3::Backward{ 0.f, 0.f, 1.f };
 
+
 extern const char* COMPONENT_TYPE_CHAR[(UINT)COMPONENT_TYPE::END] =
 {
 	"TRANSFORM",
@@ -37,7 +38,9 @@ extern const char* COMPONENT_TYPE_CHAR[(UINT)COMPONENT_TYPE::END] =
 	"SKYBOX",
 	"DECAL",
 	"LANDSCAPE",
-	"SCRIPT"
+	"WAVERENDERER",
+	"PHYSX",
+	"SCRIPT",
 };
 
 extern const wchar_t* COMPONENT_TYPE_WCHAR[(UINT)COMPONENT_TYPE::END] =
@@ -53,11 +56,12 @@ extern const wchar_t* COMPONENT_TYPE_WCHAR[(UINT)COMPONENT_TYPE::END] =
 	L"LIGHT3D",
 	L"TILEMAP",
 	L"PARTICLESYSTEM",
-	L"EXPOLOSION",
 	L"SKYBOX",
 	L"DECAL",
 	L"LANDSCAPE",
-	L"SCRIPT"
+	L"WAVERENDERER",
+	L"PHYSX",
+	L"SCRIPT",
 };
 
 extern const char* OBJECT_TYPE_CHAR[(UINT)OBJECT_TYPE::END] =

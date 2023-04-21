@@ -148,66 +148,74 @@ void ContentUI::render_update()
 	static int cnt = 0;
 	if (m_bDragEvent && nullptr != m_pTargetPrefab && bActive)
 	{
+		
 		if (KEY_RELEASE(KEY::LBTN))
 		{
-			const tRaycastOut& tRay = m_pLandScape->LandScape()->GetRay();
-			bool bLand = true;
-			CGameObjectEx* pTargetObj = nullptr;
+			Vec2 vResoltion = CDevice::GetInst()->GetRenderResolution();
+			Vec2 vMousePos = CKeyMgr::GetInst()->GetMousePos();
 
-			Vec3 vPos{ tRay.vPos * g_LandScale };
-
-			Ray ray{};
-			Vec3 vTarget{};
-			Vec3 LengthObj{};
-			Vec3 LengthLandscape{};
-			CGameObjectEx* pObj{};
-			CGameObject* pGameObject{};
-
-			if (tRay.bSuccess)
+			if (0 <= vMousePos.x && vMousePos.x < vResoltion.x && 0 <= vMousePos.y && vMousePos.y < vResoltion.y)
 			{
-				ray.direction =  CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vDir;
-				ray.position = CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vStart;
-			}
+				const tRaycastOut& tRay = m_pLandScape->LandScape()->GetRay();
+				bool bLand = true;
+				CGameObjectEx* pTargetObj = nullptr;
 
-			const map<const wchar_t*, CGameObjectEx*>  map = CEditor::GetInst()->GetEdiotrObj(CEditor::GetInst()->GetEditMode());
+				Vec3 vPos{ tRay.vPos * g_LandScale };
 
-			for (auto iter{ map.begin() }; iter != map.end(); ++iter)
-			{
-				if (!iter->second->Transform())
-					continue;
+				Ray ray{};
+				Vec3 vTarget{};
+				Vec3 LengthObj{};
+				Vec3 LengthLandscape{};
+				CGameObjectEx* pObj{};
+				CGameObject* pGameObject{};
 
-				if (iter->second->Transform()->Picking(ray, vTarget))
+				if (tRay.bSuccess)
 				{
-					LengthObj = vTarget - ray.position;
-					LengthLandscape = vPos - ray.position;
+					ray.direction = CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vDir;
+					ray.position = CEditor::GetInst()->FindByName(L"EditorCamera")->Camera()->GetRay().vStart;
+				}
 
-					if (LengthObj.Length() < LengthLandscape.Length())
+				const map<const wchar_t*, CGameObjectEx*>  map = CEditor::GetInst()->GetEdiotrObj(CEditor::GetInst()->GetEditMode());
+
+				for (auto iter{ map.begin() }; iter != map.end(); ++iter)
+				{
+					if (!iter->second->Transform())
+						continue;
+
+					if (iter->second->Transform()->Picking(ray, vTarget))
 					{
-						bLand = false;
-						pTargetObj = iter->second;
+						LengthObj = vTarget - ray.position;
+						LengthLandscape = vPos - ray.position;
+
+						if (LengthObj.Length() < LengthLandscape.Length())
+						{
+							bLand = false;
+							pTargetObj = iter->second;
+						}
 					}
 				}
-			}
 
-			if (bLand)
-			{
-				pGameObject = m_pTargetPrefab->Instantiate();
-				pObj = new CGameObjectEx(*pGameObject);
-				vPos.y += pGameObject->Transform()->GetRelativeScale().y * 0.5f;
-			}
-			else
-			{
-				pGameObject = m_pTargetPrefab->Instantiate();
-				pObj = new CGameObjectEx(*pGameObject);
-				vPos = pTargetObj->Transform()->GetRelativePos();
-				vPos.y += pTargetObj->Transform()->GetRelativeScale().y * 0.5f;
-			}
+				if (bLand)
+				{
+					pGameObject = m_pTargetPrefab->Instantiate();
+					pObj = new CGameObjectEx(*pGameObject);
+					vPos.y += pGameObject->Transform()->GetRelativeScale().y * 0.5f;
+				}
+				else
+				{
+					pGameObject = m_pTargetPrefab->Instantiate();
+					pObj = new CGameObjectEx(*pGameObject);
+					vPos = pTargetObj->Transform()->GetRelativePos();
+					vPos.y += pTargetObj->Transform()->GetRelativeScale().y * 0.5f;
+				}
 
-			pObj->Transform()->SetRelativePos(vPos);
-			pObj->SetName(L"Test" + std::to_wstring(cnt));
-			++cnt;
-			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObj);
-			delete pGameObject;
+				pObj->Transform()->SetRelativePos(vPos);
+				pObj->SetName(L"Test" + std::to_wstring(cnt));
+				pObj->begin();
+				++cnt;
+				CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObj);
+				delete pGameObject;
+			}
 		}
 	}
 }

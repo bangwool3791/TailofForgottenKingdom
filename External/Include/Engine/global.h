@@ -109,3 +109,4 @@ using namespace DirectX::SimpleMath;
 #include "struct.h"
 #include "func.h"
 #include "Base.h"
+#include "particle.h"

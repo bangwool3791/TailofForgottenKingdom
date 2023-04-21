@@ -5,6 +5,7 @@
 AnimationUI::AnimationUI()
 	: UI("AnimationUI")
 	, m_pParentObj{}
+    , m_fTimeScale{1.f}
 {
 
 }
@@ -508,25 +509,43 @@ void AnimationUI::DeleteAll(const wstring& str)
 
 void AnimationUI::SetTimeScale()
 {
-    CAnimator3D* pAniCom = m_pCurrentObj->Animator3D();
+    vector<CAnimator3D*> vecAnimations{};
 
-    pAniCom->SetTimeScale(m_fTimeScale);
+    vecAnimations.push_back(m_pParentObj->Animator3D());
+
+    const vector<CGameObject*> vecChilds = m_pParentObj->GetChilds();
+
+    for (UINT i = 0; i < vecChilds.size(); ++i)
+    {
+        CAnimator3D* pAniCom = vecChilds[i]->Animator3D();
+
+        if (nullptr != pAniCom)
+            vecAnimations.push_back(pAniCom);
+    }
+
+    for (UINT i = 0; i < vecAnimations.size(); ++i)
+        vecAnimations[i]->SetTimeScale(m_fTimeScale);
 }
 
 void AnimationUI::Update_Engine_Frame()
 {
-    if (!m_strAniCurKey.empty())
-    {
-        wstring str = wstring(m_strAniCurKey.begin(), m_strAniCurKey.end());
-        CAnimator3D* pAniCom = m_pCurrentObj->Animator3D();
+    vector<CAnimator3D*> vecAnimations{};
 
-        pAniCom->SetCurFrame(str, m_tFrame);
-        Play(str);
-    }
-    else
+    vecAnimations.push_back(m_pParentObj->Animator3D());
+
+    const vector<CGameObject*> vecChilds = m_pParentObj->GetChilds();
+
+    for (UINT i = 0; i < vecChilds.size(); ++i)
     {
-        MessageBox(nullptr, L"키를 먼저 선택하세요.", L"Warning", S_OK);
+        CAnimator3D* pAniCom = vecChilds[i]->Animator3D();
+
+        if (nullptr != pAniCom)
+            vecAnimations.push_back(pAniCom);
     }
+    wstring wstr = wstring(m_strAniCurKey.begin(), m_strAniCurKey.end());
+    for (UINT i = 0; i < vecAnimations.size(); ++i)
+        vecAnimations[i]->SetCurFrame(wstr, m_tFrame);
+
 }
 
 void AnimationUI::Update_GUI_Frame()

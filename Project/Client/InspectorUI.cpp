@@ -9,8 +9,10 @@
 #include "TransformUI.h"
 #include "MeshRenderUI.h"
 #include "Collider3DUI.h"
+#include "CAnimator3DUI.h"
+#include "PhysXComUI.h"
+
 #include "ShadowUI.h"
-#include "Light2DUI.h"
 #include "MeshUI.h"
 #include "TextureUI.h"
 #include "MaterialUI.h"
@@ -43,15 +45,13 @@ InspectorUI::InspectorUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER3D]->SetSize(ImVec2(0.f, 150.f));
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::COLLIDER3D]);
 
-	//m_arrComUI[(UINT)COMPONENT_TYPE::SCRIPT] = new ShadowUI;
-	//AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::SCRIPT]);
+	m_arrComUI[(UINT)COMPONENT_TYPE::PHYSX] = new PhysXComUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::PHYSX]->SetSize(ImVec2(0.f, 150.f));
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::PHYSX]);
 
-	//m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D] = new CAnimator2DUI;
-	//m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D]->SetSize(ImVec2(0.f, 150.f));
-	//AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR2D]);
-	//m_arrObjUI[(UINT)OBJECT_TYPE::LIGHT2D] = new Light2DUI;
-	//m_arrObjUI[(UINT)OBJECT_TYPE::LIGHT2D]->SetSize(ImVec2(0.f, 150.f));
-	//AddChild(m_arrObjUI[(UINT)OBJECT_TYPE::LIGHT2D]);
+	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D] = new CAnimator3DUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]->SetSize(ImVec2(0.f, 150.f));
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]);
 
 	// ResourceUI
 	m_arrResUI[(UINT)RES_TYPE::MESH] = new MeshUI;
@@ -165,7 +165,6 @@ void InspectorUI::SetTargetObject(CGameObjectEx* _Target)
 	{
 		for (UINT i{}; i < m_vecScriptUI.size(); ++i)
 			m_vecScriptUI[i]->Close();
-
 
 		const vector<CScript*>& scripts = m_TargetObj->GetScripts();
 

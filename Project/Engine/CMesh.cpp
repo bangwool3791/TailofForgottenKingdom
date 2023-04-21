@@ -689,7 +689,7 @@ bool CMesh::GetPosition(Ray _ray, Vec3& _vPos)
     return false;
 }
 
-bool CMesh::IsNaviValid(Vec3& _vPos)
+bool CMesh::IsTestNavValid(Vec3& _vPos)
 {
     size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
 
@@ -721,6 +721,174 @@ bool CMesh::IsNaviValid(Vec3& _vPos)
             return false;
 
     return true;
+}
+
+bool CMesh::IsNavValid(Vec3& _vPos)
+{
+    size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
+
+    //A -> 0, B -> 1, C -> 2
+    //AP X AB
+    //BP X BC
+    //CP X CA
+    bool bValid = false;
+
+    UINT i = 0;
+    UINT cnt = 0;
+    float fDistance{};
+    float fMinHeight = 987654321.f;
+
+    float fDistance1{};
+    float fDistance2{};
+    float fDistance3{};
+
+    float W1{};
+    float W2{};
+    float W3{};
+
+    float fMinDistance{ 987654321.f };
+
+    //P-A = AP
+    Vec3 vCenter{};
+    Vec3 vResult[3]{};
+    Vec3 vDebug[3]{};
+    Vec3 vVtx[3]{};
+
+    for (i = 0; i < nVerts; i += 3)
+    {
+        cnt = 0;
+        vDebug[0] = m_vertices[i].vPos;
+        vDebug[1] = m_vertices[i + 1].vPos;
+        vDebug[2] = m_vertices[i + 2].vPos;
+
+        Vec3 AP = m_vertices[i].vPos - _vPos;
+        Vec3 AB = m_vertices[i].vPos - m_vertices[i + 1].vPos;
+
+        Vec3 BP = m_vertices[i + 1].vPos - _vPos;
+        Vec3 BC = m_vertices[i + 1].vPos - m_vertices[i + 2].vPos;
+
+        Vec3 CP = m_vertices[i + 2].vPos - _vPos;
+        Vec3 CA = m_vertices[i + 2].vPos - m_vertices[i].vPos;
+
+        AB.Cross(AP, vResult[0]);
+        BC.Cross(BP, vResult[1]);
+        CA.Cross(CP, vResult[2]);
+    
+        for (UINT j = 0; j < 3; ++j)
+        {
+            if (0 > vResult[j].y)
+                break;
+            else if (0 < vResult[j].y)
+                ++cnt;
+        }
+
+        fDistance1 = m_vertices[i].vPos.Distance(_vPos, m_vertices[i].vPos);
+        fDistance2 = m_vertices[i + 1].vPos.Distance(_vPos, m_vertices[i + 1].vPos);
+        fDistance3 = m_vertices[i + 2].vPos.Distance(_vPos, m_vertices[i + 2].vPos);
+
+        W1 = 1.f / fDistance1;
+        W2 = 1.f / fDistance2;
+        W3 = 1.f / fDistance3;
+
+        float fHeight = (m_vertices[i].vPos.y * W1 + m_vertices[i + 1].vPos.y * W2 + m_vertices[i + 2].vPos.y * W3) / (W1 + W2 + W3);
+
+        if (3 == cnt && fabsf(_vPos.y - fHeight) < 10.f)
+        {
+            if (fHeight < fMinHeight)
+            {
+                fMinHeight = fHeight;
+                _vPos.y = fHeight;
+                bValid = true;
+            }
+        }
+
+    }
+
+    return bValid;
+}
+
+bool CMesh::IsNavJumpValid(Vec3& _vPos)
+{
+    size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
+
+    //A -> 0, B -> 1, C -> 2
+    //AP X AB
+    //BP X BC
+    //CP X CA
+    bool bValid = false;
+
+    UINT i = 0;
+    UINT cnt = 0;
+    float fDistance{};
+
+    float fDistance1{};
+    float fDistance2{};
+    float fDistance3{};
+
+    float W1{};
+    float W2{};
+    float W3{};
+
+    float fMinHeight = 987654321.f;
+    float fMinDistance{ 987654321.f };
+
+    //P-A = AP
+    Vec3 vCenter{};
+    Vec3 vResult[3]{};
+    Vec3 vDebug[3]{};
+    Vec3 vVtx[3]{};
+
+    for (i = 0; i < nVerts; i += 3)
+    {
+        cnt = 0;
+
+        Vec3 AP = m_vertices[i].vPos - _vPos;
+        Vec3 AB = m_vertices[i].vPos - m_vertices[i + 1].vPos;
+
+        Vec3 BP = m_vertices[i + 1].vPos - _vPos;
+        Vec3 BC = m_vertices[i + 1].vPos - m_vertices[i + 2].vPos;
+
+        Vec3 CP = m_vertices[i + 2].vPos - _vPos;
+        Vec3 CA = m_vertices[i + 2].vPos - m_vertices[i].vPos;
+
+        AB.Cross(AP, vResult[0]);
+        BC.Cross(BP, vResult[1]);
+        CA.Cross(CP, vResult[2]);
+
+        fDistance1 = m_vertices[i].vPos.Distance(_vPos, m_vertices[i].vPos);
+        fDistance2 = m_vertices[i + 1].vPos.Distance(_vPos, m_vertices[i + 1].vPos);
+        fDistance3 = m_vertices[i + 2].vPos.Distance(_vPos, m_vertices[i + 2].vPos);
+
+        W1 = 1.f / fDistance1;
+        W2 = 1.f / fDistance2;
+        W3 = 1.f / fDistance3;
+
+        float fX = (m_vertices[i].vPos.x * W1 + m_vertices[i + 1].vPos.x * W2 + m_vertices[i + 2].vPos.x * W3) / (W1 + W2 + W3);
+        float fHeight = (m_vertices[i].vPos.y * W1 + m_vertices[i + 1].vPos.y * W2 + m_vertices[i + 2].vPos.y * W3) / (W1 + W2 + W3);
+        float fZ = (m_vertices[i].vPos.z * W1 + m_vertices[i + 1].vPos.z * W2 + m_vertices[i + 2].vPos.z * W3) / (W1 + W2 + W3);
+
+        for (UINT j = 0; j < 3; ++j)
+        {
+            if (0 > vResult[j].y)
+                break;
+            else if (0 < vResult[j].y)
+                ++cnt;
+        }
+
+        if (3 == cnt && _vPos.y <= fHeight)
+        {
+            if (fHeight < fMinHeight)
+            {
+                fMinHeight = fHeight;
+                //_vPos.x = fX;
+                _vPos.y = fHeight;
+                //_vPos.z = fZ;
+                bValid = true;
+            }
+        }
+    }
+
+    return bValid;
 }
 
 void CMesh::InitializeTerrainJps(vector<Vec3>& _vec)

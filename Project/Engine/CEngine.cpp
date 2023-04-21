@@ -13,6 +13,8 @@
 #include "CDevice.h"
 #include "CEventMgr.h"
 #include "CCollisionMgr.h"
+#include "timing.h"
+#include "PhysXMgr.h"
 #include "CInstancingBuffer.h"
 #include "CSound.h"
 
@@ -60,7 +62,6 @@ int CEngine::init(HWND _hWnd, UINT _iWidth, UINT _iHeight)
 	CRenderMgr::GetInst()->init();
 	CLevelMgr::GetInst()->init();
 	CFontMgr::GetInst()->init();
-
 	CInstancingBuffer::GetInst()->init();
 
 	return S_OK;
@@ -77,6 +78,7 @@ void CEngine::tick()
 	// Manager 업데이트
 	CResMgr::GetInst()->tick();
 	//CSound::g_pFMOD->update();
+	TimingData::update();
 	CTimeMgr::GetInst()->tick();
 	CKeyMgr::GetInst()->tick();
 	CRenderMgr::GetInst()->tick();

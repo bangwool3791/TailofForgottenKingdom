@@ -16,7 +16,7 @@ private:
 	TreeNode*			m_ParentNode;
 	TreeUI*				m_TreeUI;
 
-	UINT				m_iIdx;
+	UINT				m_iIdx = 0;
 
 	bool				m_bFrame;
 	bool				m_bSelected;

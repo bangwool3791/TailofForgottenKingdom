@@ -322,6 +322,24 @@
     <Filter Include="Engine\00. Header\NaviMesh">
       <UniqueIdentifier>{90d92d04-4972-4c82-914b-b1a3a38a132e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\03. Manager\14. NavMeshMgr">
+      <UniqueIdentifier>{87da627c-1293-4ba3-b8d7-549af48a38cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\PhysXMgr">
+      <UniqueIdentifier>{854f212e-e770-48dc-876a-bee31bcf50b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\05. timing">
+      <UniqueIdentifier>{21faf3ec-dd29-4a78-94cd-b0134ddd3651}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\13. PhysX">
+      <UniqueIdentifier>{a525ae06-9b5c-4d8d-a540-f2c6935bfd35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\12. Physics\06. contacts">
+      <UniqueIdentifier>{e7dcea0e-fbc3-4655-a78f-c46fd5d6aa36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\15. Assembly">
+      <UniqueIdentifier>{2f82cb17-6a82-49db-b5a6-5d7c0000c1d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -690,6 +708,21 @@
     <ClInclude Include="DetourStatus.h">
       <Filter>Engine\00. Header\NaviMesh</Filter>
     </ClInclude>
+    <ClInclude Include="NavMeshMgr.h">
+      <Filter>Engine\03. Manager\14. NavMeshMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXMgr.h">
+      <Filter>Engine\12. Physics\PhysXMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="timing.h">
+      <Filter>Engine\12. Physics\05. timing</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXComponent.h">
+      <Filter>Engine\06. Component\13. PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="contacs.h">
+      <Filter>Engine\12. Physics\06. contacts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -989,6 +1022,15 @@
     <ClCompile Include="InputGeom.cpp">
       <Filter>Engine\06. Component\12. NaviMesh\InputGeom</Filter>
     </ClCompile>
+    <ClCompile Include="PhysXMgr.cpp">
+      <Filter>Engine\12. Physics\PhysXMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="timing.cpp">
+      <Filter>Engine\12. Physics\05. timing</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXComponent.cpp">
+      <Filter>Engine\06. Component\13. PhysX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="register.fx">
@@ -1147,5 +1189,10 @@
     <FxCompile Include="copybone.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="x64.asm">
+      <Filter>Engine\15. Assembly</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

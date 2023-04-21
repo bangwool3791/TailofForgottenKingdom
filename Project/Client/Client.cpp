@@ -8,6 +8,7 @@
 #include "CreateTestLevel.h"
 #include <Engine/CDevice.h>
 #include "CSaveLoadMgr.h"
+#include <Engine\PhysXMgr.h>
 #include "CImGuiMgr.h"
 
 #include <Engine\CGameObject.h>
@@ -34,7 +35,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    _CrtSetBreakAlloc(61621);
+    //_CrtSetBreakAlloc(61621);
 
     srand(0);
 
@@ -66,7 +67,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     CreateTestLelvel();
     //GUI 주석
     CEditor::GetInst()->init();
-
+    //Navi Mesh 로딩 후 init
+    PhysXMgr::GetInst()->init();
     // 주석 끝
      // 기본 메시지 루프입니다:
 

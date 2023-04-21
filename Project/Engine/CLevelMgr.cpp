@@ -13,6 +13,7 @@
 
 #include "CPaintShader.h"
 #include "CCollisionMgr.h"
+#include "PhysXMgr.h"
 
 CLevelMgr::CLevelMgr()
 	: m_pCurLevel(nullptr)
@@ -49,6 +50,7 @@ void CLevelMgr::progress()
 	{
 		//키 입력이 안먹는다.
 		m_pCurLevel->tick();
+		PhysXMgr::GetInst()->update();
 		m_pCurLevel->finaltick();
 	}
 	//GUI 주석 끝

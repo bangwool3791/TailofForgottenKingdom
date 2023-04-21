@@ -13,6 +13,7 @@
 #include "CSkyBox.h"
 #include "CLandScape.h"
 #include "CWaveRenderer.h"
+#include "PhysXComponent.h"
 /*
 * Particle
 */

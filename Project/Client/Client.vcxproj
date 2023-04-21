@@ -154,13 +154,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimationUI.h" />
+    <ClInclude Include="CAnimator3DUI.h" />
     <ClInclude Include="CAnimator2DUI.h" />
     <ClInclude Include="CBorderScript.h" />
     <ClInclude Include="CBrushScript.h" />
     <ClInclude Include="CLoader.h" />
     <ClInclude Include="CLoadingLevel.h" />
     <ClInclude Include="Collider3DUI.h" />
-    <ClInclude Include="NaviMeshMgr.h" />
+    <ClInclude Include="ModelComUI.h" />
+    <ClInclude Include="NavMeshTestMgr.h" />
     <ClInclude Include="ParticleSystemUI.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="CCameraScript.h" />
@@ -201,6 +203,7 @@
     <ClInclude Include="OutlinerUI.h" />
     <ClInclude Include="ParamUI.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PhysXComUI.h" />
     <ClInclude Include="PopupUI.h" />
     <ClInclude Include="ProgressUI.h" />
     <ClInclude Include="Resource.h" />
@@ -216,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationUI.cpp" />
+    <ClCompile Include="CAnimator3DUI.cpp" />
     <ClCompile Include="CAnimator2DUI.cpp" />
     <ClCompile Include="CBorderScript.cpp" />
     <ClCompile Include="CBrushScript.cpp" />
@@ -228,7 +232,8 @@
     <ClCompile Include="CLoader.cpp" />
     <ClCompile Include="CLoadingLevel.cpp" />
     <ClCompile Include="Collider3DUI.cpp" />
-    <ClCompile Include="NaviMeshMgr.cpp" />
+    <ClCompile Include="ModelComUI.cpp" />
+    <ClCompile Include="NavMeshTestMgr.cpp" />
     <ClCompile Include="ParticleSystemUI.cpp" />
     <ClCompile Include="CSaveLoadMgr.cpp" />
     <ClCompile Include="Client.cpp" />
@@ -261,6 +266,7 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PhysXComUI.cpp" />
     <ClCompile Include="PopupUI.cpp" />
     <ClCompile Include="ProgressUI.cpp" />
     <ClCompile Include="ResUI.cpp" />

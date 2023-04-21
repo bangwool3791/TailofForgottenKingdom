@@ -8,18 +8,13 @@
 
 #include "ContentUI.h"
 #include "OutlinerUI.h"
+#include "ModelComUI.h"
 
 #include "CCameraScript.h"
 #include "CBorderScript.h"
 #include "CBrushScript.h"
 
-#include <Engine\Base.h>
-
-#include "CImGuiMgr.h"
-#include <Engine/CTimeMgr.h>
 #include <Engine\CMeshRender.h>
-
-#include <Engine\CComponent.h>
 #include <Engine\GlobalComponent.h>
 
 #include <Engine\CCamera.h>
@@ -27,14 +22,11 @@
 #include "CEditorCam.h"
 #include "CCameraScript.h"
 
+#include <Engine\CDevice.h>
 #include <Engine\CRenderMgr.h>
 #include <Engine/CLevel.h>
 #include <Engine\CLevelMgr.h>
-
-#include <Engine\CAnimator2D.h>
-
-#include <Engine\CMRT.h>
-#include <Engine\CSLight.h>
+#include <Engine\PhysXMgr.h>
 
 #include <Engine\Sample.h>
 
@@ -199,10 +191,10 @@ void CEditor::init()
 	{
 		m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM] = new CTransform();
 		m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM]->SetName(L"Transform");
-		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D] = new CCollider2D();
-		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D]->SetName(L"Colider2D");
-		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR2D] = new CAnimator2D();
-		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR2D]->SetName(L"Animator2D");
+		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D] = new CCollider3D();
+		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D]->SetName(L"Colider3D");
+		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR3D] = new CAnimator3D();
+		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR3D]->SetName(L"Animator3D");
 		//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]		= new CLight2D();
 		//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]->SetName(L"Light2D");
 		m_arrCom[(UINT)COMPONENT_TYPE::PARTICLESYSTEM] = new CParticleSystem();
@@ -211,6 +203,10 @@ void CEditor::init()
 		m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]->SetName(L"CLight2D");
 		m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER] = new CMeshRender();
 		m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER]->SetName(L"CMeshRender");
+		m_arrCom[(UINT)COMPONENT_TYPE::PHYSX] = new CPhysXComponent();
+		m_arrCom[(UINT)COMPONENT_TYPE::PHYSX]->SetName(L"PhysXComponent");
+		ModelComUI* pUI = (ModelComUI*)CImGuiMgr::GetInst()->FindUI("ModelComUI");
+		pUI->begin();
 	}
 
 	{
@@ -303,7 +299,7 @@ void CEditor::finaltickObj()
 void CEditor::tick()
 {
 	tickObj();
-
+	PhysXMgr::GetInst()->update();
 	finaltickObj();
 
 	picking();
@@ -315,28 +311,38 @@ void CEditor::picking()
 	
 	if (KEY_TAP(KEY::LBTN) && EDIT_MODE::MAPTOOL == m_editmode)
 	{
-		Vec3 vPos{};
-		const tRay& ray = m_pCameraObject->Camera()->GetRay();
-
-		float fMaximum = 987654321.0f;
-		raycast.direction = ray.vDir;
-		raycast.position = ray.vStart;
-
-		for (auto iter{ m_EditorObj[(UINT)m_editmode].begin() }; iter != m_EditorObj[(UINT)m_editmode].end(); ++iter)
+		if (!CImGuiMgr::GetInst()->GetMenuClick())
 		{
-			if (nullptr != iter->second->Transform() && nullptr == iter->second->LandScape() && nullptr != iter->second->MeshRender())
-			{
-				if (iter->second->Transform()->Picking(raycast, vPos))
-				{
-					float fDist = (ray.vStart - vPos).Length();
+			Vec2 vResoltion = CDevice::GetInst()->GetRenderResolution();
+			Vec2 vMousePos = CKeyMgr::GetInst()->GetMousePos();
 
-					if (fMaximum > fDist)
+			if (0 <= vMousePos.x && vMousePos.x < vResoltion.x
+				&& 0 <= vMousePos.y && vMousePos.y < vResoltion.y)
+			{
+				Vec3 vPos{};
+				const tRay& ray = m_pCameraObject->Camera()->GetRay();
+
+				float fMaximum = 987654321.0f;
+				raycast.direction = ray.vDir;
+				raycast.position = ray.vStart;
+
+				for (auto iter{ m_EditorObj[(UINT)m_editmode].begin() }; iter != m_EditorObj[(UINT)m_editmode].end(); ++iter)
+				{
+					if (nullptr != iter->second->Transform() && nullptr == iter->second->LandScape() && nullptr != iter->second->MeshRender())
 					{
-						fMaximum = fDist;
-						CImGuiMgr::GetInst()->SetPickingObj(iter->second);
-						OutlinerUI* pOutlinerUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
-						string str = WStringToString(iter->second->GetName());
-						pOutlinerUI->SetCurrentNode(str);
+						if (iter->second->Transform()->Picking(raycast, vPos))
+						{
+							float fDist = (ray.vStart - vPos).Length();
+
+							if (fMaximum > fDist)
+							{
+								fMaximum = fDist;
+								CImGuiMgr::GetInst()->SetPickingObj(iter->second);
+								OutlinerUI* pOutlinerUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
+								string str = WStringToString(iter->second->GetName());
+								pOutlinerUI->SetCurrentNode(str);
+							}
+						}
 					}
 				}
 			}
@@ -482,7 +488,7 @@ void CEditor::CreateCamera()
 	}
 }
 
-#include "NaviMeshMgr.h"
+#include "NavMeshTestMgr.h"
 
 void CEditor::CreateNaviMesh()
 {
@@ -501,8 +507,8 @@ void CEditor::CreateNaviMesh()
 		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"TriangleMesh"));
 		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"NaviMesh", pObject);
-		//pObject = NaviMeshMgr::GetInst()->loadAll(L"navimesh\\Arene_Stage_Navi.bin");
-		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Arene_Stage_Navi", pObject);
+		pObject = NavMeshTestMgr::GetInst()->loadAll(L"navimesh\\Arene_Stage_Navi.bin");
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Arene_Stage_Navi", pObject);
 
 		Sample* pSample = new Sample;
 		pSample->initToolStates(pSample);

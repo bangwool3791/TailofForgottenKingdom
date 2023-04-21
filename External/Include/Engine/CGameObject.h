@@ -8,7 +8,7 @@ class CAnimator3D;
 class CTransform;
 class CLight2D;
 class CLight3D;
-class CTerrain;
+class CPhysXComponent;
 class CTileMap;
 class CParticleSystem;
 class CRenderComponent;
@@ -82,7 +82,7 @@ public:
 	GET_COMPONENT(Light3D, LIGHT3D);
 	GET_COMPONENT(ParticleSystem, PARTICLESYSTEM);
 	GET_COMPONENT(TileMap, TILEMAP);
-	GET_COMPONENT(Terrain, TERRAIN);
+	GET_COMPONENT(PhysXComponent, PHYSX);
 	GET_COMPONENT(Decal, DECAL);
 	GET_COMPONENT(SkyBox, SKYBOX);
 	GET_COMPONENT(LandScape, LANDSCAPE);

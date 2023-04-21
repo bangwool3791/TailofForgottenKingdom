@@ -1,10 +1,15 @@
 #include "pch.h"
 #include "CCameraScript.h"
+#include "CEditor.h"
+#include "CGameObjectEx.h"
 
+#include <Engine\CTransform.h>
 
 CCameraScript::CCameraScript()
 	:CScript(-1)
 	, m_fSpeed(400.f)
+	, m_fDistance(700.f)
+	, m_eProc(CamProc::END)
 {
 }
 
@@ -14,11 +19,21 @@ CCameraScript::~CCameraScript()
 
 void CCameraScript::begin()
 {
+
 }
 
 void CCameraScript::tick()
 {
-	Move();
+	if (nullptr == m_pPlayer)
+		m_pPlayer = CEditor::GetInst()->FindByName(L"Test0");
+	else
+		Move();
+}
+
+void CCameraScript::finaltick() 
+{
+	if (m_pPlayer->IsDead())
+		m_pPlayer = nullptr;
 }
 
 void CCameraScript::Move()
@@ -34,71 +49,63 @@ void CCameraScript::Move()
 
 	if (Camera()->GetProjType() == PROJ_TYPE::PERSPECTIVE)
 	{
-		Vec3 vFront = Transform()->GetRelativeDir(DIR::FRONT);
-		Vec3 vRight = Transform()->GetRelativeDir(DIR::RIGHT);
-
-		if (KEY_PRESSED(KEY::W))
-			vPos += DT * vFront * fSpeed;
-		if (KEY_PRESSED(KEY::S))
-			vPos += DT * vFront * -fSpeed;
-		if (KEY_PRESSED(KEY::A))
-			vPos += DT * -vRight * fSpeed;
-		if (KEY_PRESSED(KEY::D))
-			vPos += DT * vRight * fSpeed;
-
-		Vec2 vMouseDir = CKeyMgr::GetInst()->GetMouseDir();
-
-
-		if (KEY_PRESSED(KEY::RBTN))
+		//Vec3 vRight = m_pPlayer->Transform()->GetRelativeDir(DIR::RIGHT);
+		//Vec3 vUp = m_pPlayer->Transform()->GetRelativeDir(DIR::UP);
+		Vec3 vPos = m_pPlayer->Transform()->GetRelativePos();
+		Vec3 vRot = m_pPlayer->Transform()->GetRelativeRotation();
+	
+		if (m_eProc == CamProc::STEP1)
 		{
-			Vec3 vRot = Transform()->GetRelativeRotation();
+			float fFOV = Camera()->GetFOV();
+			fFOV -= 0.1f;
+			m_fDistance -= 5.f;
 
-			vRot.y += vMouseDir.x * DT * XM_PI;
-			vRot.x -= vMouseDir.y * DT * XM_PI;
-			Transform()->SetRelativeRotation(vRot);
+			if (fFOV <= XM_2PI / 8.f)
+				fFOV = XM_2PI / 8.f;
+
+			if (250.f >= m_fDistance)
+			{
+				m_fDistance = 250.f;
+				m_eProc = CamProc::STEP2;
+			}
+			
+			Camera()->SetFOV(fFOV);
+
+			vRot.x += XM_PI / 5.f;
+
+		}else if (m_eProc == CamProc::STEP2)
+		{
+			float fFOV = Camera()->GetFOV();
+			fFOV += 0.1f;
+			m_fDistance += 5.f;
+
+			if (fFOV >= XM_2PI / 6.f)
+				fFOV = XM_2PI / 6.f;
+			
+			if (700.f <= m_fDistance)
+				m_fDistance = 700.f;
+
+			Camera()->SetFOV(fFOV);
+			vRot.x += XM_PI / 5.f;
 		}
+		else
+		{
+			vRot.x += XM_PI / 6.f;
+		}
+		
+		vRot.y -= XM_PI;
+
+		vPos.x -= m_fDistance * sinf(vRot.y);
+		vPos.y = 700.f;
+		vPos.z -= m_fDistance * cosf(vRot.y);
+
 		Transform()->SetRelativePos(vPos);
+		Transform()->SetRelativeRotation(vRot);
 
 		if (KEY_PRESSED(KEY::SPACE))
 		{
-			Camera()->SetProjType(PROJ_TYPE::ORTHOGRAHPIC);
+			m_eProc = CamProc::STEP1;
 		}
 	}
 
-	else
-	{
-		Vec3 vFront = Transform()->GetRelativeDir(DIR::UP);
-		Vec3 vRight = Transform()->GetRelativeDir(DIR::RIGHT);
-
-		if (KEY_PRESSED(KEY::W))
-			vPos += DT * vFront * fSpeed;
-		if (KEY_PRESSED(KEY::S))
-			vPos += DT * vFront * -fSpeed;
-		if (KEY_PRESSED(KEY::A))
-			vPos += DT * -vRight * fSpeed;
-		if (KEY_PRESSED(KEY::D))
-			vPos += DT * vRight * fSpeed;
-
-		Vec2 vMouseDir = CKeyMgr::GetInst()->GetMouseDir();
-
-		Transform()->SetRelativePos(vPos);
-
-		if (KEY_PRESSED(KEY::NUM_1))
-		{
-			float fScale = Camera()->GetOrthographicScale();
-			fScale += DT;
-			Camera()->SetOrthographicScale(fScale);
-		}
-		else if (KEY_PRESSED(KEY::NUM_2))
-		{
-			float fScale = Camera()->GetOrthographicScale();
-			fScale -= DT;
-			Camera()->SetOrthographicScale(fScale);
-		}
-
-		if (KEY_PRESSED(KEY::SPACE))
-		{
-			Camera()->SetProjType(PROJ_TYPE::PERSPECTIVE);
-		}
-	}
 }

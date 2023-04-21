@@ -15,9 +15,9 @@ class CAnimator3D :
 	public CComponent
 {
 private:
-	bool											m_bEnd = false;
+	
 	bool											m_bPuase = false;
-
+	UINT											m_iEnd = 0;
 	float											m_fTimeScale = 1.f;
 	Ptr<CMeshData>									m_pMeshData;
 	//UI
@@ -69,6 +69,7 @@ public:
 
 	void Init();
 	void ClearData();
+	UINT IsEnd() {return 0 < m_iEnd;}
 
 	void Add_Frame(const wstring& _key, tAnim3DFrm _tData);
 	const std::unordered_map<wstring, tAnim3DFrm>& GetFrames() { return m_mapAnimation; }

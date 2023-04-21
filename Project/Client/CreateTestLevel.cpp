@@ -125,7 +125,6 @@ void CreateDefaultObj(CLevel* pLevel)
 	pObject->AddComponent(new CTransform);
 	pObject->AddComponent(new CMeshRender);
 	pObject->AddComponent(new CCollider3D);
-	pObject->AddComponent(new CPlayerScript);
 	
 	pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
 	pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));

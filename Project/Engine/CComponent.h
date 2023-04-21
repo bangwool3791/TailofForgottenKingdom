@@ -9,16 +9,16 @@ class CComponent
 	:public CEntity
 {
 private:
-	CGameObject*			m_pOwnerObject;
+	CGameObject* m_pOwnerObject;
 	const COMPONENT_TYPE	m_eType;
 protected:
 	bool                    m_bActive;
 public:
 	virtual void begin() {}
 	virtual void tick() {};
-	virtual void finaltick()= 0;
+	virtual void finaltick() = 0;
 	virtual void finaltick_module();
-public :
+public:
 	COMPONENT_TYPE GetType() { return m_eType; }
 	CGameObject* GetOwner() { return m_pOwnerObject; }
 
@@ -41,9 +41,10 @@ public :
 	GET_OTHER_COMPONENT(SkyBox);
 	GET_OTHER_COMPONENT(LandScape);
 	GET_OTHER_COMPONENT(WaveRenderer);
+	GET_OTHER_COMPONENT(PhysXComponent);
 
 	virtual CComponent* Clone() = 0;
-public :
+public:
 	CComponent(COMPONENT_TYPE _eType);
 	CComponent(const CComponent& rhs);
 	virtual ~CComponent();

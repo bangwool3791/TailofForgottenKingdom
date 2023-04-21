@@ -11,6 +11,7 @@ private:
 	unordered_map<string, UI*>	m_mapUI;
 	HANDLE				m_NotifyHandle;
 	CGameObjectEx*		m_pSelectedObj = nullptr;
+	bool				m_bMenuClick = false;
 public:
 	UI* FindUI(const string& _name);
 
@@ -20,6 +21,8 @@ public:
 	void Guizmo();
 	void SetPickingObj(CGameObjectEx* pObj) { m_pSelectedObj = pObj; }
 	void SetNullPickingObj() { m_pSelectedObj = nullptr; }
+	void SetMenuClick(bool _bClick) { m_bMenuClick = _bClick; }
+	bool GetMenuClick() { return m_bMenuClick; }
 private:
 	void clear();
 	void CreateUI();

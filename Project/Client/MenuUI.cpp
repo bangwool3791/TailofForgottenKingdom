@@ -28,6 +28,13 @@ MenuUI::~MenuUI()
 
 void MenuUI::render()
 {
+    //지형 중복 피킹 예외처리
+    //첫 프레임 클릭 시 
+    //다음 프레임에서 해제
+
+    if (true == CImGuiMgr::GetInst()->GetMenuClick())
+        CImGuiMgr::GetInst()->SetMenuClick(false);
+
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
@@ -65,6 +72,9 @@ void MenuUI::render()
 
             if (ImGui::MenuItem("Maptool"))
             {
+                //메뉴 클릭시 지형 피킹 예외처리
+                CImGuiMgr::GetInst()->SetMenuClick(true);
+
                 CEditor::GetInst()->SetEditMode(EDIT_MODE::MAPTOOL);
                 OutlinerUI* pUI = (OutlinerUI*)CImGuiMgr::GetInst()->FindUI("Outliner");
                 pUI->ResetLevel();
@@ -77,7 +87,9 @@ void MenuUI::render()
         {
             if (ImGui::BeginMenu("AddScript"))
             {
-                
+                //메뉴 클릭시 지형 피킹 예외처리
+                CImGuiMgr::GetInst()->SetMenuClick(true);
+
                 vector<string> vecScriptName{};
                 CScriptMgr::GetScriptInfo(vecScriptName);
 

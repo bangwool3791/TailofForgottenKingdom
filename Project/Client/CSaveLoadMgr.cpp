@@ -224,6 +224,9 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 		case COMPONENT_TYPE::WAVERENDERER:
 			pComponent = new CWaveRenderer;
 			break;
+		case COMPONENT_TYPE::PHYSX:
+			pComponent = new CPhysXComponent;
+			break;
 		default:
 			bProgess = false;
 			break;

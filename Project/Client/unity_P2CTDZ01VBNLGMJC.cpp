@@ -3,6 +3,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\AnimationUI.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CAnimator3DUI.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CAnimator2DUI.cpp"
 
 
@@ -39,7 +42,10 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Collider3DUI.cpp"
 
 
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\NaviMeshMgr.cpp"
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ModelComUI.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\NavMeshTestMgr.cpp"
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ParticleSystemUI.cpp"
@@ -49,7 +55,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Client.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Collider2DUI.cpp"
 

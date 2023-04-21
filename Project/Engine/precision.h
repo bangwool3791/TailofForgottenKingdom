@@ -16,7 +16,7 @@ namespace cyclone {
       * single or double precision versions. By default single precision is
       * provided.
       */
-    typedef float real;
+    typedef float PhysXReal;
 
     /** Defines the highest value for the real number. */
 #define REAL_MAX FLT_MAX

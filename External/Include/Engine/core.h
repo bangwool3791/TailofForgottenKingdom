@@ -13,7 +13,7 @@
  /**
   * @mainpage Cyclone Reference
   *
-  * Cyclone is a general purpose and robust system for real-time
+  * Cyclone is a general purpose and robust system for PhysXReal-time
   * simulation of rigid bodies. The library was designed to be used in
   * computer games, but may be applicable to other areas of simulation
   * or research.
@@ -85,7 +85,7 @@
   * documentation implies agreement with all terms and conditions of
   * the accompanying software and documentation license.
   */
-
+#pragma once
 #include <math.h>
 
   /**
@@ -94,8 +94,7 @@
    * The core contains utility functions, helpers and a basic set of
    * mathematical types.
    */
-#ifndef CYCLONE_CORE_H
-#define CYCLONE_CORE_H
+
 
 #include "precision.h"
 
@@ -114,7 +113,7 @@ namespace cyclone {
      * other forces are around that of gravity. It may need tweaking
      * if your simulation is drastically different to this.
      */
-    extern real sleepEpsilon;
+    extern PhysXReal sleepEpsilon;
 
     /**
      * Sets the current sleep epsilon value: the kinetic energy under
@@ -132,7 +131,7 @@ namespace cyclone {
      * @param value The sleep epsilon value to use from this point
      * on.
      */
-    void setSleepEpsilon(real value);
+    void setSleepEpsilon(PhysXReal value);
 
     /**
      * Gets the current value of the sleep epsilon parameter.
@@ -143,7 +142,7 @@ namespace cyclone {
      *
      * @return The current value of the parameter.
      */
-    real getSleepEpsilon();
+    PhysXReal getSleepEpsilon();
 
     /**
      * Holds a vector in 3 dimensions. Four data members are allocated
@@ -153,53 +152,53 @@ namespace cyclone {
      * mathematics. The implementations are included in the header
      * file.
      */
-    class Vector3
+    class PhysXVec3
     {
     public:
         /** Holds the value along the x axis. */
-        real x;
+        PhysXReal x{};
 
         /** Holds the value along the y axis. */
-        real y;
+        PhysXReal y{};
 
         /** Holds the value along the z axis. */
-        real z;
+        PhysXReal z{};
 
     private:
         /** Padding to ensure 4 word alignment. */
-        real pad;
+        PhysXReal pad = 0.f;
 
     public:
         /** The default constructor creates a zero vector. */
-        Vector3() : x(0), y(0), z(0) {}
+        PhysXVec3() : x(0), y(0), z(0) {}
 
         /**
          * The explicit constructor creates a vector with the given
          * components.
          */
-        Vector3(const real x, const real y, const real z)
+        PhysXVec3(const PhysXReal x, const PhysXReal y, const PhysXReal z)
             : x(x), y(y), z(z) {}
 
-        const static Vector3 GRAVITY;
-        const static Vector3 HIGH_GRAVITY;
-        const static Vector3 UP;
-        const static Vector3 RIGHT;
-        const static Vector3 OUT_OF_SCREEN;
-        const static Vector3 X;
-        const static Vector3 Y;
-        const static Vector3 Z;
+        const static PhysXVec3 GRAVITY;
+        const static PhysXVec3 HIGH_GRAVITY;
+        const static PhysXVec3 UP;
+        const static PhysXVec3 RIGHT;
+        const static PhysXVec3 OUT_OF_SCREEN;
+        const static PhysXVec3 X;
+        const static PhysXVec3 Y;
+        const static PhysXVec3 Z;
 
-        // ... Other Vector3 code as before ...
+        // ... Other PhysXVec3 code as before ...
 
 
-        real operator[](unsigned i) const
+        PhysXReal operator[](unsigned i) const
         {
             if (i == 0) return x;
             if (i == 1) return y;
             return z;
         }
 
-        real& operator[](unsigned i)
+        PhysXReal& operator[](unsigned i)
         {
             if (i == 0) return x;
             if (i == 1) return y;
@@ -207,7 +206,7 @@ namespace cyclone {
         }
 
         /** Adds the given vector to this. */
-        void operator+=(const Vector3& v)
+        void operator+=(const PhysXVec3& v)
         {
             x += v.x;
             y += v.y;
@@ -217,13 +216,13 @@ namespace cyclone {
         /**
          * Returns the value of the given vector added to this.
          */
-        Vector3 operator+(const Vector3& v) const
+        PhysXVec3 operator+(const PhysXVec3& v) const
         {
-            return Vector3(x + v.x, y + v.y, z + v.z);
+            return PhysXVec3(x + v.x, y + v.y, z + v.z);
         }
 
         /** Subtracts the given vector from this. */
-        void operator-=(const Vector3& v)
+        void operator-=(const PhysXVec3& v)
         {
             x -= v.x;
             y -= v.y;
@@ -233,13 +232,13 @@ namespace cyclone {
         /**
          * Returns the value of the given vector subtracted from this.
          */
-        Vector3 operator-(const Vector3& v) const
+        PhysXVec3 operator-(const PhysXVec3& v) const
         {
-            return Vector3(x - v.x, y - v.y, z - v.z);
+            return PhysXVec3(x - v.x, y - v.y, z - v.z);
         }
 
         /** Multiplies this vector by the given scalar. */
-        void operator*=(const real value)
+        void operator*=(const PhysXReal value)
         {
             x *= value;
             y *= value;
@@ -247,25 +246,25 @@ namespace cyclone {
         }
 
         /** Returns a copy of this vector scaled the given value. */
-        Vector3 operator*(const real value) const
+        PhysXVec3 operator*(const PhysXReal value) const
         {
-            return Vector3(x * value, y * value, z * value);
+            return PhysXVec3(x * value, y * value, z * value);
         }
 
         /**
          * Calculates and returns a component-wise product of this
          * vector with the given vector.
          */
-        Vector3 componentProduct(const Vector3& vector) const
+        PhysXVec3 componentProduct(const PhysXVec3& vector) const
         {
-            return Vector3(x * vector.x, y * vector.y, z * vector.z);
+            return PhysXVec3(x * vector.x, y * vector.y, z * vector.z);
         }
 
         /**
          * Performs a component-wise product with the given vector and
          * sets this vector to its result.
          */
-        void componentProductUpdate(const Vector3& vector)
+        void componentProductUpdate(const PhysXVec3& vector)
         {
             x *= vector.x;
             y *= vector.y;
@@ -276,9 +275,9 @@ namespace cyclone {
          * Calculates and returns the vector product of this vector
          * with the given vector.
          */
-        Vector3 vectorProduct(const Vector3& vector) const
+        PhysXVec3 vectorProduct(const PhysXVec3& vector) const
         {
-            return Vector3(y * vector.z - z * vector.y,
+            return PhysXVec3(y * vector.z - z * vector.y,
                 z * vector.x - x * vector.z,
                 x * vector.y - y * vector.x);
         }
@@ -287,7 +286,7 @@ namespace cyclone {
          * Updates this vector to be the vector product of its current
          * value and the given vector.
          */
-        void operator %=(const Vector3& vector)
+        void operator %=(const PhysXVec3& vector)
         {
             *this = vectorProduct(vector);
         }
@@ -296,9 +295,9 @@ namespace cyclone {
          * Calculates and returns the vector product of this vector
          * with the given vector.
          */
-        Vector3 operator%(const Vector3& vector) const
+        PhysXVec3 operator%(const PhysXVec3& vector) const
         {
-            return Vector3(y * vector.z - z * vector.y,
+            return PhysXVec3(y * vector.z - z * vector.y,
                 z * vector.x - x * vector.z,
                 x * vector.y - y * vector.x);
         }
@@ -307,7 +306,7 @@ namespace cyclone {
          * Calculates and returns the scalar product of this vector
          * with the given vector.
          */
-        real scalarProduct(const Vector3& vector) const
+        PhysXReal scalarProduct(const PhysXVec3& vector) const
         {
             return x * vector.x + y * vector.y + z * vector.z;
         }
@@ -316,7 +315,7 @@ namespace cyclone {
          * Calculates and returns the scalar product of this vector
          * with the given vector.
          */
-        real operator *(const Vector3& vector) const
+        PhysXReal operator *(const PhysXVec3& vector) const
         {
             return x * vector.x + y * vector.y + z * vector.z;
         }
@@ -324,7 +323,7 @@ namespace cyclone {
         /**
          * Adds the given vector to this, scaled by the given amount.
          */
-        void addScaledVector(const Vector3& vector, real scale)
+        void addScaledVector(const PhysXVec3& vector, PhysXReal scale)
         {
             x += vector.x * scale;
             y += vector.y * scale;
@@ -332,19 +331,19 @@ namespace cyclone {
         }
 
         /** Gets the magnitude of this vector. */
-        real magnitude() const
+        PhysXReal magnitude() const
         {
             return real_sqrt(x * x + y * y + z * z);
         }
 
         /** Gets the squared magnitude of this vector. */
-        real squareMagnitude() const
+        PhysXReal squareMagnitude() const
         {
             return x * x + y * y + z * z;
         }
 
         /** Limits the size of the vector to the given maximum. */
-        void trim(real size)
+        void trim(PhysXReal size)
         {
             if (squareMagnitude() > size * size)
             {
@@ -358,23 +357,23 @@ namespace cyclone {
         /** Turns a non-zero vector into a vector of unit length. */
         void normalise()
         {
-            real l = magnitude();
+            PhysXReal l = magnitude();
             if (l > 0)
             {
-                (*this) *= ((real)1) / l;
+                (*this) *= ((PhysXReal)1) / l;
             }
         }
 
         /** Returns the normalised version of a vector. */
-        Vector3 unit() const
+        PhysXVec3 unit() const
         {
-            Vector3 result = *this;
+            PhysXVec3 result = *this;
             result.normalise();
             return result;
         }
 
         /** Checks if the two vectors have identical components. */
-        bool operator==(const Vector3& other) const
+        bool operator==(const PhysXVec3& other) const
         {
             return x == other.x &&
                 y == other.y &&
@@ -382,7 +381,7 @@ namespace cyclone {
         }
 
         /** Checks if the two vectors have non-identical components. */
-        bool operator!=(const Vector3& other) const
+        bool operator!=(const PhysXVec3& other) const
         {
             return !(*this == other);
         }
@@ -394,7 +393,7 @@ namespace cyclone {
          * @note This does not behave like a single-value comparison:
          * !(a < b) does not imply (b >= a).
          */
-        bool operator<(const Vector3& other) const
+        bool operator<(const PhysXVec3& other) const
         {
             return x < other.x&& y < other.y&& z < other.z;
         }
@@ -406,7 +405,7 @@ namespace cyclone {
          * @note This does not behave like a single-value comparison:
          * !(a < b) does not imply (b >= a).
          */
-        bool operator>(const Vector3& other) const
+        bool operator>(const PhysXVec3& other) const
         {
             return x > other.x && y > other.y && z > other.z;
         }
@@ -418,7 +417,7 @@ namespace cyclone {
          * @note This does not behave like a single-value comparison:
          * !(a <= b) does not imply (b > a).
          */
-        bool operator<=(const Vector3& other) const
+        bool operator<=(const PhysXVec3& other) const
         {
             return x <= other.x && y <= other.y && z <= other.z;
         }
@@ -430,7 +429,7 @@ namespace cyclone {
          * @note This does not behave like a single-value comparison:
          * !(a <= b) does not imply (b > a).
          */
-        bool operator>=(const Vector3& other) const
+        bool operator>=(const PhysXVec3& other) const
         {
             return x >= other.x && y >= other.y && z >= other.z;
         }
@@ -474,33 +473,33 @@ namespace cyclone {
         union {
             struct {
                 /**
-                 * Holds the real component of the quaternion.
+                 * Holds the PhysXReal component of the quaternion.
                  */
-                real r;
+                PhysXReal r;
 
                 /**
                  * Holds the first complex component of the
                  * quaternion.
                  */
-                real i;
+                PhysXReal i;
 
                 /**
                  * Holds the second complex component of the
                  * quaternion.
                  */
-                real j;
+                PhysXReal j;
 
                 /**
                  * Holds the third complex component of the
                  * quaternion.
                  */
-                real k;
+                PhysXReal k;
             };
 
             /**
              * Holds the quaternion data in array form.
              */
-            real data[4];
+            PhysXReal data[4];
         };
 
         // ... other Quaternion code as before ...
@@ -515,7 +514,7 @@ namespace cyclone {
          * The explicit constructor creates a quaternion with the given
          * components.
          *
-         * @param r The real component of the rigid body's orientation
+         * @param r The PhysXReal component of the rigid body's orientation
          * quaternion.
          *
          * @param i The first complex component of the rigid body's
@@ -535,7 +534,7 @@ namespace cyclone {
          *
          * @see normalise
          */
-        Quaternion(const real r, const real i, const real j, const real k)
+        Quaternion(const PhysXReal r, const PhysXReal i, const PhysXReal j, const PhysXReal k)
             : r(r), i(i), j(j), k(k)
         {
         }
@@ -546,7 +545,7 @@ namespace cyclone {
          */
         void normalise()
         {
-            real d = r * r + i * i + j * j + k * k;
+            PhysXReal d = r * r + i * i + j * j + k * k;
 
             // Check for zero length quaternion, and use the no-rotation
             // quaternion in that case.
@@ -555,7 +554,7 @@ namespace cyclone {
                 return;
             }
 
-            d = ((real)1.0) / real_sqrt(d);
+            d = ((PhysXReal)1.0) / real_sqrt(d);
             r *= d;
             i *= d;
             j *= d;
@@ -589,20 +588,20 @@ namespace cyclone {
          *
          * @param scale The amount of the vector to add.
          */
-        void addScaledVector(const Vector3& vector, real scale)
+        void addScaledVector(const PhysXVec3& vector, PhysXReal scale)
         {
             Quaternion q(0,
                 vector.x * scale,
                 vector.y * scale,
                 vector.z * scale);
             q *= *this;
-            r += q.r * ((real)0.5);
-            i += q.i * ((real)0.5);
-            j += q.j * ((real)0.5);
-            k += q.k * ((real)0.5);
+            r += q.r * ((PhysXReal)0.5);
+            i += q.i * ((PhysXReal)0.5);
+            j += q.j * ((PhysXReal)0.5);
+            k += q.k * ((PhysXReal)0.5);
         }
 
-        void rotateByVector(const Vector3& vector)
+        void rotateByVector(const PhysXVec3& vector)
         {
             Quaternion q(0, vector.x, vector.y, vector.z);
             (*this) *= q;
@@ -614,21 +613,21 @@ namespace cyclone {
      * a position. The matrix has 12 elements, it is assumed that the
      * remaining four are (0,0,0,1); producing a homogenous matrix.
      */
-    class Matrix4
+    class PhyXMat4
     {
     public:
         /**
          * Holds the transform matrix data in array form.
          */
-        real data[12];
+        PhysXReal data[12];
 
-        // ... Other Matrix4 code as before ...
+        // ... Other PhyXMat4 code as before ...
 
 
         /**
          * Creates an identity matrix.
          */
-        Matrix4()
+        PhyXMat4()
         {
             data[1] = data[2] = data[3] = data[4] = data[6] =
                 data[7] = data[8] = data[9] = data[11] = 0;
@@ -638,7 +637,7 @@ namespace cyclone {
         /**
          * Sets the matrix to be a diagonal matrix with the given coefficients.
          */
-        void setDiagonal(real a, real b, real c)
+        void setDiagonal(PhysXReal a, PhysXReal b, PhysXReal c)
         {
             data[0] = a;
             data[5] = b;
@@ -649,9 +648,9 @@ namespace cyclone {
          * Returns a matrix which is this matrix multiplied by the given
          * other matrix.
          */
-        Matrix4 operator*(const Matrix4& o) const
+        PhyXMat4 operator*(const PhyXMat4& o) const
         {
-            Matrix4 result;
+            PhyXMat4 result;
             result.data[0] = (o.data[0] * data[0]) + (o.data[4] * data[1]) + (o.data[8] * data[2]);
             result.data[4] = (o.data[0] * data[4]) + (o.data[4] * data[5]) + (o.data[8] * data[6]);
             result.data[8] = (o.data[0] * data[8]) + (o.data[4] * data[9]) + (o.data[8] * data[10]);
@@ -676,9 +675,9 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 operator*(const Vector3& vector) const
+        PhysXVec3 operator*(const PhysXVec3& vector) const
         {
-            return Vector3(
+            return PhysXVec3(
                 vector.x * data[0] +
                 vector.y * data[1] +
                 vector.z * data[2] + data[3],
@@ -698,7 +697,7 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 transform(const Vector3& vector) const
+        PhysXVec3 transform(const PhysXVec3& vector) const
         {
             return (*this) * vector;
         }
@@ -706,19 +705,19 @@ namespace cyclone {
         /**
          * Returns the determinant of the matrix.
          */
-        real getDeterminant() const;
+        PhysXReal getDeterminant() const;
 
         /**
          * Sets the matrix to be the inverse of the given matrix.
          *
          * @param m The matrix to invert and use to set this.
          */
-        void setInverse(const Matrix4& m);
+        void setInverse(const PhyXMat4& m);
 
         /** Returns a new matrix containing the inverse of this matrix. */
-        Matrix4 inverse() const
+        PhyXMat4 inverse() const
         {
-            Matrix4 result;
+            PhyXMat4 result;
             result.setInverse(*this);
             return result;
         }
@@ -739,9 +738,9 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 transformDirection(const Vector3& vector) const
+        PhysXVec3 transformDirection(const PhysXVec3& vector) const
         {
-            return Vector3(
+            return PhysXVec3(
                 vector.x * data[0] +
                 vector.y * data[1] +
                 vector.z * data[2],
@@ -772,9 +771,9 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 transformInverseDirection(const Vector3& vector) const
+        PhysXVec3 transformInverseDirection(const PhysXVec3& vector) const
         {
-            return Vector3(
+            return PhysXVec3(
                 vector.x * data[0] +
                 vector.y * data[4] +
                 vector.z * data[8],
@@ -802,13 +801,13 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 transformInverse(const Vector3& vector) const
+        PhysXVec3 transformInverse(const PhysXVec3& vector) const
         {
-            Vector3 tmp = vector;
+            PhysXVec3 tmp = vector;
             tmp.x -= data[3];
             tmp.y -= data[7];
             tmp.z -= data[11];
-            return Vector3(
+            return PhysXVec3(
                 tmp.x * data[0] +
                 tmp.y * data[4] +
                 tmp.z * data[8],
@@ -831,16 +830,16 @@ namespace cyclone {
          *
          * @return The vector.
          */
-        Vector3 getAxisVector(int i) const
+        PhysXVec3 getAxisVector(int i) const
         {
-            return Vector3(data[i], data[i + 4], data[i + 8]);
+            return PhysXVec3(data[i], data[i + 4], data[i + 8]);
         }
 
         /**
          * Sets this matrix to be the rotation matrix corresponding to
          * the given quaternion.
          */
-        void setOrientationAndPos(const Quaternion& q, const Vector3& pos)
+        void setOrientationAndPos(const Quaternion& q, const PhysXVec3& pos)
         {
             data[0] = 1 - (2 * q.j * q.j + 2 * q.k * q.k);
             data[1] = 2 * q.i * q.j + 2 * q.k * q.r;
@@ -891,24 +890,24 @@ namespace cyclone {
     /**
      * Holds an inertia tensor, consisting of a 3x3 row-major matrix.
      * This matrix is not padding to produce an aligned structure, since
-     * it is most commonly used with a mass (single real) and two
+     * it is most commonly used with a mass (single PhysXReal) and two
      * damping coefficients to make the 12-element characteristics array
      * of a rigid body.
      */
-    class Matrix3
+    class PhysXMat3
     {
     public:
         /**
          * Holds the tensor matrix data in array form.
          */
-        real data[9];
+        PhysXReal data[9];
 
-        // ... Other Matrix3 code as before ...
+        // ... Other PhysXMat3 code as before ...
 
         /**
          * Creates a new matrix.
          */
-        Matrix3()
+        PhysXMat3()
         {
             data[0] = data[1] = data[2] = data[3] = data[4] = data[5] =
                 data[6] = data[7] = data[8] = 0;
@@ -918,8 +917,8 @@ namespace cyclone {
          * Creates a new matrix with the given three vectors making
          * up its columns.
          */
-        Matrix3(const Vector3& compOne, const Vector3& compTwo,
-            const Vector3& compThree)
+        PhysXMat3(const PhysXVec3& compOne, const PhysXVec3& compTwo,
+            const PhysXVec3& compThree)
         {
             setComponents(compOne, compTwo, compThree);
         }
@@ -927,8 +926,8 @@ namespace cyclone {
         /**
          * Creates a new matrix with explicit coefficients.
          */
-        Matrix3(real c0, real c1, real c2, real c3, real c4, real c5,
-            real c6, real c7, real c8)
+        PhysXMat3(PhysXReal c0, PhysXReal c1, PhysXReal c2, PhysXReal c3, PhysXReal c4, PhysXReal c5,
+            PhysXReal c6, PhysXReal c7, PhysXReal c8)
         {
             data[0] = c0; data[1] = c1; data[2] = c2;
             data[3] = c3; data[4] = c4; data[5] = c5;
@@ -939,7 +938,7 @@ namespace cyclone {
          * Sets the matrix to be a diagonal matrix with the given
          * values along the leading diagonal.
          */
-        void setDiagonal(real a, real b, real c)
+        void setDiagonal(PhysXReal a, PhysXReal b, PhysXReal c)
         {
             setInertiaTensorCoeffs(a, b, c);
         }
@@ -947,8 +946,8 @@ namespace cyclone {
         /**
          * Sets the value of the matrix from inertia tensor values.
          */
-        void setInertiaTensorCoeffs(real ix, real iy, real iz,
-            real ixy = 0, real ixz = 0, real iyz = 0)
+        void setInertiaTensorCoeffs(PhysXReal ix, PhysXReal iy, PhysXReal iz,
+            PhysXReal ixy = 0, PhysXReal ixz = 0, PhysXReal iyz = 0)
         {
             data[0] = ix;
             data[1] = data[3] = -ixy;
@@ -963,9 +962,9 @@ namespace cyclone {
          * a rectangular block aligned with the body's coordinate
          * system with the given axis half-sizes and mass.
          */
-        void setBlockInertiaTensor(const Vector3& halfSizes, real mass)
+        void setBlockInertiaTensor(const PhysXVec3& halfSizes, PhysXReal mass)
         {
-            Vector3 squares = halfSizes.componentProduct(halfSizes);
+            PhysXVec3 squares = halfSizes.componentProduct(halfSizes);
             setInertiaTensorCoeffs(0.3f * mass * (squares.y + squares.z),
                 0.3f * mass * (squares.x + squares.z),
                 0.3f * mass * (squares.x + squares.y));
@@ -977,7 +976,7 @@ namespace cyclone {
          * of the vector product. So if a,b are vectors. a x b = A_s b
          * where A_s is the skew symmetric form of a.
          */
-        void setSkewSymmetric(const Vector3 vector)
+        void setSkewSymmetric(const PhysXVec3 vector)
         {
             data[0] = data[4] = data[8] = 0;
             data[1] = -vector.z;
@@ -992,8 +991,8 @@ namespace cyclone {
          * Sets the matrix values from the given three vector components.
          * These are arranged as the three columns of the vector.
          */
-        void setComponents(const Vector3& compOne, const Vector3& compTwo,
-            const Vector3& compThree)
+        void setComponents(const PhysXVec3& compOne, const PhysXVec3& compTwo,
+            const PhysXVec3& compThree)
         {
             data[0] = compOne.x;
             data[1] = compTwo.x;
@@ -1012,9 +1011,9 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 operator*(const Vector3& vector) const
+        PhysXVec3 operator*(const PhysXVec3& vector) const
         {
-            return Vector3(
+            return PhysXVec3(
                 vector.x * data[0] + vector.y * data[1] + vector.z * data[2],
                 vector.x * data[3] + vector.y * data[4] + vector.z * data[5],
                 vector.x * data[6] + vector.y * data[7] + vector.z * data[8]
@@ -1026,7 +1025,7 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 transform(const Vector3& vector) const
+        PhysXVec3 transform(const PhysXVec3& vector) const
         {
             return (*this) * vector;
         }
@@ -1036,9 +1035,9 @@ namespace cyclone {
          *
          * @param vector The vector to transform.
          */
-        Vector3 transformTranspose(const Vector3& vector) const
+        PhysXVec3 transformTranspose(const PhysXVec3& vector) const
         {
-            return Vector3(
+            return PhysXVec3(
                 vector.x * data[0] + vector.y * data[3] + vector.z * data[6],
                 vector.x * data[1] + vector.y * data[4] + vector.z * data[7],
                 vector.x * data[2] + vector.y * data[5] + vector.z * data[8]
@@ -1050,9 +1049,9 @@ namespace cyclone {
          *
          * @param i The row to return.
          */
-        Vector3 getRowVector(int i) const
+        PhysXVec3 getRowVector(int i) const
         {
-            return Vector3(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
+            return PhysXVec3(data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
         }
 
         /**
@@ -1062,9 +1061,9 @@ namespace cyclone {
          *
          * @return The vector.
          */
-        Vector3 getAxisVector(int i) const
+        PhysXVec3 getAxisVector(int i) const
         {
-            return Vector3(data[i], data[i + 3], data[i + 6]);
+            return PhysXVec3(data[i], data[i + 3], data[i + 6]);
         }
 
         /**
@@ -1072,22 +1071,22 @@ namespace cyclone {
          *
          * @param m The matrix to invert and use to set this.
          */
-        void setInverse(const Matrix3& m)
+        void setInverse(const PhysXMat3& m)
         {
-            real t4 = m.data[0] * m.data[4];
-            real t6 = m.data[0] * m.data[5];
-            real t8 = m.data[1] * m.data[3];
-            real t10 = m.data[2] * m.data[3];
-            real t12 = m.data[1] * m.data[6];
-            real t14 = m.data[2] * m.data[6];
+            PhysXReal t4 = m.data[0] * m.data[4];
+            PhysXReal t6 = m.data[0] * m.data[5];
+            PhysXReal t8 = m.data[1] * m.data[3];
+            PhysXReal t10 = m.data[2] * m.data[3];
+            PhysXReal t12 = m.data[1] * m.data[6];
+            PhysXReal t14 = m.data[2] * m.data[6];
 
             // Calculate the determinant
-            real t16 = (t4 * m.data[8] - t6 * m.data[7] - t8 * m.data[8] +
+            PhysXReal t16 = (t4 * m.data[8] - t6 * m.data[7] - t8 * m.data[8] +
                 t10 * m.data[7] + t12 * m.data[5] - t14 * m.data[4]);
 
             // Make sure the determinant is non-zero.
-            if (t16 == (real)0.0f) return;
-            real t17 = 1 / t16;
+            if (t16 == (PhysXReal)0.0f) return;
+            PhysXReal t17 = 1 / t16;
 
             data[0] = (m.data[4] * m.data[8] - m.data[5] * m.data[7]) * t17;
             data[1] = -(m.data[1] * m.data[8] - m.data[2] * m.data[7]) * t17;
@@ -1101,9 +1100,9 @@ namespace cyclone {
         }
 
         /** Returns a new matrix containing the inverse of this matrix. */
-        Matrix3 inverse() const
+        PhysXMat3 inverse() const
         {
-            Matrix3 result;
+            PhysXMat3 result;
             result.setInverse(*this);
             return result;
         }
@@ -1121,7 +1120,7 @@ namespace cyclone {
          *
          * @param m The matrix to transpose and use to set this.
          */
-        void setTranspose(const Matrix3& m)
+        void setTranspose(const PhysXMat3& m)
         {
             data[0] = m.data[0];
             data[1] = m.data[3];
@@ -1135,9 +1134,9 @@ namespace cyclone {
         }
 
         /** Returns a new matrix containing the transpose of this matrix. */
-        Matrix3 transpose() const
+        PhysXMat3 transpose() const
         {
-            Matrix3 result;
+            PhysXMat3 result;
             result.setTranspose(*this);
             return result;
         }
@@ -1146,9 +1145,9 @@ namespace cyclone {
          * Returns a matrix which is this matrix multiplied by the given
          * other matrix.
          */
-        Matrix3 operator*(const Matrix3& o) const
+        PhysXMat3 operator*(const PhysXMat3& o) const
         {
-            return Matrix3(
+            return PhysXMat3(
                 data[0] * o.data[0] + data[1] * o.data[3] + data[2] * o.data[6],
                 data[0] * o.data[1] + data[1] * o.data[4] + data[2] * o.data[7],
                 data[0] * o.data[2] + data[1] * o.data[5] + data[2] * o.data[8],
@@ -1166,11 +1165,11 @@ namespace cyclone {
         /**
          * Multiplies this matrix in place by the given other matrix.
          */
-        void operator*=(const Matrix3& o)
+        void operator*=(const PhysXMat3& o)
         {
-            real t1;
-            real t2;
-            real t3;
+            PhysXReal t1;
+            PhysXReal t2;
+            PhysXReal t3;
 
             t1 = data[0] * o.data[0] + data[1] * o.data[3] + data[2] * o.data[6];
             t2 = data[0] * o.data[1] + data[1] * o.data[4] + data[2] * o.data[7];
@@ -1197,7 +1196,7 @@ namespace cyclone {
         /**
          * Multiplies this matrix in place by the given scalar.
          */
-        void operator*=(const real scalar)
+        void operator*=(const PhysXReal scalar)
         {
             data[0] *= scalar; data[1] *= scalar; data[2] *= scalar;
             data[3] *= scalar; data[4] *= scalar; data[5] *= scalar;
@@ -1208,7 +1207,7 @@ namespace cyclone {
          * Does a component-wise addition of this matrix and the given
          * matrix.
          */
-        void operator+=(const Matrix3& o)
+        void operator+=(const PhysXMat3& o)
         {
             data[0] += o.data[0]; data[1] += o.data[1]; data[2] += o.data[2];
             data[3] += o.data[3]; data[4] += o.data[4]; data[5] += o.data[5];
@@ -1235,9 +1234,7 @@ namespace cyclone {
         /**
          * Interpolates a couple of matrices.
          */
-        static Matrix3 linearInterpolate(const Matrix3& a, const Matrix3& b, real prop);
+        static PhysXMat3 linearInterpolate(const PhysXMat3& a, const PhysXMat3& b, PhysXReal prop);
     };
 
 }
-
-#endif // CYCLONE_CORE_H

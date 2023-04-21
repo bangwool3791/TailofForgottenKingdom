@@ -21,6 +21,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ParamUI.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\PhysXComUI.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\PopupUI.cpp"
 
 

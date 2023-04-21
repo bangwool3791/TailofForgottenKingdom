@@ -10,11 +10,7 @@
  * software licence.
  */
 #include "pch.h"
-#include <assert.h>
 #include "particle.h"
-
-using namespace cyclone;
-
 
 /*
  * --------------------------------------------------------------------------
@@ -22,7 +18,9 @@ using namespace cyclone;
  * --------------------------------------------------------------------------
  */
 
-void Particle::integrate(real duration)
+using namespace cyclone;
+
+void Particle::integrate(PhysXReal duration)
 {
     // We don't integrate things with zero mass.
     if (inverseMass <= 0.0f) return;
@@ -33,7 +31,7 @@ void Particle::integrate(real duration)
     position.addScaledVector(velocity, duration);
 
     // Work out the acceleration from the force
-    PxVec3 resultingAcc = acceleration;
+    PhysXVec3 resultingAcc = acceleration;
     resultingAcc.addScaledVector(forceAccum, inverseMass);
 
     // Update linear velocity from the acceleration.
@@ -48,28 +46,28 @@ void Particle::integrate(real duration)
 
 
 
-void Particle::setMass(const real mass)
+void Particle::setMass(const PhysXReal mass)
 {
     assert(mass != 0);
-    Particle::inverseMass = ((real)1.0) / mass;
+    Particle::inverseMass = ((PhysXReal)1.0) / mass;
 }
 
-real Particle::getMass() const
+PhysXReal Particle::getMass() const
 {
     if (inverseMass == 0) {
         return REAL_MAX;
     }
     else {
-        return ((real)1.0) / inverseMass;
+        return ((PhysXReal)1.0) / inverseMass;
     }
 }
 
-void Particle::setInverseMass(const real inverseMass)
+void Particle::setInverseMass(const PhysXReal inverseMass)
 {
     Particle::inverseMass = inverseMass;
 }
 
-real Particle::getInverseMass() const
+PhysXReal Particle::getInverseMass() const
 {
     return inverseMass;
 }
@@ -79,78 +77,78 @@ bool Particle::hasFiniteMass() const
     return inverseMass >= 0.0f;
 }
 
-void Particle::setDamping(const real damping)
+void Particle::setDamping(const PhysXReal damping)
 {
     Particle::damping = damping;
 }
 
-real Particle::getDamping() const
+PhysXReal Particle::getDamping() const
 {
     return damping;
 }
 
-void Particle::setPosition(const PxVec3& position)
+void Particle::setPosition(const PhysXVec3& position)
 {
     Particle::position = position;
 }
 
-void Particle::setPosition(const real x, const real y, const real z)
+void Particle::setPosition(const PhysXReal x, const PhysXReal y, const PhysXReal z)
 {
     position.x = x;
     position.y = y;
     position.z = z;
 }
 
-void Particle::getPosition(PxVec3* position) const
+void Particle::getPosition(PhysXVec3* position) const
 {
     *position = Particle::position;
 }
 
-PxVec3 Particle::getPosition() const
+PhysXVec3 Particle::getPosition() const
 {
     return position;
 }
 
-void Particle::setVelocity(const PxVec3& velocity)
+void Particle::setVelocity(const PhysXVec3& velocity)
 {
     Particle::velocity = velocity;
 }
 
-void Particle::setVelocity(const real x, const real y, const real z)
+void Particle::setVelocity(const PhysXReal x, const PhysXReal y, const PhysXReal z)
 {
     velocity.x = x;
     velocity.y = y;
     velocity.z = z;
 }
 
-void Particle::getVelocity(PxVec3* velocity) const
+void Particle::getVelocity(PhysXVec3* velocity) const
 {
     *velocity = Particle::velocity;
 }
 
-PxVec3 Particle::getVelocity() const
+PhysXVec3 Particle::getVelocity() const
 {
     return velocity;
 }
 
-void Particle::setAcceleration(const PxVec3& acceleration)
+void Particle::setAcceleration(const PhysXVec3& acceleration)
 {
     Particle::acceleration = acceleration;
 }
 
-void Particle::setAcceleration(const real x, const real y, const real z)
+void Particle::setAcceleration(const PhysXReal x, const PhysXReal y, const PhysXReal z)
 {
     acceleration.x = x;
     acceleration.y = y;
     acceleration.z = z;
 }
 
-void Particle::getAcceleration(PxVec3* acceleration) const
+void Particle::getAcceleration(PhysXVec3* acceleration) const
 {
     *acceleration = Particle::acceleration;
 }
 
-PxVec3 Particle::getAcceleration() const
+PhysXVec3 Particle::getAcceleration() const
 {
     return acceleration;
 }
@@ -160,7 +158,7 @@ void Particle::clearAccumulator()
     forceAccum.clear();
 }
 
-void Particle::addForce(const PxVec3& force)
+void Particle::addForce(const PhysXVec3& force)
 {
     forceAccum += force;
 }

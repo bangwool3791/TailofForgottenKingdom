@@ -69,7 +69,9 @@ public :
     Vtx* GetVertices(size_t& nVerts);
     void InitializeTerrainJps(vector<Vec3>& _vec);
 
-    bool IsNaviValid(Vec3& _vPos);
+    bool IsNavValid(Vec3& _vPos);
+    bool IsTestNavValid(Vec3& _vPos);
+    bool IsNavJumpValid(Vec3& _vPos);
     virtual void Save(const wstring& _strRelativePath);
     virtual int Load(const wstring& _strFilePath) override;
     CLONE_ASSERT(CMesh);

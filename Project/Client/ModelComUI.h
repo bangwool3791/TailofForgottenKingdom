@@ -11,10 +11,10 @@ class ModelComUI :
 {
 private:
 	TreeUI* m_Tree;
-private:
+public:
+	virtual void begin() override;
 	virtual void update() override;
 	virtual void render_update() override;
-
 public:
 	void ResetLevel();
 

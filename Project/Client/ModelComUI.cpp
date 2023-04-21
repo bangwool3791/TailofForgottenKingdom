@@ -22,28 +22,6 @@ ModelComUI::ModelComUI()
 
 	m_Tree->AddDynamic_LBtn_Selected(this, (FUNC_1)&ModelComUI::SetObjectToInspector);
 	m_Tree->AddDynamic_DragDrop(this, (FUNC_2)&ModelComUI::AddChildObject);
-
-	array<CComponent*, (UINT)COMPONENT_TYPE::END> arr = CEditor::GetInst()->GetArrComponents();
-
-	TreeNode* pNode{};
-	pNode = m_Tree->AddItem(nullptr, " ", (DWORD_PTR)nullptr);
-	m_Tree->SetDummyRoot(true);
-
-	for (UINT i{}; i < (UINT)COMPONENT_TYPE::END; ++i)
-	{
-		if (i == (UINT)COMPONENT_TYPE::COLLIDER3D 
-			|| i == (UINT)COMPONENT_TYPE::CAMERA
-			|| i == (UINT)COMPONENT_TYPE::ANIMATOR3D
-			|| i == (UINT)COMPONENT_TYPE::LIGHT3D
-			|| i == (UINT)COMPONENT_TYPE::TILEMAP
-			|| i == (UINT)COMPONENT_TYPE::SKYBOX
-			|| i == (UINT)COMPONENT_TYPE::DECAL
-			|| i == (UINT)COMPONENT_TYPE::LANDSCAPE
-			|| i == (UINT)COMPONENT_TYPE::SCRIPT)
-			continue;
-
-		m_Tree->AddItem(pNode, ToString((COMPONENT_TYPE)i), (DWORD_PTR)arr[i]);
-	}
 		
 
 	/*
@@ -56,6 +34,35 @@ ModelComUI::ModelComUI()
 
 ModelComUI::~ModelComUI()
 {
+}
+
+void ModelComUI::begin()
+{
+	array<CComponent*, (UINT)COMPONENT_TYPE::END> arr = CEditor::GetInst()->GetArrComponents();
+
+	TreeNode* pNode{};
+	pNode = m_Tree->AddItem(nullptr, " ", (DWORD_PTR)nullptr);
+	m_Tree->SetDummyRoot(true);
+
+	for (UINT i{}; i < (UINT)COMPONENT_TYPE::END; ++i)
+	{
+		if (i == (UINT)COMPONENT_TYPE::COLLIDER2D
+			|| i == (UINT)COMPONENT_TYPE::CAMERA
+			|| i == (UINT)COMPONENT_TYPE::ANIMATOR2D
+			|| i == (UINT)COMPONENT_TYPE::LIGHT2D
+			|| i == (UINT)COMPONENT_TYPE::TILEMAP
+			|| i == (UINT)COMPONENT_TYPE::PARTICLESYSTEM
+			|| i == (UINT)COMPONENT_TYPE::WAVERENDERER
+			|| i == (UINT)COMPONENT_TYPE::SKYBOX
+			|| i == (UINT)COMPONENT_TYPE::DECAL
+			|| i == (UINT)COMPONENT_TYPE::LANDSCAPE
+			|| i == (UINT)COMPONENT_TYPE::SCRIPT)
+			continue;
+
+		string temp = ToString((COMPONENT_TYPE)i);
+		if (nullptr != arr[i])
+			m_Tree->AddItem(pNode, ToString((COMPONENT_TYPE)i), (DWORD_PTR)arr[i]);
+	}
 }
 
 void ModelComUI::update()

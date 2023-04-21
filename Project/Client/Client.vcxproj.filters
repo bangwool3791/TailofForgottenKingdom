@@ -125,14 +125,23 @@
     <Filter Include="03. UI\01. Inspector\ComponentUI\Collider3DUI">
       <UniqueIdentifier>{829cc604-2565-478f-ac33-b18aaea2b9c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. UI\11. Animation3DUI">
-      <UniqueIdentifier>{73991249-785c-41b3-b988-c6fcb1c440fb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. UI\01. Inspector\ComponentUI\ParticleComponentUI">
       <UniqueIdentifier>{b5df8c5e-cd3f-4bea-8521-c8965401df48}</UniqueIdentifier>
     </Filter>
     <Filter Include="05. NaviMeshMgr">
       <UniqueIdentifier>{87b65bb6-58ed-4717-b4bc-4443672bf784}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI\12. ModelComUI">
+      <UniqueIdentifier>{6d893223-e532-41f4-9cf1-93355dc629ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI\01. Inspector\ComponentUI\PhysXComUI">
+      <UniqueIdentifier>{dc3c9a47-846c-4795-b5d8-588ef7ebfbee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI\11. AnimationEditor">
+      <UniqueIdentifier>{73991249-785c-41b3-b988-c6fcb1c440fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. UI\01. Inspector\ComponentUI\Animator3DUI">
+      <UniqueIdentifier>{0fa0e968-1092-4fe5-bd41-1fdb65251a1e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -308,13 +317,22 @@
       <Filter>03. UI\01. Inspector\ComponentUI\Collider3DUI</Filter>
     </ClInclude>
     <ClInclude Include="AnimationUI.h">
-      <Filter>03. UI\11. Animation3DUI</Filter>
+      <Filter>03. UI\11. AnimationEditor</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystemUI.h">
       <Filter>03. UI\01. Inspector\ComponentUI\ParticleComponentUI</Filter>
     </ClInclude>
-    <ClInclude Include="NaviMeshMgr.h">
+    <ClInclude Include="NavMeshTestMgr.h">
       <Filter>05. NaviMeshMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelComUI.h">
+      <Filter>03. UI\12. ModelComUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXComUI.h">
+      <Filter>03. UI\01. Inspector\ComponentUI\PhysXComUI</Filter>
+    </ClInclude>
+    <ClInclude Include="CAnimator3DUI.h">
+      <Filter>03. UI\01. Inspector\ComponentUI\Animator3DUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -472,13 +490,22 @@
       <Filter>03. UI\01. Inspector\ComponentUI\Collider3DUI</Filter>
     </ClCompile>
     <ClCompile Include="AnimationUI.cpp">
-      <Filter>03. UI\11. Animation3DUI</Filter>
+      <Filter>03. UI\11. AnimationEditor</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystemUI.cpp">
       <Filter>03. UI\01. Inspector\ComponentUI\ParticleComponentUI</Filter>
     </ClCompile>
-    <ClCompile Include="NaviMeshMgr.cpp">
+    <ClCompile Include="NavMeshTestMgr.cpp">
       <Filter>05. NaviMeshMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelComUI.cpp">
+      <Filter>03. UI\12. ModelComUI</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXComUI.cpp">
+      <Filter>03. UI\01. Inspector\ComponentUI\PhysXComUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CAnimator3DUI.cpp">
+      <Filter>03. UI\01. Inspector\ComponentUI\Animator3DUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

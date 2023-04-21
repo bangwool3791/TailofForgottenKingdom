@@ -62,25 +62,10 @@ void CAnimator3D::begin()
 
 void CAnimator3D::finaltick()
 {
-	if (KEY_PRESSED(KEY::NUM_1))
-	{
-		/*
-		* 1440 프레임 중 0~200 프레임 사용
-		*/
-		m_tCurFrame = { 0, 5, 30, true };
-		m_vecClipUpdateTime[m_iCurClip] = 0.f;
-		m_bEnd = false;
-	}
-	else if (KEY_PRESSED(KEY::NUM_2))
-	{
-		m_tCurFrame = { 6, 10, 30, false };
-		m_vecClipUpdateTime[m_iCurClip] = 0.f;
-		m_bEnd = false;
-	}
 
 	m_dCurTime = 0.f;
 
-	if (!m_bEnd)
+	if (!m_iEnd)
 	{
 		if (!m_bPuase)
 			m_vecClipUpdateTime[m_iCurClip] += DT;
@@ -91,7 +76,7 @@ void CAnimator3D::finaltick()
 	if (!m_bPuase)
 	{
 		m_dCurTime = m_pVecClip->at(m_iCurClip).dStartTime + m_vecClipUpdateTime[m_iCurClip];
-
+		m_dCurTime *= m_fTimeScale;
 		dFrameIdx = m_dCurTime * (double)m_iFrameCount + (double)m_tCurFrame.iStart;
 
 		m_iFrameIdx = (int)(dFrameIdx);
@@ -110,7 +95,7 @@ void CAnimator3D::finaltick()
 	{
 		if (m_iFrameIdx >= m_tCurFrame.iEnd)
 		{
-			m_bEnd = true;
+			m_iEnd = true;
 		}
 	}
 
@@ -147,12 +132,7 @@ void CAnimator3D::SetAnimClip(const vector<tMTAnimClip>* _vecAnimClip)
 {
 	m_pVecClip = _vecAnimClip;
 	m_vecClipUpdateTime.resize(m_pVecClip->size());
-
-	//시작 시간으로 초기화 필요 ?
-	static float fTime = 0.f;
-	fTime += 1.f;
-	//업데이트 시간 초기화
-	m_vecClipUpdateTime[0] = fTime;
+	m_vecClipUpdateTime[0] = 0.f;
 }
 
 void CAnimator3D::UpdateData()
@@ -217,7 +197,7 @@ void CAnimator3D::ClearData()
 
 void CAnimator3D::Init()
 {
-	m_bEnd = false;
+	m_iEnd = 0;
 	m_bPuase = false;
 
 	m_fTimeScale = 1.f;
@@ -312,7 +292,10 @@ void CAnimator3D::SetCurFrame(const wstring& _Key, tAnim3DFrm _tData)
 	if (iter != m_mapAnimation.end())
 	{
 		m_tCurFrame = iter->second = _tData;
-		m_bEnd = false;
+		m_iEnd = 0;
+
+		if (m_tCurFrame.iStart > m_iFrameIdx || m_tCurFrame.iEnd <= m_iFrameIdx)
+			m_vecClipUpdateTime[m_iCurClip] = 0.f;
 
 		m_iFrameIdx = m_tCurFrame.iStart;
 	}
@@ -325,7 +308,11 @@ void CAnimator3D::SetCurFrameKey(const wstring& _Key)
 	if (iter != m_mapAnimation.end())
 	{
 		m_tCurFrame = iter->second;
-		m_bEnd = false;
+
+		if (m_tCurFrame.iStart > m_iFrameIdx || m_tCurFrame.iEnd <= m_iFrameIdx)
+			m_vecClipUpdateTime[m_iCurClip] = 0.f;
+
+		m_iEnd = 0;
 	}
 }
 

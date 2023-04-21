@@ -14,34 +14,35 @@
 
 using namespace cyclone;
 
-const Vector3 Vector3::GRAVITY = Vector3(0, -9.81, 0);
-const Vector3 Vector3::HIGH_GRAVITY = Vector3(0, -19.62, 0);
-const Vector3 Vector3::UP = Vector3(0, 1, 0);
-const Vector3 Vector3::RIGHT = Vector3(1, 0, 0);
-const Vector3 Vector3::OUT_OF_SCREEN = Vector3(0, 0, 1);
-const Vector3 Vector3::X = Vector3(0, 1, 0);
-const Vector3 Vector3::Y = Vector3(1, 0, 0);
-const Vector3 Vector3::Z = Vector3(0, 0, 1);
+
+const PhysXVec3 PhysXVec3::GRAVITY = PhysXVec3(0, -9.81, 0);
+const PhysXVec3 PhysXVec3::HIGH_GRAVITY = PhysXVec3(0, -19.62, 0);
+const PhysXVec3 PhysXVec3::UP = PhysXVec3(0, 1, 0);
+const PhysXVec3 PhysXVec3::RIGHT = PhysXVec3(1, 0, 0);
+const PhysXVec3 PhysXVec3::OUT_OF_SCREEN = PhysXVec3(0, 0, 1);
+const PhysXVec3 PhysXVec3::X = PhysXVec3(0, 1, 0);
+const PhysXVec3 PhysXVec3::Y = PhysXVec3(1, 0, 0);
+const PhysXVec3 PhysXVec3::Z = PhysXVec3(0, 0, 1);
 
 /*
  * Definition of the sleep epsilon extern.
  */
-real cyclone::sleepEpsilon = ((real)0.3);
+cyclone::PhysXReal cyclone::sleepEpsilon = ((cyclone::PhysXReal)0.3);
 
 /*
  * Functions to change sleepEpsilon.
  */
-void cyclone::setSleepEpsilon(real value)
+void cyclone::setSleepEpsilon(cyclone::PhysXReal value)
 {
     cyclone::sleepEpsilon = value;
 }
 
-real cyclone::getSleepEpsilon()
+cyclone::PhysXReal cyclone::getSleepEpsilon()
 {
     return cyclone::sleepEpsilon;
 }
 
-real Matrix4::getDeterminant() const
+cyclone::PhysXReal cyclone::PhyXMat4::getDeterminant() const
 {
     return -data[8] * data[5] * data[2] +
         data[4] * data[9] * data[2] +
@@ -51,12 +52,12 @@ real Matrix4::getDeterminant() const
         data[0] * data[5] * data[10];
 }
 
-void Matrix4::setInverse(const Matrix4& m)
+void cyclone::PhyXMat4::setInverse(const cyclone::PhyXMat4& m)
 {
     // Make sure the determinant is non-zero.
-    real det = getDeterminant();
+    cyclone::PhysXReal det = getDeterminant();
     if (det == 0) return;
-    det = ((real)1.0) / det;
+    det = ((cyclone::PhysXReal)1.0) / det;
 
     data[0] = (-m.data[9] * m.data[6] + m.data[5] * m.data[10]) * det;
     data[4] = (m.data[8] * m.data[6] - m.data[4] * m.data[10]) * det;
@@ -90,9 +91,9 @@ void Matrix4::setInverse(const Matrix4& m)
         - m.data[0] * m.data[5] * m.data[11]) * det;
 }
 
-Matrix3 Matrix3::linearInterpolate(const Matrix3& a, const Matrix3& b, real prop)
+cyclone::PhysXMat3 cyclone::PhysXMat3::linearInterpolate(const cyclone::PhysXMat3& a, const cyclone::PhysXMat3& b, cyclone::PhysXReal prop)
 {
-    Matrix3 result;
+    cyclone::PhysXMat3 result;
     for (unsigned i = 0; i < 9; i++) {
         result.data[i] = a.data[i] * (1 - prop) + b.data[i] * prop;
     }
