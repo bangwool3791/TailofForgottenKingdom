@@ -16,6 +16,8 @@ private:
     CamProc m_eProc;
     float   m_fSpeed;
     float   m_fDistance;
+    float   m_fOffset = 0.f;
+    Vec3    m_vRot;
     CGameObjectEx* m_pPlayer = nullptr;
 public:
     virtual void begin() override;

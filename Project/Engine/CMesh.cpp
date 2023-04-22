@@ -689,40 +689,6 @@ bool CMesh::GetPosition(Ray _ray, Vec3& _vPos)
     return false;
 }
 
-bool CMesh::IsTestNavValid(Vec3& _vPos)
-{
-    size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
-
-    assert(3 == nVerts);
-    //A -> 0, B -> 1, C -> 2
-    //AP X AB
-    //BP X BC
-    //CP X CA
-
-    //P-A = AP
-
-    Vec3 vResult[3]{};
-
-    Vec3 AP = m_vertices[0].vPos - _vPos;
-    Vec3 AB = m_vertices[0].vPos - m_vertices[1].vPos;
-    
-    Vec3 BP = m_vertices[1].vPos - _vPos;
-    Vec3 BC = m_vertices[1].vPos - m_vertices[2].vPos;
-
-    Vec3 CP = m_vertices[2].vPos - _vPos;
-    Vec3 CA = m_vertices[2].vPos - m_vertices[0].vPos;
-
-    AB.Cross(AP, vResult[0]);
-    BC.Cross(BP, vResult[1]);
-    CA.Cross(CP, vResult[2]);
-
-    for (UINT i = 0; i < 3; ++i)
-        if (0 > vResult[i].y)
-            return false;
-
-    return true;
-}
-
 bool CMesh::IsNavValid(Vec3& _vPos)
 {
     size_t nVerts = m_tVBDesc.ByteWidth / sizeof(Vtx);
@@ -798,13 +764,13 @@ bool CMesh::IsNavValid(Vec3& _vPos)
             {
                 fMinHeight = fHeight;
                 _vPos.y = fHeight;
-                bValid = true;
+                return true;
             }
         }
 
     }
 
-    return bValid;
+    return false;
 }
 
 bool CMesh::IsNavJumpValid(Vec3& _vPos)

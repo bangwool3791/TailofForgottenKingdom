@@ -469,6 +469,7 @@ void CEditor::CreateCamera()
 		m_pCameraObject->AddComponent(new CCamera);
 		m_pCameraObject->AddComponent(new CCameraScript);
 		m_pCameraObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, -1000.f));
+		//m_pCameraObject->Transform()->SetCalRot(false);
 		m_pCameraObject->Camera()->SetProjType(PERSPECTIVE);
 		//	m_pCameraObject->SetType(OBJ_TYPE::EDIT);
 		CRenderMgr::GetInst()->RegisterEditCam(m_pCameraObject->Camera());
@@ -508,6 +509,7 @@ void CEditor::CreateNaviMesh()
 		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"NaviMesh", pObject);
 		pObject = NavMeshTestMgr::GetInst()->loadAll(L"navimesh\\Arene_Stage_Navi.bin");
+		pObject->GetRenderComponent()->Deactivate();
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Arene_Stage_Navi", pObject);
 
 		Sample* pSample = new Sample;

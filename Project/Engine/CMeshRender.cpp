@@ -101,6 +101,9 @@ void CMeshRender::render()
 
 void CMeshRender::render(UINT _iSubset)
 {
+	if (!IsActive())
+		return;
+
 	if (nullptr == GetMesh() || nullptr == GetCurMaterial(_iSubset))
 		return;
 

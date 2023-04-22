@@ -34,7 +34,6 @@ CPlayerScript::~CPlayerScript()
 
 void CPlayerScript::begin()
 {
-
 	Vec3 vPos = Transform()->GetRelativePos();
 
 	m_vecAnimation.push_back(GetOwner()->Animator3D());
@@ -47,7 +46,10 @@ void CPlayerScript::begin()
 	if(m_pTriangleMesh->IsNavValid(vPos))
 		Transform()->SetRelativePos(vPos);
 
+	Transform()->SetRelativeRotationX(0.f);
 	Transform()->SetRelativeRotationY(XM_PI);
+
+	Set_Animation_Key(L"idle");
 }
 
 void CPlayerScript::tick()
@@ -57,11 +59,11 @@ void CPlayerScript::tick()
 
 	//IsAnimationEnd에 걸린 경우 m_bAttack true 이므로 false 초기화
 	//!m_bAttack Move에서 애니메이션 방복하고, 이전 프레임에 공격이 끝났었음
-	if (!m_bJump && !m_bAttack || (IsAnimationEnd() && !m_bJump))
+	if ((!m_bJump) || (IsAnimationEnd() && !m_bJump))
 	{
 		m_bAttack = false;
 
-		if (KEY_PRESSED(KEY::LBTN))
+		if (KEY_TAP(KEY::LBTN))
 		{
 			m_bAttack = true;
 
@@ -89,7 +91,7 @@ void CPlayerScript::tick()
 
 	if (!m_bJump)
 	{
-		if (KEY_PRESSED(KEY::SPACE))
+		if (KEY_TAP(KEY::SPACE))
 		{
 			m_bJump = true;
 			Vec3 vPos = Transform()->GetRelativePos();
@@ -107,7 +109,7 @@ void CPlayerScript::tick()
 
 		Vec3 vRot = Transform()->GetRelativeRotation();
 
-		vRot.x += -vMouseDir.y * DT * XM_PI;
+		//vRot.x += -vMouseDir.y * DT * XM_PI;
 		vRot.y += vMouseDir.x * DT * XM_PI;
 
 		Transform()->SetRelativeRotation(vRot);
@@ -199,28 +201,46 @@ void CPlayerScript::Move()
 
 	if (KEY_TAP(KEY::W))
 	{
-		if(0 == iMoveCount)
+		if (0 == iMoveCount)
+		{
 			iMoveCount = 1;
+			Set_Animation_Key(L"walk");
+		}
 		else if (1 == iMoveCount)
+		{
 			iMoveCount = 2;
+			Set_Animation_Key(L"run");
+		}
 	}
 
 	if (KEY_PRESSED(KEY::W))
 	{
+		if (1 == iMoveCount)
+		{
+			vPos += DT * vFront * -m_fSpeed * 0.7;
+			Set_Animation_Key(L"walk");
+		}
+		else if (2 == iMoveCount)
+		{
+			vPos += DT * vFront * -m_fSpeed * 1.2;
+			Set_Animation_Key(L"run");
+		}
 
-		vPos += DT * vFront * -m_fSpeed;
 		if (m_pTriangleMesh->IsNavValid(vPos))
 			Transform()->SetRelativePos(vPos);
 
-		if (1 == iMoveCount)
-			Set_Animation_Key(L"walk");
-		else if (2 == iMoveCount)
-			Set_Animation_Key(L"run");
-
 		if (KEY_PRESSED(KEY::A))
 		{
-			vPos += DT * vFront * -m_fSpeed * 0.5f;
-			vPos += DT * vRight * +m_fSpeed * 0.5f;
+			if (1 == iMoveCount)
+			{
+				vPos += DT * vFront * -m_fSpeed * 0.5f;
+				vPos += DT * vRight * +m_fSpeed * 0.5f;
+			}
+			else if (2 == iMoveCount)
+			{
+				vPos += DT * vFront * -m_fSpeed * 0.75f;
+				vPos += DT * vRight * +m_fSpeed * 0.75f;
+			}
 
 			if (m_pTriangleMesh->IsNavValid(vPos))
 				Transform()->SetRelativePos(vPos);
@@ -228,8 +248,18 @@ void CPlayerScript::Move()
 
 		if (KEY_PRESSED(KEY::D))
 		{
-			vPos += DT * vFront * -m_fSpeed * 0.5f;
-			vPos += DT * vRight * -m_fSpeed * 0.5f;
+			if (1 == iMoveCount)
+			{
+
+				vPos += DT * vFront * -m_fSpeed * 0.5f;
+				vPos += DT * vRight * -m_fSpeed * 0.5f;
+			}
+			else if (2 == iMoveCount)
+			{
+
+				vPos += DT * vFront * -m_fSpeed * 0.75f;
+				vPos += DT * vRight * -m_fSpeed * 0.75f;
+			}
 
 			if (m_pTriangleMesh->IsNavValid(vPos))
 				Transform()->SetRelativePos(vPos);

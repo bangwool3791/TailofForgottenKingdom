@@ -70,7 +70,7 @@ public :
     void InitializeTerrainJps(vector<Vec3>& _vec);
 
     bool IsNavValid(Vec3& _vPos);
-    bool IsTestNavValid(Vec3& _vPos);
+    //bool IsTestNavValid(Vec3& _vPos);
     bool IsNavJumpValid(Vec3& _vPos);
     virtual void Save(const wstring& _strRelativePath);
     virtual int Load(const wstring& _strFilePath) override;

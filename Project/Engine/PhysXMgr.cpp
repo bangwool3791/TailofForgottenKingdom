@@ -109,7 +109,6 @@ void PhysXMgr::add(CPhysXComponent* pCom)
 
 void PhysXMgr::update()
 {
-
     // Find the duration of the last frame in seconds
     float duration = (float)TimingData::get().lastFrameDuration * 0.001f;
     if (duration <= 0.0f) return;
