@@ -14,6 +14,7 @@
 #include "CLandScape.h"
 #include "CWaveRenderer.h"
 #include "PhysXComponent.h"
+#include "CTrailComponent.h"
 /*
 * Particle
 */

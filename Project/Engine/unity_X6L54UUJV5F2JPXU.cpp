@@ -1,14 +1,5 @@
 #include "pch.h"
 
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShadowMapShader.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSkyBox.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSLight.cpp"
-
-
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSound.cpp"
 
 
@@ -19,6 +10,9 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CTimeMgr.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CTrailComponent.cpp"
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CTransform.cpp"
@@ -55,4 +49,13 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\InputGeom.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\MeshLoaderObj.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\PhysXComponent.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\PhysXMgr.cpp"
 

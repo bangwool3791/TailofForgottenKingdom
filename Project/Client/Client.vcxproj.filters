@@ -143,6 +143,9 @@
     <Filter Include="03. UI\01. Inspector\ComponentUI\Animator3DUI">
       <UniqueIdentifier>{0fa0e968-1092-4fe5-bd41-1fdb65251a1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. UI\01. Inspector\ComponentUI\TrailComUI">
+      <UniqueIdentifier>{3b2e8f78-b016-4469-90c4-4fec41cbbcc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -334,6 +337,12 @@
     <ClInclude Include="CAnimator3DUI.h">
       <Filter>03. UI\01. Inspector\ComponentUI\Animator3DUI</Filter>
     </ClInclude>
+    <ClInclude Include="CPlayerTestScript.h">
+      <Filter>01. Editor\EditorScript</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailComUI.h">
+      <Filter>03. UI\01. Inspector\ComponentUI\TrailComUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -506,6 +515,12 @@
     </ClCompile>
     <ClCompile Include="CAnimator3DUI.cpp">
       <Filter>03. UI\01. Inspector\ComponentUI\Animator3DUI</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerTestScript.cpp">
+      <Filter>01. Editor\EditorScript</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailComUI.cpp">
+      <Filter>03. UI\01. Inspector\ComponentUI\TrailComUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

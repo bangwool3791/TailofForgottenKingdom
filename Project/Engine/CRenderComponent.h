@@ -42,7 +42,6 @@ public:
 	Ptr<CMaterial> GetSharedMaterial(UINT _idx);
 	Ptr<CMaterial> GetDynamicMaterial(UINT _iIdx);
 	ULONG64 GetInstID(UINT _iMtrlIdx);
-
 	void SetFrustumCulling(bool _Use) { m_bUseFrustumCulling = _Use; }
 	bool IsUseFrustumCulling() { return m_bUseFrustumCulling; }
 public:

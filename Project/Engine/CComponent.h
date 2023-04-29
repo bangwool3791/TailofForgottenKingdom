@@ -42,6 +42,7 @@ public:
 	GET_OTHER_COMPONENT(LandScape);
 	GET_OTHER_COMPONENT(WaveRenderer);
 	GET_OTHER_COMPONENT(PhysXComponent);
+	GET_OTHER_COMPONENT(TrailComponent);
 
 	virtual CComponent* Clone() = 0;
 public:

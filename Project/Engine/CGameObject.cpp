@@ -308,6 +308,31 @@ void CGameObject::DestroyComponent(COMPONENT_TYPE _eComType)
 		m_pRenderComponent = nullptr;
 }
 
+CEntity* CGameObject::GetComponent(const string& strCom)
+{
+	wstring wstrName = wstring(strCom.begin(), strCom.end());
+
+	for (size_t i{}; i < m_arrCom.size(); ++i)
+	{
+		if (nullptr != (m_arrCom[i]))
+			if (!lstrcmp(wstrName.c_str(), (m_arrCom[i])->GetName().c_str()))
+			{
+				return m_arrCom[i];
+			}
+	}
+
+	for (size_t i{}; i < m_vecScripts.size(); ++i)
+	{
+		if (nullptr != (m_vecScripts[i]))
+			if (!lstrcmp(wstrName.c_str(), (m_vecScripts[i])->GetName().c_str()))
+			{
+				return m_vecScripts[i];
+			}
+	}
+
+	return nullptr;
+}
+
 CComponent* CGameObject::GetComponent(COMPONENT_TYPE _eComType)
 {
 	return m_arrCom[(UINT)_eComType];
@@ -373,4 +398,9 @@ bool CGameObject::DeleteScript(const string& _strName)
 			}
 	}
 	return false;
+}
+
+void CGameObject::DeleteChildsAll()
+{
+	m_vecChild.clear();
 }

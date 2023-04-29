@@ -4,6 +4,7 @@
 #include "CTransform.h"
 #include "CAnimator2D.h"
 #include "CAnimator3D.h"
+#include "CTrailComponent.h"
 CMeshRender::CMeshRender()
 	:CRenderComponent{ COMPONENT_TYPE::MESHRENDER }
 {
@@ -54,7 +55,6 @@ void CMeshRender::render()
 	* 싱글 톤 또는 static vector 처리
 	*/
 	//삭제 예정
-	Transform()->UpdateData();
 
 	if (Animator2D())
 	{
@@ -76,6 +76,11 @@ void CMeshRender::render()
 		}
 	}
 
+	if (TrailComponent())
+	{
+		TrailComponent()->UpdateData();
+	}
+	Transform()->UpdateData();
 	// 사용할 재질 업데이트
 	UINT iSubsetCount = GetMesh()->GetSubsetCount();
 
@@ -97,6 +102,9 @@ void CMeshRender::render()
 
 	if (Animator3D())
 		Animator3D()->ClearData();
+
+	if (TrailComponent())
+		TrailComponent()->Clear();
 }
 
 void CMeshRender::render(UINT _iSubset)
@@ -111,7 +119,6 @@ void CMeshRender::render(UINT _iSubset)
 	// UpdateData
 	// ==========
 	// Transform 업데이트
-	Transform()->UpdateData();
 
 	// Animation2D 업데이트
 	if (Animator2D())
@@ -127,6 +134,12 @@ void CMeshRender::render(UINT _iSubset)
 		GetCurMaterial(_iSubset)->SetBoneCount(Animator3D()->GetBoneCount());
 	}
 
+	if (TrailComponent())
+	{
+		TrailComponent()->UpdateData();
+	}
+
+	Transform()->UpdateData();
 	// ======
 	// Render
 	// ======
@@ -141,6 +154,9 @@ void CMeshRender::render(UINT _iSubset)
 
 	if (Animator3D())
 		Animator3D()->ClearData();
+
+	if (TrailComponent())
+		TrailComponent()->Clear();
 }
 
 void CMeshRender::SaveToFile(FILE* _File)
@@ -152,4 +168,3 @@ void CMeshRender::LoadFromFile(FILE* _File)
 {
 	__super::LoadFromFile(_File);
 }
-

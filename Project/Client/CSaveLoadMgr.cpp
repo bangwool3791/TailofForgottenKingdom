@@ -79,10 +79,17 @@ void CSaveLoadMgr::SaveGameObject(CGameObject* _Object, FILE* _File)
 
 	const vector<CScript*>& vecScript = _Object->GetScripts();
 	size_t iScriptCount = vecScript.size();
+
+	for (size_t i{}; i < vecScript.size(); ++i)
+		iScriptCount -= vecScript[i]->GetScriptType();
+	
 	fwrite(&iScriptCount, sizeof(size_t), 1, _File);
 
 	for (size_t i{}; i < vecScript.size(); ++i)
 	{
+		if (nullptr == CScriptMgr::GetScriptWName(vecScript[i]))
+			continue;
+
 		SaveWStringToFile(CScriptMgr::GetScriptWName(vecScript[i]), _File);
 		vecScript[i]->SaveToFile(_File);
 	}
@@ -227,6 +234,9 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 		case COMPONENT_TYPE::PHYSX:
 			pComponent = new CPhysXComponent;
 			break;
+		case COMPONENT_TYPE::TRAIL:
+			pComponent = new CTrailComponent;
+			break;
 		default:
 			bProgess = false;
 			break;
@@ -246,11 +256,11 @@ CGameObject* CSaveLoadMgr::LoadGameObject(FILE* _File)
 
 	for (size_t i{}; i < iScriptCount; ++i)
 	{
-		wstring strScriptName;
-		LoadWStringFromFile(strScriptName, _File);
-		CScript* pNewScript = CScriptMgr::GetScript(strScriptName);
-		pNewScript->LoadFromFile(_File);
-		pObject->AddComponent(pNewScript);
+		//wstring strScriptName;
+		//LoadWStringFromFile(strScriptName, _File);
+		//CScript* pNewScript = CScriptMgr::GetScript(strScriptName);
+		//pNewScript->LoadFromFile(_File);
+		//pObject->AddComponent(pNewScript);
 	}
 
 	size_t iChildCount = 0;

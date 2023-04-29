@@ -268,6 +268,7 @@ call EngineCopy.bat</Command>
     <ClInclude Include="CSLight.h" />
     <ClInclude Include="CSound.h" />
     <ClInclude Include="CStructuredBuffer.h" />
+    <ClInclude Include="CTrailComponent.h" />
     <ClInclude Include="CUIMgr.h" />
     <ClInclude Include="CWeightMapShader.h" />
     <ClInclude Include="d3dUtil.h" />
@@ -423,6 +424,7 @@ call EngineCopy.bat</Command>
     <ClCompile Include="CStructuredBuffer.cpp" />
     <ClCompile Include="CTexture.cpp" />
     <ClCompile Include="CTimeMgr.cpp" />
+    <ClCompile Include="CTrailComponent.cpp" />
     <ClCompile Include="CTransform.cpp" />
     <ClCompile Include="CUIMgr.cpp" />
     <ClCompile Include="CWeightMapShader.cpp" />
@@ -488,8 +490,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="bloom.fx" />
     <FxCompile Include="bloom_blur.fx" />
     <FxCompile Include="bloom_update.fx" />
-    <FxCompile Include="bordermap.fx" />
-    <FxCompile Include="building.fx" />
+    <FxCompile Include="bonsocket.fx" />
     <FxCompile Include="color.fx" />
     <FxCompile Include="compute.fx" />
     <FxCompile Include="compute_light.fx">
@@ -515,33 +516,25 @@ call EngineCopy.bat</Command>
     <FxCompile Include="light.fx" />
     <FxCompile Include="matrix.fx" />
     <FxCompile Include="merge.fx" />
-    <FxCompile Include="opaque.fx" />
-    <FxCompile Include="particlerender.fx" />
     <FxCompile Include="particleupdate.fx">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="particleupdatewood.fx" />
-    <FxCompile Include="postprocess.fx" />
+    <FxCompile Include="postpocess3d.fx" />
     <FxCompile Include="raycast.fx" />
     <FxCompile Include="reflection.fx" />
     <FxCompile Include="reflection2.fx" />
     <FxCompile Include="register.fx" />
-    <FxCompile Include="objectrenderer.fx" />
-    <FxCompile Include="selectedunit.fx" />
     <FxCompile Include="shadowmap.fx" />
-    <FxCompile Include="shadowrenderer.fx" />
     <FxCompile Include="skybox.fx" />
-    <FxCompile Include="std2d.fx" />
     <FxCompile Include="std3d.fx" />
     <FxCompile Include="std3d_deffered.fx" />
     <FxCompile Include="struct.fx" />
     <FxCompile Include="tess.fx" />
     <FxCompile Include="test.fx" />
     <FxCompile Include="tile.fx" />
-    <FxCompile Include="terrain.fx" />
-    <FxCompile Include="tilemap.fx" />
-    <FxCompile Include="ui.fx" />
+    <FxCompile Include="trail.fx" />
     <FxCompile Include="wave.fx" />
     <FxCompile Include="weightmap.fx" />
   </ItemGroup>

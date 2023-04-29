@@ -29,7 +29,7 @@ public:
     virtual void EndOverlap(CCollider* _pOther) {};
 
     void         Move();
-
+    void         SetPlayer(CGameObjectEx* pPlayer);
 public :
     CLONE(CCameraScript);
 public:

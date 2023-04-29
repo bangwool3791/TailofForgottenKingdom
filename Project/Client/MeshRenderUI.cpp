@@ -5,8 +5,11 @@
 #include <Engine\CGameObject.h>
 #include <Engine\CMeshRender.h>
 
+#include "CGameObjectEx.h"
+
 #include "CImGuiMgr.h"
 #include "ListUI.h"
+#include "InspectorUI.h"
 
 MeshRenderUI::MeshRenderUI()
 	: ComponentUI("MeshRender", COMPONENT_TYPE::MESHRENDER)
@@ -94,6 +97,22 @@ void MeshRenderUI::render_update()
 
 		pListUI->Open();
 	}
+
+	if (GetTarget() && GetTarget()->MeshRender())
+	{
+		static bool bActive = GetTarget()->MeshRender()->IsActive();
+
+		bActive = GetTarget()->MeshRender()->IsActive();
+
+		if (ImGui::Checkbox("Is Active##1", &bActive))
+		{
+			if(!bActive)
+				GetTarget()->MeshRender()->Deactivate();
+			else
+				GetTarget()->MeshRender()->Activate();
+		}
+
+	}
 }
 
 void MeshRenderUI::SetMesh(DWORD_PTR _strMeshKey)
@@ -113,16 +132,19 @@ void MeshRenderUI::SetMaterial(DWORD_PTR _strMaterialKey)
 	string strKey = (char*)_strMaterialKey;
 	wstring wstrKey = wstring(strKey.begin(), strKey.end());
 
-	Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(wstrKey);
-	
-	assert(nullptr != pMtrl);
+	CGameObject* pTargetObject = GetTarget();
+	CRenderComponent* pRenderCom = pTargetObject->GetRenderComponent();
 
-	GetTarget()->MeshRender()->SetSharedMaterial(pMtrl, 0);
+	UINT iCount = pRenderCom->GetMtrlCount();
 
-	if (!lstrcmp(L"ObjectMtrl", pMtrl->GetKey().c_str()))
-		GetTarget()->MeshRender()->SetInstancingType(INSTANCING_TYPE::USED);
-	else
-		GetTarget()->MeshRender()->SetInstancingType(INSTANCING_TYPE::NONE);
-	
+	for (UINT i = 0; i < iCount; ++i)
+	{
+		Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(wstrKey);
+
+		assert(nullptr != pMtrl);
+
+		GetTarget()->MeshRender()->SetSharedMaterial(pMtrl, i);
+
+	}
 }
 

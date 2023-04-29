@@ -19,7 +19,7 @@ public:
 	void init(HWND _hWnd);
 	void progress();
 	void Guizmo();
-	void SetPickingObj(CGameObjectEx* pObj) { m_pSelectedObj = pObj; }
+	void SetPickingObj(CGameObjectEx* pObj);
 	void SetNullPickingObj() { m_pSelectedObj = nullptr; }
 	void SetMenuClick(bool _bClick) { m_bMenuClick = _bClick; }
 	bool GetMenuClick() { return m_bMenuClick; }

@@ -27,6 +27,7 @@ public:
     void SetTargetResource(CRes* _Resource);
     void InitializeScriptUI();
     CGameObjectEx* GetTargetObject() { return m_TargetObj; }
+    ScriptUI* GetScriptUI(const string& str);
 private:
     virtual void update() override;
     virtual void render_update() override;

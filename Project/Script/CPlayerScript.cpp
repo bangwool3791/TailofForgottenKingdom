@@ -47,9 +47,11 @@ void CPlayerScript::begin()
 		Transform()->SetRelativePos(vPos);
 
 	Transform()->SetRelativeRotationX(0.f);
-	Transform()->SetRelativeRotationY(XM_PI);
+//	Transform()->SetRelativeRotationY(XM_PI);
 
 	Set_Animation_Key(L"idle");
+
+	PhysXComponent()->SetName(L"CPhysXComponent");
 }
 
 void CPlayerScript::tick()
@@ -312,4 +314,9 @@ void CPlayerScript::Move()
 	{
 		iMoveCount = 0;
 	}
+}
+
+void CPlayerScript::Test()
+{
+
 }

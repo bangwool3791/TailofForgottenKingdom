@@ -11,6 +11,7 @@ CPhysXComponent::CPhysXComponent()
 	:CComponent(COMPONENT_TYPE::PHYSX)
 	, AmmoRound{}
 {
+	SetName(L"CPhysXComponent");
 }
 
 CPhysXComponent::CPhysXComponent(const CPhysXComponent& _rhs)
@@ -23,11 +24,6 @@ CPhysXComponent::CPhysXComponent(const CPhysXComponent& _rhs)
 
 CPhysXComponent::~CPhysXComponent()
 {
-	if (AmmoRound)
-	{
-		AmmoRound->type = UNUSED;
-		AmmoRound->idx = 0xffff;
-	}
 }
 
 void CPhysXComponent::begin()

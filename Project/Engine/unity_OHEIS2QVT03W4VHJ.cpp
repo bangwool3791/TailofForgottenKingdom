@@ -1,11 +1,5 @@
 #include "pch.h"
 
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLight2D.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMaterial.cpp"
-
-
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMesh.cpp"
 
 
@@ -55,4 +49,13 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShader.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CShadowMapShader.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSkyBox.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CSLight.cpp"
 

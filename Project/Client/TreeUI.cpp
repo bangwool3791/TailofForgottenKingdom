@@ -378,7 +378,7 @@ void TreeUI::SetDropTargetNode(TreeNode* _DropTargetNode)
 
 	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(GetName().c_str()))
 	{
-		if (m_DragDropInst && m_DragDropFunc)
+		if(m_BeginDragNode->GetData() && m_DragDropInst && m_DragDropFunc)
 		{
 			CGameObjectEx* pObj = (CGameObjectEx*)m_BeginDragNode->GetData();
 			

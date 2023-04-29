@@ -168,10 +168,6 @@ StructuredBuffer<tLightInfo> g_Light3DBuffer : register(t56);
 
 StructuredBuffer<tTile> g_TileBuffer : register(t56);
 
-/*
-* Instancing object
-*/
-StructuredBuffer<tRenderInfo> g_RenderInfo : register(t57);
 // Noise Texture
 Texture2D g_Noise : register(t58);
 
@@ -180,9 +176,11 @@ Texture2D g_Atals : register(t59);
 // RenderTarget CopyTex
 Texture2D g_RTCopyTex : register(t60);
 
-StructuredBuffer<Matrix> g_arrBoneMat : register(t61);
-
-#define b g_RenderInfo
+StructuredBuffer<matrix> g_arrBoneMat : register(t61);
+StructuredBuffer<float> g_trailTime   : register(t62);
+StructuredBuffer<float> g_SwordTrailTime   : register(t63);
+StructuredBuffer<matrix> g_BoneSocketMat   : register(t64);
+StructuredBuffer<float3> g_SwordPosBuffer   : register(t65);
 // 샘플러 레지스터
 SamplerState g_sam_0 : register(s0); // anisotropic sampler
 SamplerState g_sam_1 : register(s1); // point sampler

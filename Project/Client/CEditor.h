@@ -46,6 +46,7 @@ private:
 	void CreateCamera();
 	void CreateLight();
 	void CreateNaviMesh();
+	void CreatePlayer();
 	void DebugDraw(tDebugShapeInfo& _info);
 	void Initialize_Outliner();
 public:

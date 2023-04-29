@@ -1,8 +1,5 @@
 #include "pch.h"
 
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFontMgr.cpp"
-
-
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CFrustum.cpp"
 
 
@@ -55,4 +52,10 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLevelMgr.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CLight2D.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\CMaterial.cpp"
 

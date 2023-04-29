@@ -6,13 +6,17 @@
 
 #include "CImGuiMgr.h"
 
+#include "CSaveLoadMgr.h"
+
 #include "ContentUI.h"
+#include "ListUI.h"
 #include "OutlinerUI.h"
 #include "ModelComUI.h"
 
 #include "CCameraScript.h"
 #include "CBorderScript.h"
 #include "CBrushScript.h"
+#include "CPlayerTestScript.h"
 
 #include <Engine\CMeshRender.h>
 #include <Engine\GlobalComponent.h>
@@ -115,39 +119,6 @@ void CEditor::init()
 		pContentUI->begin();
 	}
 
-	//test obj
-	{
-		pObject = new CGameObjectEx;
-		pObject->SetName(L"Sphere");
-		pObject->AddComponent(new CTransform);
-		pObject->AddComponent(new CMeshRender);
-		pObject->AddComponent(new CCollider3D);
-		
-		pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
-		pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
-		
-		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
-		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
-		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
-		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
-		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
-		//
-		//pObject = new CGameObjectEx;
-		//pObject->SetName(L"Rect");
-		//
-		//pObject->AddComponent(new CTransform);
-		//pObject->AddComponent(new CMeshRender);
-		//
-		//pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 500.f));
-		//pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 0.f));
-		//
-		//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
-		//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
-		//pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"ShadowAdjacentTex"));
-		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Rect", pObject);
-	
-	}
-
 	{
 		// ============
 		// FBX Loading
@@ -165,9 +136,6 @@ void CEditor::init()
 			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\jug_stage.FBX");
 			//pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\player_sword.FBX");
 
-
-			//pMeshData = CResMgr::GetInst()->FindRes<CMeshData>(L"meshdata\\monster.mdat");
-	
 			for (UINT i = 0; i < 4; ++i)
 			{
 				pMeshData = CResMgr::GetInst()->LoadFBX(L"fbx\\arene_stage.FBX", i);
@@ -184,6 +152,8 @@ void CEditor::init()
 	//Navi Mesh
 	{
 		CreateNaviMesh();
+
+		CreatePlayer();
 	}
 	/*
 	* Component List
@@ -191,8 +161,8 @@ void CEditor::init()
 	{
 		m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM] = new CTransform();
 		m_arrCom[(UINT)COMPONENT_TYPE::TRANSFORM]->SetName(L"Transform");
-		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D] = new CCollider3D();
-		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER2D]->SetName(L"Colider3D");
+		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER3D] = new CCollider3D();
+		m_arrCom[(UINT)COMPONENT_TYPE::COLLIDER3D]->SetName(L"Colider3D");
 		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR3D] = new CAnimator3D();
 		m_arrCom[(UINT)COMPONENT_TYPE::ANIMATOR3D]->SetName(L"Animator3D");
 		//m_arrCom[(UINT)COMPONENT_TYPE::LIGHT2D]		= new CLight2D();
@@ -205,6 +175,9 @@ void CEditor::init()
 		m_arrCom[(UINT)COMPONENT_TYPE::MESHRENDER]->SetName(L"CMeshRender");
 		m_arrCom[(UINT)COMPONENT_TYPE::PHYSX] = new CPhysXComponent();
 		m_arrCom[(UINT)COMPONENT_TYPE::PHYSX]->SetName(L"PhysXComponent");
+
+		m_arrCom[(UINT)COMPONENT_TYPE::TRAIL] = new CTrailComponent();
+		m_arrCom[(UINT)COMPONENT_TYPE::TRAIL]->SetName(L"CTrailComponent");
 		ModelComUI* pUI = (ModelComUI*)CImGuiMgr::GetInst()->FindUI("ModelComUI");
 		pUI->begin();
 	}
@@ -233,7 +206,7 @@ void CEditor::progress()
 	{
 		tick();
 	}
-	//Debug Shape
+	// Debug Shape
 }
 
 void CEditor::tickObj()
@@ -313,6 +286,11 @@ void CEditor::picking()
 	{
 		if (!CImGuiMgr::GetInst()->GetMenuClick())
 		{
+			ListUI* pListUI = dynamic_cast<ListUI*>(CImGuiMgr::GetInst()->FindUI("ListUI"));
+
+			if (pListUI->IsOpen())
+				return;
+
 			Vec2 vResoltion = CDevice::GetInst()->GetRenderResolution();
 			Vec2 vMousePos = CKeyMgr::GetInst()->GetMousePos();
 
@@ -489,6 +467,72 @@ void CEditor::CreateCamera()
 	}
 }
 
+void CEditor::CreatePlayer()
+{
+	CGameObjectEx* pObject{};
+
+	{
+		{
+			pObject = new CGameObjectEx;
+			pObject->SetName(L"SwordTrail");
+			pObject->AddComponent(new CTransform);
+			pObject->AddComponent(new CMeshRender);
+			pObject->AddComponent(new CTrailComponent);
+
+			pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+			pObject->Transform()->SetRelativeScale(Vec3(1.f, 1.f, 1.f));
+
+			pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"PointMesh"));
+			pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"SwordTrailMtrl"), 0);
+			pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\particle\\SwordTrail.png"));
+			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"SwordTrail", pObject);
+		}
+
+		{
+			pObject = new CGameObjectEx;
+			pObject->SetName(L"SwordTrailUppder");
+			pObject->AddComponent(new CTransform);
+			pObject->AddComponent(new CMeshRender);
+
+			pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+			pObject->Transform()->SetRelativeScale(Vec3(50.f, 50.f, 50.f));
+
+			pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+			pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
+			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"SwordTrailUppder", pObject);
+		}
+
+		{
+			pObject = new CGameObjectEx;
+			pObject->SetName(L"SwordTrailBottom");
+			pObject->AddComponent(new CTransform);
+			pObject->AddComponent(new CMeshRender);
+
+			pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+			pObject->Transform()->SetRelativeScale(Vec3(50.f, 50.f, 50.f));
+
+			pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+			pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
+			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"SwordTrailBottom", pObject);
+		}
+
+		{
+			CSaveLoadMgr::GetInst()->LoadPrefab();
+			Ptr<CPrefab> pPrefab = CResMgr::GetInst()->FindRes<CPrefab>(L"Player1Prefab");
+
+			CGameObject* pObj = pPrefab->Instantiate();
+			pObject = new CGameObjectEx(*pObj);
+			pObject->AddComponent(new CPlayerTestScript);
+
+			delete pObj;
+			pObject->SetName(L"Player1");
+			pObject->begin();
+			m_pCameraObject->GetScript<CCameraScript>(L"CCameraScript")->SetPlayer(pObject);
+			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObject);
+		}
+	}
+}
+
 #include "NavMeshTestMgr.h"
 
 void CEditor::CreateNaviMesh()
@@ -497,17 +541,18 @@ void CEditor::CreateNaviMesh()
 
 	{
 		//ColorMtrl
-		pObject = new CGameObjectEx;
-		pObject->SetName(L"NaviMesh");
-		pObject->AddComponent(new CTransform);
-		pObject->AddComponent(new CMeshRender);
+		//pObject = new CGameObjectEx;
+		//pObject->SetName(L"NaviMesh");
+		//pObject->AddComponent(new CTransform);
+		//pObject->AddComponent(new CMeshRender);
 
-		pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-		pObject->Transform()->SetRelativeScale(Vec3(1.f, 1.f, 1.f));
+		//pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+		//pObject->Transform()->SetRelativeScale(Vec3(1.f, 1.f, 1.f));
 
-		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"TriangleMesh"));
-		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
-		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"NaviMesh", pObject);
+		//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"TriangleMesh"));
+		//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
+		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"NaviMesh", pObject);
+
 		pObject = NavMeshTestMgr::GetInst()->loadAll(L"navimesh\\Arene_Stage_Navi.bin");
 		pObject->GetRenderComponent()->Deactivate();
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Arene_Stage_Navi", pObject);
@@ -515,6 +560,7 @@ void CEditor::CreateNaviMesh()
 		Sample* pSample = new Sample;
 		pSample->initToolStates(pSample);
 		pSample->loadAll("navimesh\\Arene_Stage_Navi.bin");
+		delete pSample;
 	}
 }
 
@@ -538,11 +584,10 @@ void CEditor::DebugDraw(tDebugShapeInfo& _info)
 
 	pDebugObj->Transform()->finaltick();
 
-	g_transform.matWorld = pDebugObj->Transform()->GetWorldMat();
-	g_transform.matView = CRenderMgr::GetInst()->GetMainCam()->GetViewMat();
-	g_transform.matProj = CRenderMgr::GetInst()->GetMainCam()->GetProjMat();
+	//g_transform.matWorld = pDebugObj->Transform()->GetWorldMat();
+	//g_transform.matView = CRenderMgr::GetInst()->GetMainCam()->GetViewMat();
+	//g_transform.matProj = CRenderMgr::GetInst()->GetMainCam()->GetProjMat();
 
-	pDebugObj->MeshRender()->SetInstancingType(INSTANCING_TYPE::NONE);
 	pDebugObj->render();
 }
 
@@ -748,3 +793,39 @@ void CEditor::CreateLight()
 		m_EditorObj[(UINT)EDIT_MODE::ANIMATOR].emplace(L"DirectionalLight", pDirLight);
 	}
 }
+
+/*
+* 	//test obj
+	{
+		pObject = new CGameObjectEx;
+		pObject->SetName(L"Sphere");
+		pObject->AddComponent(new CTransform);
+		pObject->AddComponent(new CMeshRender);
+		pObject->AddComponent(new CCollider3D);
+		
+		pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 1000.f));
+		pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 256.f));
+		
+		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
+		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
+		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01.tga"));
+		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\tile\\TILE_01_N.tga"));
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Sphere", pObject);
+
+		//
+		//pObject = new CGameObjectEx;
+		//pObject->SetName(L"Rect");
+		//
+		//pObject->AddComponent(new CTransform);
+		//pObject->AddComponent(new CMeshRender);
+		//
+		//pObject->Transform()->SetRelativePos(Vec3(0.f, 1000.f, 500.f));
+		//pObject->Transform()->SetRelativeScale(Vec3(256.f, 256.f, 0.f));
+		//
+		//pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
+		//pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"Std3DDeferredMtrl"), 0);
+		//pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"ShadowAdjacentTex"));
+		//m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"Rect", pObject);
+	
+	}
+*/

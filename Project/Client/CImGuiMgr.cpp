@@ -11,6 +11,7 @@
 #include "CGameObjectEx.h"
 #include <Engine\CTransform.h>
 #include <Engine\CCamera.h>
+#include <Engine\CRenderComponent.h>
 
 #include "UI.h"
 #include "PopupUI.h"
@@ -425,5 +426,18 @@ void CImGuiMgr::ObserveContent()
         pContentUI->ReloadContent();
 
         FindNextChangeNotification(m_NotifyHandle);
+    }
+}
+
+void CImGuiMgr::SetPickingObj(CGameObjectEx* pObj)
+{
+    if (!pObj->GetRenderComponent())
+        return;
+
+    wstring str = pObj->GetRenderComponent()->GetCurMaterial(0)->GetName();
+
+    if (str.find(L"Trail") == std::wstring::npos)
+    {
+        m_pSelectedObj = pObj;
     }
 }

@@ -7,7 +7,10 @@ class CCollider3D
     , public SmallObjAllocator<CCollider3D, OBJECTPOOL_SIZE, CCollider3D_Key>
 {
 private:
+    bool			m_bUpdate = true;
+    UINT            m_iBoneIdx = 0;
     Vec3            m_vOffsetPos;
+    Vec3            m_vRotOffset{};
     Vec3            m_vScale;
 
     Vec3            m_vFinalPos;
@@ -16,6 +19,8 @@ private:
     COLLIDER3D_TYPE m_eType;
 public:
     void SetOffsetPos(Vec3 _vOffset) { m_vOffsetPos = _vOffset; }
+    void SetRotOffset(Vec3 _vOffset) { m_vRotOffset = _vOffset; }
+    Vec3 GetRotOffset() { return m_vRotOffset; }
     void SetScale(Vec3 _vScale) { m_vScale = _vScale; }
 
     void SetCollider3DType(COLLIDER3D_TYPE _type) { m_eType = _type; }
@@ -25,6 +30,12 @@ public:
     Vec3 GetScale() { return m_vScale; }
 
     Vec3 GetFinalPos() { return m_vFinalPos; }
+
+    void SetIsUpdate(bool _bUpdate) { m_bUpdate = _bUpdate; }
+    bool GetIsUpdate() { return m_bUpdate; }
+
+    int GetBoneIdx() { return m_iBoneIdx; }
+    void SetBoneIdx(int idx) { m_iBoneIdx = idx; }
 public:
     virtual void finaltick() override;
 public:

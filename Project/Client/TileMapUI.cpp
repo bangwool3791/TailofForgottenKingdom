@@ -141,8 +141,8 @@ void TileMapUI::render_update()
 
 	if (ImGui::InputFloat("Land Scale", &g_LandScale, 2, 4, "%.3f"))
 	{
-		if (0 > g_LandScale)
-			g_LandScale = 0;
+		if (1 > g_LandScale)
+			g_LandScale = 1;
 
 		m_pLandObj->Transform()->SetRelativeScale({ g_LandScale ,g_LandScale ,g_LandScale });
 		float fScale = g_BrushScale * g_LandScale * g_FaceCount;

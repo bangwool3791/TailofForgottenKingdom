@@ -3,6 +3,7 @@
 
 #include "CTransform.h"
 #include "CAnimator3D.h"
+#include "CTrailComponent.h"
 
 CRenderComponent::CRenderComponent(COMPONENT_TYPE _eComponentType)
 	:CComponent(_eComponentType)
@@ -43,7 +44,7 @@ void CRenderComponent::SetMesh(Ptr<CMesh> _pMesh)
 {
 	m_pMesh = _pMesh;
 
-	if (!m_vecMtrls.empty())
+	if (!m_vecMtrls.empty() && !m_pMesh->IsEngineRes())
 	{
 		m_vecMtrls.clear();
 		vector<tMtrlSet> vecMtrls;
@@ -104,7 +105,8 @@ Ptr<CMaterial> CRenderComponent::GetDynamicMaterial(UINT _iIdx)
 
 void CRenderComponent::render_depthmap()
 {
-	Transform()->UpdateData();
+	if (nullptr == GetMesh() || nullptr == Transform())
+		return;
 
 	Ptr<CMaterial> pMtrl = CResMgr::GetInst()->FindRes<CMaterial>(L"DepthMapMtrl");
 
@@ -115,6 +117,13 @@ void CRenderComponent::render_depthmap()
 		pMtrl->SetAnim3D(true);
 		pMtrl->SetBoneCount(Animator3D()->GetBoneCount());
 	}
+
+	if (TrailComponent())
+	{
+		TrailComponent()->UpdateData();
+	}
+
+	Transform()->UpdateData();
 
 	// 사용할 재질 업데이트
 	pMtrl->UpdateData();

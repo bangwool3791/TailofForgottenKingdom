@@ -11,10 +11,13 @@
 #include "PopupUI.h"
 #include "TreeUI.h"
 #include "InspectorUI.h"
+#include "ScriptUI.h"
 
 #include "CImGuiMgr.h"
 
 #include "CGameObjectEx.h"
+
+#include <Engine\CScript.h>
 
 OutlinerUI::OutlinerUI()
 	: UI("Outliner")
@@ -180,6 +183,17 @@ void OutlinerUI::render_update()
 		{
 			if (nullptr != m_Node)
 			{
+				CGameObject* pObject = (CGameObject*)m_Node->GetData();
+				CEntity* cEntity = pObject->GetComponent(m_strComponentName);
+
+				InspectorUI* Inspector = (InspectorUI*)CImGuiMgr::GetInst()->FindUI("Inspector");
+				
+				if (nullptr != dynamic_cast<CScript*>(cEntity))
+				{
+					ScriptUI* pUI = Inspector->GetScriptUI(m_strComponentName);
+					pUI->SetTargetScript(nullptr);
+				}
+
 				if (((CGameObject*)(m_Node->GetData()))->DeleteComponent(m_strComponentName))
 				{
 					m_Node = nullptr;

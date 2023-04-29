@@ -25,9 +25,7 @@ public:
     float GetRotationX() { return m_vRot.x; }
     float GetRotationY() { return m_vRot.y; }
     float GetRotationZ() { return m_vRot.z; }
-    void  SetRotationX(float _fDegree);
-    void  SetRotationY(float _fDegree);
-    void  SetRotationZ(float _fDegree);
+    void  SetRotation(Vec3 vRot);
 
     Vec3 GetRotation() { return m_vRot; }
     const Matrix& GetWorldMat() { return m_matWorld; }

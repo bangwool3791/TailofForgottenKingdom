@@ -622,9 +622,190 @@ void CResMgr::CreateDefaultMesh()
 	pMesh = new CMesh(true);
 	pMesh->Create(arrCube, 24, vecIdx.data(), vecIdx.size());
 	AddRes<CMesh>(L"CubeMesh", pMesh);
+
 	pMesh = new CMesh(true);
 	pMesh->Create(arrCube, 24, vecIdx.data(), vecIdx.size());
 	AddRes<CMesh>(L"FrustumMesh", pMesh);
+
+	// À­¸é
+	arrCube[0].vPos = Vec3(-0.5f, 0.5f, 0.5f);
+	arrCube[0].vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	arrCube[0].vUV = Vec2(0.f, 0.f);
+	arrCube[0].vNormal = Vec3(0.f, 1.f, 0.f);
+	arrCube[0].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[0].vBinormal = Vec3(0.f, 0.f, -1.f);
+
+	arrCube[1].vPos = Vec3(0.5f, 0.5f, 0.5f);
+	arrCube[1].vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	arrCube[1].vUV = Vec2(1.f, 0.f);
+	arrCube[1].vNormal = Vec3(0.f, 1.f, 0.f);
+	arrCube[1].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[1].vBinormal = Vec3(0.f, 0.f, -1.f);
+
+	arrCube[2].vPos = Vec3(0.5f, 0.5f, -0.5f);
+	arrCube[2].vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	arrCube[2].vUV = Vec2(1.f, 1.f);
+	arrCube[2].vNormal = Vec3(0.f, 1.f, 0.f);
+	arrCube[2].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[2].vBinormal = Vec3(0.f, 0.f, -1.f);
+
+	arrCube[3].vPos = Vec3(-0.5f, 0.5f, -0.5f);
+	arrCube[3].vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	arrCube[3].vUV = Vec2(0.f, 1.f);
+	arrCube[3].vNormal = Vec3(0.f, 1.f, 0.f);
+	arrCube[3].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[3].vBinormal = Vec3(0.f, 0.f, -1.f);
+
+	// ¾Æ·§ ¸é	
+	arrCube[4].vPos = Vec3(-0.5f, -0.5f, -0.5f);
+	arrCube[4].vColor = Vec4(1.f, 0.f, 0.f, 1.f);
+	arrCube[4].vUV = Vec2(0.f, 0.f);
+	arrCube[4].vNormal = Vec3(0.f, -1.f, 0.f);
+	arrCube[4].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[4].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	arrCube[5].vPos = Vec3(0.5f, -0.5f, -0.5f);
+	arrCube[5].vColor = Vec4(1.f, 0.f, 0.f, 1.f);
+	arrCube[5].vUV = Vec2(1.f, 0.f);
+	arrCube[5].vNormal = Vec3(0.f, -1.f, 0.f);
+	arrCube[5].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[5].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	arrCube[6].vPos = Vec3(0.5f, -0.5f, 0.5f);
+	arrCube[6].vColor = Vec4(1.f, 0.f, 0.f, 1.f);
+	arrCube[6].vUV = Vec2(1.f, 1.f);
+	arrCube[6].vNormal = Vec3(0.f, -1.f, 0.f);
+	arrCube[6].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[6].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	arrCube[7].vPos = Vec3(-0.5f, -0.5f, 0.5f);
+	arrCube[7].vColor = Vec4(1.f, 0.f, 0.f, 1.f);
+	arrCube[7].vUV = Vec2(0.f, 1.f);
+	arrCube[7].vNormal = Vec3(0.f, -1.f, 0.f);
+	arrCube[7].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[7].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	// ¿ÞÂÊ ¸é
+	arrCube[8].vPos = Vec3(-0.5f, 0.5f, 0.5f);
+	arrCube[8].vColor = Vec4(0.f, 1.f, 0.f, 1.f);
+	arrCube[8].vUV = Vec2(0.f, 0.f);
+	arrCube[8].vNormal = Vec3(-1.f, 0.f, 0.f);
+	arrCube[8].vTangent = Vec3(0.f, 1.f, 0.f);
+	arrCube[8].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	arrCube[9].vPos = Vec3(-0.5f, 0.5f, -0.5f);
+	arrCube[9].vColor = Vec4(0.f, 1.f, 0.f, 1.f);
+	arrCube[9].vUV = Vec2(1.f, 0.f);
+	arrCube[9].vNormal = Vec3(-1.f, 0.f, 0.f);
+	arrCube[9].vTangent = Vec3(0.f, 1.f, 0.f);
+	arrCube[9].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	arrCube[10].vPos = Vec3(-0.5f, -0.5f, -0.5f);
+	arrCube[10].vColor = Vec4(0.f, 1.f, 0.f, 1.f);
+	arrCube[10].vUV = Vec2(1.f, 1.f);
+	arrCube[10].vNormal = Vec3(-1.f, 0.f, 0.f);
+	arrCube[10].vTangent = Vec3(0.f, 1.f, 0.f);
+	arrCube[10].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	arrCube[11].vPos = Vec3(-0.5f, -0.5f, 0.5f);
+	arrCube[11].vColor = Vec4(0.f, 1.f, 0.f, 1.f);
+	arrCube[11].vUV = Vec2(0.f, 1.f);
+	arrCube[11].vNormal = Vec3(-1.f, 0.f, 0.f);
+	arrCube[11].vTangent = Vec3(0.f, 1.f, 0.f);
+	arrCube[11].vBinormal = Vec3(0.f, 0.f, 1.f);
+
+	// ¿À¸¥ÂÊ ¸é
+	arrCube[12].vPos = Vec3(0.5f, 0.5f, -0.5f);
+	arrCube[12].vColor = Vec4(0.f, 0.f, 1.f, 1.f);
+	arrCube[12].vUV = Vec2(0.f, 0.f);
+	arrCube[12].vNormal = Vec3(1.f, 0.f, 0.f);
+	arrCube[12].vTangent = Vec3(0.f, 0.f, 1.f);
+	arrCube[12].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[13].vPos = Vec3(0.5f, 0.5f, 0.5f);
+	arrCube[13].vColor = Vec4(0.f, 0.f, 1.f, 1.f);
+	arrCube[13].vUV = Vec2(1.f, 0.f);
+	arrCube[13].vNormal = Vec3(1.f, 0.f, 0.f);
+	arrCube[13].vTangent = Vec3(0.f, 0.f, 1.f);
+	arrCube[13].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[14].vPos = Vec3(0.5f, -0.5f, 0.5f);
+	arrCube[14].vColor = Vec4(0.f, 0.f, 1.f, 1.f);
+	arrCube[14].vUV = Vec2(1.f, 1.f);
+	arrCube[14].vNormal = Vec3(1.f, 0.f, 0.f);
+	arrCube[14].vTangent = Vec3(0.f, 0.f, 1.f);
+	arrCube[14].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[15].vPos = Vec3(0.5f, -0.5f, -0.5f);
+	arrCube[15].vColor = Vec4(0.f, 0.f, 1.f, 1.f);
+	arrCube[15].vUV = Vec2(0.f, 1.f);
+	arrCube[15].vNormal = Vec3(0.f, 0.f, 1.f);
+	arrCube[15].vTangent = Vec3(-1.f, 0.f, 0.f);
+	arrCube[15].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	// µÞ ¸é
+	arrCube[16].vPos = Vec3(0.5f, 0.5f, 0.5f);
+	arrCube[16].vColor = Vec4(1.f, 1.f, 0.f, 1.f);
+	arrCube[16].vUV = Vec2(0.f, 0.f);
+	arrCube[16].vNormal = Vec3(0.f, 0.f, 1.f);
+	arrCube[16].vNormal = Vec3(0.f, 0.f, 1.f);
+	arrCube[16].vTangent = Vec3(-1.f, 0.f, 0.f);
+	arrCube[16].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[17].vPos = Vec3(-0.5f, 0.5f, 0.5f);
+	arrCube[17].vColor = Vec4(1.f, 1.f, 0.f, 1.f);
+	arrCube[17].vUV = Vec2(1.f, 0.f);
+	arrCube[17].vNormal = Vec3(0.f, 0.f, 1.f);
+	arrCube[17].vTangent = Vec3(-1.f, 0.f, 0.f);
+	arrCube[17].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[18].vPos = Vec3(-0.5f, -0.5f, 0.5f);
+	arrCube[18].vColor = Vec4(1.f, 1.f, 0.f, 1.f);
+	arrCube[18].vUV = Vec2(1.f, 1.f);
+	arrCube[18].vNormal = Vec3(0.f, 0.f, 1.f);
+	arrCube[18].vTangent = Vec3(-1.f, 0.f, 0.f);
+	arrCube[18].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[19].vPos = Vec3(0.5f, -0.5f, 0.5f);
+	arrCube[19].vColor = Vec4(1.f, 1.f, 0.f, 1.f);
+	arrCube[19].vUV = Vec2(0.f, 1.f);
+	arrCube[19].vNormal = Vec3(0.f, 0.f, 1.f);
+	arrCube[19].vTangent = Vec3(-1.f, 0.f, 0.f);
+	arrCube[19].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	// ¾Õ ¸é
+	arrCube[20].vPos = Vec3(-0.5f, 0.5f, -0.5f);;
+	arrCube[20].vColor = Vec4(1.f, 0.f, 1.f, 1.f);
+	arrCube[20].vUV = Vec2(0.f, 0.f);
+	arrCube[20].vNormal = Vec3(0.f, 0.f, -1.f);
+	arrCube[20].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[20].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[21].vPos = Vec3(0.5f, 0.5f, -0.5f);
+	arrCube[21].vColor = Vec4(1.f, 0.f, 1.f, 1.f);
+	arrCube[21].vUV = Vec2(1.f, 0.f);
+	arrCube[21].vNormal = Vec3(0.f, 0.f, -1.f);
+	arrCube[21].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[21].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[22].vPos = Vec3(0.5f, -0.5f, -0.5f);
+	arrCube[22].vColor = Vec4(1.f, 0.f, 1.f, 1.f);
+	arrCube[22].vUV = Vec2(1.f, 1.f);
+	arrCube[22].vNormal = Vec3(0.f, 0.f, -1.f);
+	arrCube[22].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[22].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	arrCube[23].vPos = Vec3(-0.5f, -0.5f, -0.5f);
+	arrCube[23].vColor = Vec4(1.f, 0.f, 1.f, 1.f);
+	arrCube[23].vUV = Vec2(0.f, 1.f);
+	arrCube[23].vNormal = Vec3(0.f, 0.f, -1.f);
+	arrCube[23].vTangent = Vec3(1.f, 0.f, 0.f);
+	arrCube[23].vBinormal = Vec3(0.f, 1.f, 0.f);
+
+	pMesh = new CMesh(true);
+	pMesh->Create(arrCube, 24, vecIdx.data(), vecIdx.size());
+	AddRes<CMesh>(L"SwordMesh", pMesh);
+
 	vecIdx.clear();
 
 	// ===========
@@ -830,17 +1011,6 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
 
 	AddRes<CGraphicsShader>(L"ParticleRenderShader", pShader);
-
-	//Opaque
-	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\opaque.fx", "VS_Opaque");
-	pShader->CreatePixelShader(L"shader\\opaque.fx", "PS_Opaque");
-
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetBSType(BS_TYPE::DEFAULT);
-	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
-	AddRes<CGraphicsShader>(L"OpaqueShader", pShader);
 
 	// PostProcess Shader
 	pShader = new CGraphicsShader;
@@ -1072,6 +1242,33 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetBSType(BS_TYPE::DEFAULT);
 
 	AddRes<CGraphicsShader>(L"DepthMapShader", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\trail.fx", "VS_Trail");
+	pShader->CreatePixelShader(L"shader\\trail.fx", "PS_Trail");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetBSType(BS_TYPE::ALPHABLEND);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
+	AddRes<CGraphicsShader>(L"TrailShader", pShader);
+
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\postpocess3d.fx", "VS_3DPostProcess");
+	pShader->CreateGeometryShader(L"shader\\postpocess3d.fx", "GS_3DPostProcess");
+	pShader->CreatePixelShader(L"shader\\postpocess3d.fx", "PS_3DPostProcess");
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetRSType(RS_TYPE::CULL_NONE);
+	pShader->SetBSType(BS_TYPE::ALPHABLEND);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_POST_PROCESS);
+	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	AddRes<CGraphicsShader>(L"SwordTrailShader", pShader);
+
+	//pShader = new CGraphicsShader;
+	//pShader->CreateVertexShader(L"shader\\bonsocket.fx", "VS_Std3D_BoneSocket");
+	//pShader->CreatePixelShader(L"shader\\bonsocket.fx", "PS_Std3D_BoneSocket");
+	//pShader->SetRSType(RS_TYPE::CULL_BACK);
+	//pShader->SetBSType(BS_TYPE::DEFAULT);
+	//pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED_MASK);
+	//AddRes<CGraphicsShader>(L"BoneSocketShader", pShader);
 }
 
 #include "CComputeShader.h"
@@ -1201,6 +1398,18 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"DepthMapShader"));
 	AddRes<CMaterial>(L"DepthMapMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"TrailShader"));
+	AddRes<CMaterial>(L"TrailMtrl", pMaterial);
+
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"SwordTrailShader"));
+	AddRes<CMaterial>(L"SwordTrailMtrl", pMaterial);
+
+	//pMaterial = new CMaterial(true);
+	//pMaterial->SetShader(FindRes<CGraphicsShader>(L"BoneSocketShader"));
+	//AddRes<CMaterial>(L"BoneSocketMtrl", pMaterial);
 }
 
 int GetSizeofFormat(DXGI_FORMAT _eFormat)

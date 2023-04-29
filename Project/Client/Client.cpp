@@ -35,7 +35,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    //_CrtSetBreakAlloc(61621);
+    //_CrtSetBreakAlloc(115085);
 
     srand(0);
 
@@ -107,7 +107,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
 
             CEngine::GetInst()->render(vec);
-
+            CEditor::GetInst()->debug_render();
             vec.clear();
 
             CImGuiMgr::GetInst()->progress();

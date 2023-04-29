@@ -59,7 +59,6 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
     PS_OUT output = (PS_OUT)0.f;
 
     float2 vUV = _in.vPosition.xy / g_vRenderResolution;
-    ;
     float4 vViewPos = g_tex_0.Sample(g_sam_0, vUV);
 
     if (0.f == vViewPos.a)

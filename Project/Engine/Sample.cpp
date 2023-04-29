@@ -59,6 +59,7 @@ Sample::~Sample()
 {
 	dtFreeNavMeshQuery(m_navQuery);
 	dtFreeNavMesh(m_navMesh);
+	delete m_mesh;
 	delete m_tool;
 	for (int i = 0; i < MAX_TOOLS; i++)
 		delete m_toolStates[i];
@@ -263,13 +264,13 @@ dtNavMesh* Sample::loadAll(const char* path)
 		return 0;
 	}
 
-	dtNavMesh* mesh = dtAllocNavMesh();
-	if (!mesh)
+	m_mesh = dtAllocNavMesh();
+	if (!m_mesh)
 	{
 		fclose(fp);
 		return 0;
 	}
-	dtStatus status = mesh->init(&header.params);
+	dtStatus status = m_mesh->init(&header.params);
 	if (dtStatusFailed(status))
 	{
 		fclose(fp);
@@ -301,12 +302,12 @@ dtNavMesh* Sample::loadAll(const char* path)
 			return 0;
 		}
 
-		mesh->addTile(data, tileHeader.dataSize, DT_TILE_FREE_DATA, tileHeader.tileRef, 0);
+		m_mesh->addTile(data, tileHeader.dataSize, DT_TILE_FREE_DATA, tileHeader.tileRef, 0);
 	}
 
 	fclose(fp);
 
-	return mesh;
+	return m_mesh;
 }
 
 void Sample::saveAll(const char* path, const dtNavMesh* mesh)

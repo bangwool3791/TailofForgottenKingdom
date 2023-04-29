@@ -24,6 +24,7 @@ private:
     void Set_Animation_Time(float);
     void Move();
     bool IsAnimationEnd();
+    void Test();
 private:
     void SaveToFile(FILE* _File);
     void LoadFromFile(FILE* _File);

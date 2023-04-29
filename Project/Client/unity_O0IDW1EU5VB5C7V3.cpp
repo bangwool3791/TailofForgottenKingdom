@@ -42,6 +42,9 @@
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Collider3DUI.cpp"
 
 
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CPlayerTestScript.cpp"
+
+
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\ModelComUI.cpp"
 
 
@@ -52,7 +55,4 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\CSaveLoadMgr.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Client\Client.cpp"
 

@@ -11,6 +11,7 @@
 #include "Collider3DUI.h"
 #include "CAnimator3DUI.h"
 #include "PhysXComUI.h"
+#include "TrailComUI.h"
 
 #include "ShadowUI.h"
 #include "MeshUI.h"
@@ -52,6 +53,10 @@ InspectorUI::InspectorUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D] = new CAnimator3DUI;
 	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]->SetSize(ImVec2(0.f, 150.f));
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]);
+
+	m_arrComUI[(UINT)COMPONENT_TYPE::TRAIL] = new TrailComUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::TRAIL]->SetSize(ImVec2(0.f, 150.f));
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::TRAIL]);
 
 	// ResourceUI
 	m_arrResUI[(UINT)RES_TYPE::MESH] = new MeshUI;
@@ -274,4 +279,15 @@ void InspectorUI::SetTargetResource(CRes* _Resource)
 	}
 }
 
+ScriptUI* InspectorUI::GetScriptUI(const string& str)
+{
+	for (UINT i = 0; i < m_vecScriptUI.size(); ++i)
+	{
+		if (!strcmp(m_vecScriptUI[i]->GetName().c_str(), str.c_str()))
+		{
+			return m_vecScriptUI[i];
+		}
+	}
+	return nullptr;
+}
 

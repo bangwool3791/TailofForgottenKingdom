@@ -97,7 +97,7 @@ protected:
 	class dtNavMesh* m_navMesh;
 	class dtNavMeshQuery* m_navQuery;
 	class dtCrowd* m_crowd;
-
+	class dtNavMesh* m_mesh;
 	unsigned char m_navMeshDrawFlags;
 
 	float m_cellSize;

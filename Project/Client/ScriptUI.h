@@ -24,7 +24,6 @@ public:
 public:
 	virtual void update() override;
 	virtual void render_update() override;
-
 private :
 	void render_scriptparam();
 public:

@@ -11,6 +11,7 @@ CCameraScript::CCameraScript()
 	, m_fDistance(700.f)
 	, m_eProc(CamProc::END)
 {
+	SetName(L"CCameraScript");
 }
 
 CCameraScript::~CCameraScript()
@@ -24,16 +25,7 @@ void CCameraScript::begin()
 
 void CCameraScript::tick()
 {
-	if (nullptr == m_pPlayer)
-	{
-		m_pPlayer = CEditor::GetInst()->FindByName(L"Test0");
-		if (m_pPlayer)
-		{
-			m_vRot = m_pPlayer->Transform()->GetRelativeRotation();
-		}
-	}
-	else
-		Move();
+	Move();
 }
 
 void CCameraScript::finaltick() 
@@ -188,4 +180,11 @@ void CCameraScript::Move()
 		}
 	}
 
+}
+
+void  CCameraScript::SetPlayer(CGameObjectEx* pPlayer)
+{
+	m_pPlayer = pPlayer;
+
+	m_vRot = m_pPlayer->Transform()->GetRelativeRotation();
 }

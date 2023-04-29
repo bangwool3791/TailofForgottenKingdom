@@ -160,21 +160,6 @@
     <Filter Include="Engine\03. Manager\13. FontMgr">
       <UniqueIdentifier>{63c9eddd-5f0c-400d-bbfe-583969f956ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HLSL\Render\2D">
-      <UniqueIdentifier>{c2a3e252-a37a-47b1-b5d4-81aa203c1609}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HLSL\Render\2D\Building">
-      <UniqueIdentifier>{64970417-a29d-4bab-8534-91a81697a4bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HLSL\Render\2D\Default">
-      <UniqueIdentifier>{ba14e625-ec36-48cd-86c6-8d2ffe12aa8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HLSL\Render\2D\Effect">
-      <UniqueIdentifier>{2fdf47d1-039e-42f2-9f9d-520f0502303b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HLSL\Render\2D\Tile">
-      <UniqueIdentifier>{d6f7e9c6-cefb-4340-aad3-1989aae8f910}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HLSL\Render\3D">
       <UniqueIdentifier>{18994084-cf8a-4a2d-ac9b-75e767513955}</UniqueIdentifier>
     </Filter>
@@ -325,9 +310,6 @@
     <Filter Include="Engine\03. Manager\14. NavMeshMgr">
       <UniqueIdentifier>{87da627c-1293-4ba3-b8d7-549af48a38cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\12. Physics\PhysXMgr">
-      <UniqueIdentifier>{854f212e-e770-48dc-876a-bee31bcf50b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\12. Physics\05. timing">
       <UniqueIdentifier>{21faf3ec-dd29-4a78-94cd-b0134ddd3651}</UniqueIdentifier>
     </Filter>
@@ -339,6 +321,12 @@
     </Filter>
     <Filter Include="Engine\15. Assembly">
       <UniqueIdentifier>{2f82cb17-6a82-49db-b5a6-5d7c0000c1d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\03. Manager\15. PhysXMgr">
+      <UniqueIdentifier>{854f212e-e770-48dc-876a-bee31bcf50b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\06. Component\14. Trail">
+      <UniqueIdentifier>{43f02ec9-f10e-42cd-aec4-a8938ccc1dfb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -712,7 +700,7 @@
       <Filter>Engine\03. Manager\14. NavMeshMgr</Filter>
     </ClInclude>
     <ClInclude Include="PhysXMgr.h">
-      <Filter>Engine\12. Physics\PhysXMgr</Filter>
+      <Filter>Engine\03. Manager\15. PhysXMgr</Filter>
     </ClInclude>
     <ClInclude Include="timing.h">
       <Filter>Engine\12. Physics\05. timing</Filter>
@@ -722,6 +710,9 @@
     </ClInclude>
     <ClInclude Include="contacs.h">
       <Filter>Engine\12. Physics\06. contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="CTrailComponent.h">
+      <Filter>Engine\06. Component\14. Trail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1023,13 +1014,16 @@
       <Filter>Engine\06. Component\12. NaviMesh\InputGeom</Filter>
     </ClCompile>
     <ClCompile Include="PhysXMgr.cpp">
-      <Filter>Engine\12. Physics\PhysXMgr</Filter>
+      <Filter>Engine\03. Manager\15. PhysXMgr</Filter>
     </ClCompile>
     <ClCompile Include="timing.cpp">
       <Filter>Engine\12. Physics\05. timing</Filter>
     </ClCompile>
     <ClCompile Include="PhysXComponent.cpp">
       <Filter>Engine\06. Component\13. PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="CTrailComponent.cpp">
+      <Filter>Engine\06. Component\14. Trail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1066,44 +1060,8 @@
     <FxCompile Include="particleupdatewood.fx">
       <Filter>HLSL\Compute\ParticleUpdateShader\01. WoodShader</Filter>
     </FxCompile>
-    <FxCompile Include="objectrenderer.fx">
-      <Filter>HLSL\Render\2D\Default</Filter>
-    </FxCompile>
-    <FxCompile Include="std2d.fx">
-      <Filter>HLSL\Render\2D\Default</Filter>
-    </FxCompile>
-    <FxCompile Include="particlerender.fx">
-      <Filter>HLSL\Render\2D\Effect</Filter>
-    </FxCompile>
-    <FxCompile Include="postprocess.fx">
-      <Filter>HLSL\Render\2D\Effect</Filter>
-    </FxCompile>
-    <FxCompile Include="selectedunit.fx">
-      <Filter>HLSL\Render\2D\Effect</Filter>
-    </FxCompile>
-    <FxCompile Include="shadowrenderer.fx">
-      <Filter>HLSL\Render\2D\Effect</Filter>
-    </FxCompile>
-    <FxCompile Include="terrain.fx">
-      <Filter>HLSL\Render\2D\Tile</Filter>
-    </FxCompile>
     <FxCompile Include="func.fx">
       <Filter>HLSL\Header</Filter>
-    </FxCompile>
-    <FxCompile Include="bordermap.fx">
-      <Filter>HLSL\Render\2D\Tile</Filter>
-    </FxCompile>
-    <FxCompile Include="tilemap.fx">
-      <Filter>HLSL\Render\2D\Tile</Filter>
-    </FxCompile>
-    <FxCompile Include="ui.fx">
-      <Filter>HLSL\Render\2D\Default</Filter>
-    </FxCompile>
-    <FxCompile Include="opaque.fx">
-      <Filter>HLSL\Render\2D\Default</Filter>
-    </FxCompile>
-    <FxCompile Include="building.fx">
-      <Filter>HLSL\Render\2D\Building</Filter>
     </FxCompile>
     <FxCompile Include="matrix.fx">
       <Filter>HLSL\Header</Filter>
@@ -1187,6 +1145,15 @@
       <Filter>HLSL\Compute\Animation3D</Filter>
     </FxCompile>
     <FxCompile Include="copybone.fx">
+      <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="trail.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="postpocess3d.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="bonsocket.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
   </ItemGroup>

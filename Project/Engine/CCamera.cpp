@@ -412,7 +412,7 @@ void CCamera::render_deferred()
 		// instancing 개수 조건 미만이거나
 		// Animation2D 오브젝트거나(스프라이트 애니메이션 오브젝트)
 		// Shader 가 Instancing 을 지원하지 않는경우
-		if (pair.second.size() <= 1
+		if (pair.second.size() <= 5
 			|| pair.second[0].pObj->Animator2D()
 			|| pair.second[0].pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx)->GetShader()->GetVSInst() == nullptr)
 		{
@@ -433,6 +433,7 @@ void CCamera::render_deferred()
 		}
 
 		CGameObject* pObj = pair.second[0].pObj;
+		wstring name = pObj->GetName();
 		Ptr<CMesh> pMesh = pObj->GetRenderComponent()->GetMesh();
 		Ptr<CMaterial> pMtrl = pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx);
 
@@ -461,6 +462,9 @@ void CCamera::render_deferred()
 			}
 			else
 				tInstData.iRowIdx = -1;
+
+			if (pair.second[i].pObj->TrailComponent())
+				pair.second[i].pObj->TrailComponent()->UpdateData();
 
 			//WVP 데이터 임시 버퍼 저장
 			CInstancingBuffer::GetInst()->AddInstancingData(tInstData);
@@ -577,6 +581,8 @@ void CCamera::render_forward()
 			else
 				tInstData.iRowIdx = -1;
 
+			if (pair.second[i].pObj->TrailComponent())
+				pair.second[i].pObj->TrailComponent()->UpdateData();
 			//WVP 데이터 임시 버퍼 저장
 			CInstancingBuffer::GetInst()->AddInstancingData(tInstData);
 		}
@@ -631,19 +637,140 @@ void CCamera::render_decal()
 
 void CCamera::render_transparent()
 {
-	for (auto iter{ m_vecTransparent.begin() }; iter != m_vecTransparent.end(); ++iter)
+	// Deferred object render
+	tInstancingData tInstData = {};
+
+	for (auto& pair : m_mapTransParentObj)
 	{
-		(*iter)->render();
+		// 그룹 오브젝트가 없거나, 쉐이더가 없는 경우
+		if (pair.second.empty())
+			continue;
+
+		CGameObject* pObj = pair.second[0].pObj;
+		Ptr<CMesh> pMesh = pObj->GetRenderComponent()->GetMesh();
+		Ptr<CMaterial> pMtrl = pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx);
+
+		// Instancing 버퍼 클리어
+		CInstancingBuffer::GetInst()->Clear();
+
+		int iRowIdx = 0;
+		bool bHasAnim3D = false;
+		//동일 Mesh, Mtrl 
+		for (UINT i = 0; i < pair.second.size(); ++i)
+		{
+			//오브젝트 World, WV, WVP 받아온다.
+			tInstData.matWorld = pair.second[i].pObj->Transform()->GetWorldMat();
+			tInstData.matWV = tInstData.matWorld * m_matView;
+			tInstData.matWVP = tInstData.matWV * m_matProj;
+
+			//애니메이션이 있다면 애니메이션 정보도 Compute 셰이더로 업데이트 시킨다.
+			if (pair.second[i].pObj->Animator3D())
+			{
+				pair.second[i].pObj->Animator3D()->UpdateData();
+				//결과로 전달할 인스턴싱 데이터 
+				tInstData.iRowIdx = iRowIdx++;
+				//뼈 행렬 정보도 결과 구조화 버퍼에 취합 후, GPU 전달
+				CInstancingBuffer::GetInst()->AddInstancingBoneMat(pair.second[i].pObj->Animator3D()->GetFinalBoneMat());
+				bHasAnim3D = true;
+			}
+			else
+				tInstData.iRowIdx = -1;
+			
+			if (pair.second[i].pObj->TrailComponent())
+				pair.second[i].pObj->TrailComponent()->UpdateData();
+			//WVP 데이터 임시 버퍼 저장
+			CInstancingBuffer::GetInst()->AddInstancingData(tInstData);
+		}
+
+		// 인스턴싱에 필요한 데이터를 세팅(SysMem -> GPU Mem)
+		CInstancingBuffer::GetInst()->SetData();
+
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(true); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(pMesh->GetBoneCount());
+		}
+
+		pMtrl->UpdateData_Inst();
+		//Matrerial 개수 만큼 render
+		pMesh->render_instancing(pair.second[0].iMtrlIdx);
+
+		// 정리
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(false); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(0);
+		}
 	}
 }
 
 void CCamera::render_postprocess()
 {
-	for (auto iter{ m_vecPostProcess.begin() }; iter != m_vecPostProcess.end(); ++iter)
+	CRenderMgr::GetInst()->CopyRenderTarget();
+	// Deferred object render
+	tInstancingData tInstData = {};
+
+	for (auto& pair : m_mapPostProcessObj)
 	{
-		CRenderMgr::GetInst()->CopyRenderTarget();
-		(*iter)->render();
+		// 그룹 오브젝트가 없거나, 쉐이더가 없는 경우
+		if (pair.second.empty())
+			continue;
+
+		CGameObject* pObj = pair.second[0].pObj;
+		Ptr<CMesh> pMesh = pObj->GetRenderComponent()->GetMesh();
+		Ptr<CMaterial> pMtrl = pObj->GetRenderComponent()->GetCurMaterial(pair.second[0].iMtrlIdx);
+
+		// Instancing 버퍼 클리어
+		CInstancingBuffer::GetInst()->Clear();
+
+		int iRowIdx = 0;
+		bool bHasAnim3D = false;
+		//동일 Mesh, Mtrl 
+		for (UINT i = 0; i < pair.second.size(); ++i)
+		{
+			//오브젝트 World, WV, WVP 받아온다.
+			tInstData.matWorld = pair.second[i].pObj->Transform()->GetWorldMat();
+			tInstData.matWV = tInstData.matWorld * m_matView;
+			tInstData.matWVP = tInstData.matWV * m_matProj;
+
+			//애니메이션이 있다면 애니메이션 정보도 Compute 셰이더로 업데이트 시킨다.
+			if (pair.second[i].pObj->Animator3D())
+			{
+				pair.second[i].pObj->Animator3D()->UpdateData();
+				//결과로 전달할 인스턴싱 데이터 
+				tInstData.iRowIdx = iRowIdx++;
+				//뼈 행렬 정보도 결과 구조화 버퍼에 취합 후, GPU 전달
+				CInstancingBuffer::GetInst()->AddInstancingBoneMat(pair.second[i].pObj->Animator3D()->GetFinalBoneMat());
+				bHasAnim3D = true;
+			}
+			else
+				tInstData.iRowIdx = -1;
+
+			//WVP 데이터 임시 버퍼 저장
+			CInstancingBuffer::GetInst()->AddInstancingData(tInstData);
+		}
+
+		// 인스턴싱에 필요한 데이터를 세팅(SysMem -> GPU Mem)
+		CInstancingBuffer::GetInst()->SetData();
+
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(true); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(pMesh->GetBoneCount());
+		}
+
+		pMtrl->UpdateData_Inst();
+		//Matrerial 개수 만큼 render
+		pMesh->render_instancing(pair.second[0].iMtrlIdx);
+
+		// 정리
+		if (bHasAnim3D)
+		{
+			pMtrl->SetAnim3D(false); // Animation Mesh 알리기
+			pMtrl->SetBoneCount(0);
+		}
 	}
+	//CMaterial::Clear();
 }
 
 void CCamera::render_ui()
@@ -679,11 +806,14 @@ void CCamera::SortObject()
 		pair.second.clear();
 	for (auto& pair : m_mapInstGroup_F)
 		pair.second.clear();
+	for (auto& pair : m_mapTransParentObj)
+		pair.second.clear();
+	for (auto& pair : m_mapPostProcessObj)
+		pair.second.clear();
 
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
 	m_vecUi.clear();
-	m_vecPostProcess.clear();
 
 	auto pLevel = CLevelMgr::GetInst()->GetCurLevel();
 
@@ -706,11 +836,14 @@ void CCamera::SortObject(const vector<CGameObject*>& vecGameObject)
 		pair.second.clear();
 	for (auto& pair : m_mapInstGroup_F)
 		pair.second.clear();
+	for (auto& pair : m_mapTransParentObj)
+		pair.second.clear();
+	for (auto& pair : m_mapPostProcessObj)
+		pair.second.clear();
 
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
 	m_vecUi.clear();
-	m_vecPostProcess.clear();
 
 	Process_Sort(vecGameObject);
 }
@@ -786,6 +919,9 @@ void CCamera::Process_Sort(const vector<CGameObject*>& vecGameObject)
 		//}
 
 		//DebugDrawSphere(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), radius);
+		if (!vecGameObject[j]->Transform())
+			continue;
+
 		frustum_t frus;
 		Vec3 vScale = vecGameObject[j]->Transform()->GetRelativeScale();
 		Vec3 vRot = vecGameObject[j]->Transform()->GetRelativeRotation();
@@ -805,7 +941,7 @@ void CCamera::Process_Sort(const vector<CGameObject*>& vecGameObject)
 		//	continue;
 		//}
 		//
-		DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
+		//DebugDrawCube(Vec4(0.f, 0.f, 1.f, 1.f), Vec3(pTransform->GetRelativePos()), vScale, vRot);
 
 		Mtrl_Sort(RenderCompoent, vecGameObject[j]);
 
@@ -900,10 +1036,50 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 				m_vecDecal.push_back(pObj);
 				break;
 			case SHADER_DOMAIN::DOMAIN_TRANSPARENT:
-				m_vecTransparent.push_back(pObj);
+			{
+				std::unordered_map<ULONG64, vector<tInstObj>>* pMap = &m_mapTransParentObj;
+				Ptr<CMaterial> pMtrl = RenderCompoent->GetCurMaterial(iMtrl);
+
+				uInstID uID = {};
+			
+				uID.llID = RenderCompoent->GetInstID(iMtrl);
+
+				if (0 == uID.llID)
+					continue;
+
+				std::unordered_map<ULONG64, vector<tInstObj>>::iterator iter = pMap->find(uID.llID);
+				if (iter == pMap->end())
+				{
+					pMap->insert(make_pair(uID.llID, vector<tInstObj>{tInstObj{ pObj, iMtrl }}));
+				}
+				else
+				{
+					iter->second.push_back(tInstObj{ pObj, iMtrl });
+				}
+			}
 				break;
 			case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
-				m_vecPostProcess.push_back(pObj);
+			{
+				std::unordered_map<ULONG64, vector<tInstObj>>* pMap = &m_mapPostProcessObj;
+				Ptr<CMaterial> pMtrl = RenderCompoent->GetCurMaterial(iMtrl);
+
+				uInstID uID = {};
+
+				uID.llID = RenderCompoent->GetInstID(iMtrl);
+
+				if (0 == uID.llID)
+					continue;
+
+				std::unordered_map<ULONG64, vector<tInstObj>>::iterator iter = pMap->find(uID.llID);
+				if (iter == pMap->end())
+				{
+					pMap->insert(make_pair(uID.llID, vector<tInstObj>{tInstObj{ pObj, iMtrl }}));
+				}
+				else
+				{
+					iter->second.push_back(tInstObj{ pObj, iMtrl });
+				}
+			}
 				break;
 			}
 		}

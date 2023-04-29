@@ -1,4 +1,3 @@
-
 #include "pch.h"
 #include "timing.h"
 #include "PhysXMgr.h"
@@ -26,6 +25,7 @@ void PhysXMgr::init()
 {
     TimingData::init();
     m_pMesh = CResMgr::GetInst()->FindRes<CMesh>(L"AreneStage_Navi_Mesh");
+    m_vecTransform.resize(0xffff);
 }
 
 void PhysXMgr::add(CPhysXComponent* pCom)
@@ -38,24 +38,19 @@ void PhysXMgr::add(CPhysXComponent* pCom)
 
     Vec3 vFront = pCom->Transform()->GetRelativeDir(DIR::FRONT);
 
+    UINT idx = 0;
     // Find the first available round.
-    if (nullptr == pCom->Get_AmmoRound())
-    {
-        for (shot = ammo; shot < ammo + AmmoRounds; shot++)
-        {
-            if (shot->type == UNUSED)
-            {
-                m_vecTransform.push_back(pCom->Transform());
-                shot->idx = m_iIdx++;
-                break;
-            }
-        }
 
-    }
-    else
+    for (shot = ammo; shot < ammo + AmmoRounds; shot++)
     {
-        shot = pCom->Get_AmmoRound();
+        if (shot->type == UNUSED)
+        {
+            m_vecTransform[idx] = pCom->Transform();
+            shot->idx = idx++;
+            break;
+        }
     }
+
 
     // If we didn't find a round, then exit - we can't fire.
     if (shot >= ammo + AmmoRounds) return;
@@ -116,7 +111,7 @@ void PhysXMgr::update()
     // Update the physics of each particle in turn
     for (cyclone::AmmoRound* shot = ammo; shot < ammo + AmmoRounds; shot++)
     {
-        if (shot->type != UNUSED)
+        if (shot->type != UNUSED && shot->type != PAUSE)
         {
             // Run the physics
             shot->particle.integrate(duration);
@@ -124,16 +119,22 @@ void PhysXMgr::update()
             assert(0xffff != shot->idx);
             // Check if the particle is now invalid
             Vec3 vPos = m_vecTransform[shot->idx]->GetRelativePos();
-            
-            if (m_pMesh->IsNavJumpValid(vPos) && 
+
+            if (m_pMesh->IsNavJumpValid(vPos) &&
                 shot->startTime + 150.f < TimingData::get().lastFrameTimestamp)
-               // shot->startTime + 5000 < TimingData::get().lastFrameTimestamp ||
-               // shot->particle.getPosition().z > 500.0f)
+                // shot->startTime + 5000 < TimingData::get().lastFrameTimestamp ||
+                // shot->particle.getPosition().z > 500.0f)
             {
                 // We simply set the shot type to be unused, so the
                 // memory it occupies can be reused by another shot.
                 shot->type = UNUSED;
                 m_vecTransform[shot->idx]->SetRelativePos(vPos);
+            }
+
+            if (shot->type == UNUSED && shot->idx != 0xffff)
+            {
+                m_vecTransform[shot->idx] = nullptr;
+                shot->idx = 0xffff;
             }
         }
     }

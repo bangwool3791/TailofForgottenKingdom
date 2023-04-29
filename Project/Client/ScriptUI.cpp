@@ -18,8 +18,6 @@ ScriptUI::~ScriptUI()
 
 void ScriptUI::update()
 {
-    if (m_pTargetScript && m_pTargetScript->GetOwner() && m_pTargetScript->GetOwner()->IsDead())
-        m_pTargetScript = nullptr;
 }
 
 void ScriptUI::render_update()

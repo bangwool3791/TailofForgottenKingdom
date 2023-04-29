@@ -22,4 +22,16 @@ void CAnimator3DUI::update()
 void CAnimator3DUI::render_update()
 {
 	ComponentUI::render_update();
+
+	static bool bUse = false;
+
+	if (GetTarget() && GetTarget()->Animator3D())
+	{
+		bUse = GetTarget()->Animator3D()->GetUseAnimationMatrix();
+
+		if (ImGui::Checkbox("Use Matrix##1", &bUse))
+		{
+			GetTarget()->Animator3D()->SetUseAnimationMatrix(bUse);
+		}
+	}
 }

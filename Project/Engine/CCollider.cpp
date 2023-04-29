@@ -48,17 +48,9 @@ void CCollider::EndOverlap(CCollider* _pOther)
 	}
 }
 
-void CCollider::SetRotationX(float _fDegree)
+void  CCollider::SetRotation(Vec3 vRot)
 {
-	Transform()->SetRelativeRotationX(_fDegree);
-}
-void CCollider::SetRotationY(float _fDegree)
-{
-	Transform()->SetRelativeRotationY(_fDegree);
-}
-void CCollider::SetRotationZ(float _fDegree)
-{
-	Transform()->SetRelativeRotationZ(_fDegree);
+	m_vRot = vRot;
 }
 
 void CCollider::SaveToFile(FILE* _File)

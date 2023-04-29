@@ -1,14 +1,5 @@
 #include "pch.h"
 
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\MeshLoaderObj.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\PhysXComponent.cpp"
-
-
-#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\PhysXMgr.cpp"
-
-
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\QuadNode.cpp"
 
 
@@ -55,4 +46,10 @@
 
 
 #include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\NavMesh.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\NavMeshQuery.cpp"
+
+
+#include "D:\Dev\MyEngine\D3D\AssortRockDx112D-master\Project\Engine\particle.cpp"
 

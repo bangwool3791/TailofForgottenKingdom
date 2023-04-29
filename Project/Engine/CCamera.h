@@ -19,7 +19,7 @@ class CCamera :
 {
 private:
     tRay                    m_ray;      // 마우스 방향을 향하는 직선
-    CSLight* m_LightCS;
+    CSLight*                m_LightCS;
     CFrustum                m_Frustum;
 
     Matrix                  m_matView;
@@ -49,6 +49,8 @@ private:
     std::unordered_map<ULONG64, vector<tInstObj>>		m_mapInstGroup_D;	    // Deferred
     std::unordered_map<ULONG64, vector<tInstObj>>		m_mapInstGroup_F;	    // Foward ( Opaque, Mask )	
     std::unordered_map<INT_PTR, vector<tInstObj>>		m_mapSingleObj;		    // Single Object
+    std::unordered_map<ULONG64, vector<tInstObj>>		m_mapTransParentObj;		    // TransParent
+    std::unordered_map<ULONG64, vector<tInstObj>>		m_mapPostProcessObj;		    // PostProcessing 
 
     //vector<CGameObject*>    m_vecDeferred;
     //vector<CGameObject*>    m_vecQpaque;
@@ -56,7 +58,6 @@ private:
     vector<CGameObject*>                     m_vecDecal;
     vector<CGameObject* >                    m_vecTransparent;
     vector<CGameObject*>                     m_vecDynamicShadow;     // 동적 그림자 물체
-    vector<CGameObject* >                    m_vecPostProcess;
     vector<CGameObject* >                    m_vecUi;
 
     CStructuredBuffer* m_pObjectRenderBuffer;

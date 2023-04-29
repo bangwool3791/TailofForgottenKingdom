@@ -217,7 +217,7 @@ StructuredBuffer<tFrameTrans> g_arrFrameTrans : register(t16);
 StructuredBuffer<matrix> g_arrOffset : register(t17);
 //최종 행렬 
 RWStructuredBuffer<matrix> g_arrFinelMat : register(u0);
-
+RWStructuredBuffer<matrix> g_arrBoneSocket : register(u1);
 // ===========================
 // Animation3D Compute Shader
 #define BoneCount   g_int_0
@@ -257,6 +257,7 @@ void CS_Animation3D(int3 _iThreadIdx : SV_DispatchThreadID)
 
     // 구조화버퍼에 결과값 저장
     g_arrFinelMat[_iThreadIdx.x] = mul(matOffset, matBone);
+    g_arrBoneSocket[_iThreadIdx.x] = transpose(matBone);
 }
 
 

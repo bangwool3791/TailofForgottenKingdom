@@ -117,7 +117,7 @@ void CTransform::Update()
 void CTransform::UpdateData()
 {
 	CConstBuffer* pCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::TRANSFORM);
-	
+
 	g_transform.matWorld = m_matWorld;
 	g_transform.matWorldInv = m_matWorldInv;
 	g_transform.matWV	 = g_transform.matWorld * g_transform.matView;

@@ -19,7 +19,6 @@ class PhysXMgr : public CSingleton<PhysXMgr>
 
     /** Holds the current shot type. */
     PhysType currentPhysType;
-    UINT m_iIdx;
     Ptr<CMesh> m_pMesh = nullptr;
     vector<class CTransform*> m_vecTransform;
     /** Dispatches a round. */

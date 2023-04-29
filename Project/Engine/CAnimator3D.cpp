@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "CAnimator3D.h"
+#include "CTrailComponent.h"
 #include "CTimeMgr.h"
 #include "CMeshRender.h"
 #include "CStructuredBuffer.h"
@@ -23,7 +24,10 @@ CAnimator3D::CAnimator3D()
 	, m_fRatio{ 0.f }
 	, CComponent(COMPONENT_TYPE::ANIMATOR3D)
 {
+	SetName(L"CAnimator3D");
+
 	m_pBoneFinalMatBuffer = new CStructuredBuffer;
+	m_pBoneSocketMat = new CStructuredBuffer;
 }
 
 CAnimator3D::CAnimator3D(const CAnimator3D& _origin)
@@ -45,7 +49,10 @@ CAnimator3D::CAnimator3D(const CAnimator3D& _origin)
 	, m_pMeshData(_origin.m_pMeshData)
 	, CComponent(COMPONENT_TYPE::ANIMATOR3D)
 {
+	SetName(L"CAnimator3D");
+
 	m_pBoneFinalMatBuffer = new CStructuredBuffer;
+	m_pBoneSocketMat = new CStructuredBuffer;
 	SetBones(m_pVecBones);
 	SetAnimClip(m_pVecClip);
 }
@@ -53,11 +60,11 @@ CAnimator3D::CAnimator3D(const CAnimator3D& _origin)
 CAnimator3D::~CAnimator3D()
 {
 	SAFE_DELETE(m_pBoneFinalMatBuffer);
+	SAFE_DELETE(m_pBoneSocketMat);
 }
 
 void CAnimator3D::begin()
 {
-
 }
 
 void CAnimator3D::finaltick()
@@ -73,7 +80,7 @@ void CAnimator3D::finaltick()
 
 	double dFrameIdx = 0.f;
 
-	if (!m_bPuase)
+	if (!m_bTrail && !m_bPuase)
 	{
 		m_dCurTime = m_pVecClip->at(m_iCurClip).dStartTime + m_vecClipUpdateTime[m_iCurClip];
 		m_dCurTime *= m_fTimeScale;
@@ -155,6 +162,7 @@ void CAnimator3D::UpdateData()
 		pUpdateShader->SetOffsetMatBuffer(pMesh->GetBoneOffsetBuffer());
 		//뼈 최종 행렬 Set
 		pUpdateShader->SetOutputBuffer(m_pBoneFinalMatBuffer);
+		pUpdateShader->SetBoneSocketBuffer(m_pBoneSocketMat);
 		//뼈 개수 Set
 		UINT iBoneCount = (UINT)m_pVecBones->size();
 		pUpdateShader->SetBoneCount(iBoneCount);
@@ -169,8 +177,37 @@ void CAnimator3D::UpdateData()
 		pUpdateShader->Execute();
 
 		m_bFinalMatUpdate = true;
-	}
+	
+		if (m_pBoneFinalMatBuffer->GetElementCount() != iBoneCount)
+		{
+			m_pBoneFinalMatBuffer->Create(sizeof(Matrix), iBoneCount, SB_TYPE::UAV_INC, nullptr, false);
+		}
+		
+		if (GetOwner()->IsAnimationMatrix())
+		{
+			Ptr<CMesh> pMesh = MeshRender()->GetMesh();
+			check_mesh(pMesh);
+			UINT iBoneCount = pMesh->GetBoneCount();
+			vector<Matrix> vecBoneMat{};
+			vector<Matrix> vecOffsetMat{};
+			vecBoneMat.resize(iBoneCount);
+			vecOffsetMat.resize(iBoneCount);
 
+			m_pBoneSocketMat->GetData(vecBoneMat.data(), iBoneCount * sizeof(Matrix));
+			pMesh->GetBoneOffsetBuffer()->GetData(vecOffsetMat.data(), iBoneCount * sizeof(Matrix));
+			//vecBoneMat[0] = XMMatrixTranspose(vecBoneMat[0]);
+			vecOffsetMat[0] = XMMatrixTranspose(vecOffsetMat[1]);
+
+			Matrix InvOffMatrix = XMMatrixInverse(nullptr, vecOffsetMat[0]);
+			//Vec3 vDir = XMVector3TransformNormal(Vec3{ 1.f, 1.f, 1.f }, vecBoneMat[0]);
+			//vecOffsetMat[0].CreateRotationX(vDir.x);
+			//vecOffsetMat[0].CreateRotationY(vDir.z);
+			//vecOffsetMat[0].CreateRotation(vDir.y);
+			//Vec3 vPos = vecBoneMat[0].Translation();
+			//Vec3 vSacle = vecBoneMat[0].
+			m_matAnimation = vecBoneMat[24];
+		}
+	}
 	//61 레지스터에 최종행렬 데이터(구조버퍼) 바인딩		
 	m_pBoneFinalMatBuffer->UpdateData(61, PIPELINE_STAGE::VS);
 }
@@ -179,12 +216,13 @@ void CAnimator3D::ClearData()
 {
 	//최종 뼈 행렬 클리어
 	m_pBoneFinalMatBuffer->Clear();
+
 	//랜더
 	UINT iMtrlCount = MeshRender()->GetMtrlCount();
 	Ptr<CMaterial> pMtrl = nullptr;
 	for (UINT i = 0; i < iMtrlCount; ++i)
 	{
-		pMtrl = MeshRender()->GetSharedMaterial(i);
+		pMtrl = MeshRender()->GetCurMaterial(i);
 		if (nullptr == pMtrl)
 			continue;
 
@@ -223,7 +261,12 @@ void CAnimator3D::check_mesh(Ptr<CMesh> _pMesh)
 	UINT iBoneCount = _pMesh->GetBoneCount();
 	if (m_pBoneFinalMatBuffer->GetElementCount() != iBoneCount)
 	{
-		m_pBoneFinalMatBuffer->Create(sizeof(Matrix), iBoneCount, SB_TYPE::UAV_INC, nullptr, false);
+		m_pBoneFinalMatBuffer->Create(sizeof(Matrix), iBoneCount, SB_TYPE::UAV_INC, nullptr, true);
+	}
+
+	if (m_pBoneSocketMat->GetElementCount() != iBoneCount)
+	{
+		m_pBoneSocketMat->Create(sizeof(Matrix), iBoneCount, SB_TYPE::UAV_INC, nullptr, true);
 	}
 }
 
@@ -291,6 +334,8 @@ void CAnimator3D::SetCurFrame(const wstring& _Key, tAnim3DFrm _tData)
 
 	if (iter != m_mapAnimation.end())
 	{
+		m_strCurKey = _Key;
+
 		m_tCurFrame = iter->second = _tData;
 		m_iEnd = 0;
 
@@ -307,6 +352,7 @@ void CAnimator3D::SetCurFrameKey(const wstring& _Key)
 
 	if (iter != m_mapAnimation.end())
 	{
+		m_strCurKey = _Key;
 		m_tCurFrame = iter->second;
 
 		if (m_tCurFrame.iStart > m_iFrameIdx || m_tCurFrame.iEnd <= m_iFrameIdx)
@@ -341,6 +387,14 @@ const string& CAnimator3D::Delete(const wstring& _key)
 	return str;
 }
 
+void CAnimator3D::DeleteEnd()
+{
+	auto iter = m_mapAnimation.end();
+	--iter;
+
+	m_mapAnimation.erase(iter);
+}
+
 void CAnimator3D::SetTimeScale(float& _dScale)
 {
 	if (0 < _dScale)
@@ -351,4 +405,14 @@ void CAnimator3D::SetTimeScale(float& _dScale)
 	{
 		_dScale = 1.f;
 	}
+}
+
+void CAnimator3D::SetUseAnimationMatrix(bool _bUse)
+{
+	GetOwner()->SetAnimationMatrix(_bUse);
+}
+
+bool CAnimator3D::GetUseAnimationMatrix()
+{
+	return GetOwner()->IsAnimationMatrix();
 }

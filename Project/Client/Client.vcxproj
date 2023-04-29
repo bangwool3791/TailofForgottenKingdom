@@ -161,6 +161,7 @@
     <ClInclude Include="CLoader.h" />
     <ClInclude Include="CLoadingLevel.h" />
     <ClInclude Include="Collider3DUI.h" />
+    <ClInclude Include="CPlayerTestScript.h" />
     <ClInclude Include="ModelComUI.h" />
     <ClInclude Include="NavMeshTestMgr.h" />
     <ClInclude Include="ParticleSystemUI.h" />
@@ -212,6 +213,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextureUI.h" />
     <ClInclude Include="TileMapUI.h" />
+    <ClInclude Include="TrailComUI.h" />
     <ClInclude Include="TransformUI.h" />
     <ClInclude Include="TreeUI.h" />
     <ClInclude Include="UI.h" />
@@ -232,6 +234,7 @@
     <ClCompile Include="CLoader.cpp" />
     <ClCompile Include="CLoadingLevel.cpp" />
     <ClCompile Include="Collider3DUI.cpp" />
+    <ClCompile Include="CPlayerTestScript.cpp" />
     <ClCompile Include="ModelComUI.cpp" />
     <ClCompile Include="NavMeshTestMgr.cpp" />
     <ClCompile Include="ParticleSystemUI.cpp" />
@@ -273,6 +276,7 @@
     <ClCompile Include="ScriptUI.cpp" />
     <ClCompile Include="TextureUI.cpp" />
     <ClCompile Include="TileMapUI.cpp" />
+    <ClCompile Include="TrailComUI.cpp" />
     <ClCompile Include="TransformUI.cpp" />
     <ClCompile Include="TreeUI.cpp" />
     <ClCompile Include="UI.cpp" />

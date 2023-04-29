@@ -20,6 +20,7 @@ class CDecal;
 class CSkyBox;
 class CLandScape;
 class CWaveRenderer;
+class CTrailComponent;
 
 #define GET_COMPONENT(classname, CLASSNAME ) C##classname* classname() { return ( C##classname*)GetComponent(COMPONENT_TYPE::CLASSNAME); }
 
@@ -31,6 +32,7 @@ class CGameObject
 	, public SmallObjAllocator<CGameObject, OBJECTPOOL_SIZE, CGameObjectKey>
 {
 private:
+	bool										  m_bUseAnimationMat = false;
 	array<CComponent*, (UINT)COMPONENT_TYPE::END> m_arrCom;
 	vector<CScript*>							  m_vecScripts;
 	CRenderComponent* m_pRenderComponent{};
@@ -49,6 +51,8 @@ public:
 
 	CGameObject* GetChild(const wstring& _key);
 	bool IsDead() { return m_bDead; }
+	bool IsAnimationMatrix() { return m_bUseAnimationMat; }
+	void SetAnimationMatrix(bool _bFlag) { m_bUseAnimationMat = _bFlag; }
 	void Destroy();
 public:
 	virtual void begin();
@@ -67,8 +71,10 @@ public:
 	void DestroyComponent(COMPONENT_TYPE _eComType);
 	void AddChild(CGameObject* _pGameObejct);
 
+	void DeleteChildsAll();
 	bool DeleteComponent(const string& _strName);
 	bool DeleteScript(const string& _strName);
+	CEntity* GetComponent(const string& strCom);
 	CComponent* GetComponent(COMPONENT_TYPE _eComType);
 
 	GET_COMPONENT(Transform, TRANSFORM);
@@ -87,7 +93,7 @@ public:
 	GET_COMPONENT(SkyBox, SKYBOX);
 	GET_COMPONENT(LandScape, LANDSCAPE);
 	GET_COMPONENT(WaveRenderer, WAVERENDERER);
-
+	GET_COMPONENT(TrailComponent, TRAIL);
 
 	CGameObject* GetParent() { return m_pParent; }
 

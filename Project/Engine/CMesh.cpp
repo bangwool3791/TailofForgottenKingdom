@@ -300,7 +300,7 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
         }
 
         pMesh->m_pBoneOffset = new CStructuredBuffer;
-        pMesh->m_pBoneOffset->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, vecOffset.data(), false);
+        pMesh->m_pBoneOffset->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, vecOffset.data(), true);
 
         pMesh->m_pBoneFrameData = new CStructuredBuffer;
         pMesh->m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * iFrameCount
@@ -466,7 +466,7 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader, UINT idx)
         }
 
         pMesh->m_pBoneOffset = new CStructuredBuffer;
-        pMesh->m_pBoneOffset->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, vecOffset.data(), false);
+        pMesh->m_pBoneOffset->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, vecOffset.data(), true);
 
         pMesh->m_pBoneFrameData = new CStructuredBuffer;
         pMesh->m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * iFrameCount
@@ -1087,7 +1087,7 @@ int CMesh::Load(const wstring& _strFilePath)
         }
 
         m_pBoneOffset = new CStructuredBuffer;
-        m_pBoneOffset->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, vecOffset.data(), false);
+        m_pBoneOffset->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, vecOffset.data(), true);
 
         m_pBoneFrameData = new CStructuredBuffer;
         m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * (UINT)_iFrameCount

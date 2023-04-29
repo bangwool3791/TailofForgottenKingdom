@@ -26,6 +26,7 @@ public:
 
 	virtual void Open() { m_bOpen = true; }
 	virtual void Close() { m_bOpen = false; }
+	bool IsOpen() {return m_bOpen;}
 	void SetModal(bool _modal) { m_bModal = _modal; }
 	void ShowSeperator(bool _bShow) { m_bSeperator = _bShow; }
 

@@ -154,6 +154,7 @@ enum class COMPONENT_TYPE
 	LANDSCAPE,
 	WAVERENDERER,
 	PHYSX,
+	TRAIL,
 	SCRIPT,
 	END,
 };
@@ -273,7 +274,7 @@ enum class DEBUG_SHAPE
 {
 	RECT,
 	CIRCLE,
-
+	SWORD,
 	CUBE,
 	SPHERE,
 	CONE,
@@ -411,6 +412,7 @@ enum class LANDSCAPE_MOD
 enum PhysType
 {
 	UNUSED = 0,
+	PAUSE,
 	PISTOL,
 	ARTILLERY,
 	FIREBALL,
