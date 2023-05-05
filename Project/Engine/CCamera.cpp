@@ -296,6 +296,7 @@ void CCamera::render()
 
 	render_transparent();
 	render_postprocess();
+	render_fog();
 }
 
 void CCamera::EditorRender()
@@ -338,6 +339,7 @@ void CCamera::EditorRender()
 	render_forward();
 	render_transparent();
 	render_postprocess();
+	render_fog();
 }
 
 void CCamera::render(MRT_TYPE _eType)
@@ -498,7 +500,10 @@ void CCamera::render_deferred()
 		if (pair.second.empty())
 			continue;
 
-		pair.second[0].pObj->Transform()->UpdateData();
+		if (nullptr == pair.second[0].pObj)
+			continue;
+
+			pair.second[0].pObj->Transform()->UpdateData();
 
 		for (auto& instObj : pair.second)
 		{
@@ -614,6 +619,9 @@ void CCamera::render_forward()
 		if (pair.second.empty())
 			continue;
 
+		if (nullptr == pair.second[0].pObj)
+			continue;
+
 		pair.second[0].pObj->Transform()->UpdateData();
 
 		for (auto& instObj : pair.second)
@@ -633,6 +641,17 @@ void CCamera::render_decal()
 	{
 		(*iter)->render();
 	}
+}
+
+void CCamera::render_fog()
+{
+	//CRenderMgr::GetInst()->CopyRenderTarget();
+	//CRenderMgr::GetInst()->CopyPositionTarget();
+	//
+	//for (auto iter{ m_vecFog.begin() }; iter != m_vecFog.end(); ++iter)
+	//{
+	//	(*iter)->MeshRender()->render(0);
+	//}
 }
 
 void CCamera::render_transparent()
@@ -814,6 +833,7 @@ void CCamera::SortObject()
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
 	m_vecUi.clear();
+	m_vecFog.clear();
 
 	auto pLevel = CLevelMgr::GetInst()->GetCurLevel();
 
@@ -844,11 +864,48 @@ void CCamera::SortObject(const vector<CGameObject*>& vecGameObject)
 	m_vecDecal.clear();
 	m_vecTransparent.clear();
 	m_vecUi.clear();
+	m_vecFog.clear();
 
 	Process_Sort(vecGameObject);
 }
 
-void CCamera::render_depthmap()
+void CCamera::render_static_depthmap()
+{
+	// 광원 카메라의 View, Proj 세팅
+	g_transform.matView = m_matView;
+	g_transform.matViewInv = m_matViewInv;
+	g_transform.matProj = m_matProj;
+
+	for (size_t i = 0; i < m_vecStaticShadow.size(); ++i)
+	{
+		if (m_vecStaticShadow[i]->GetRenderComponent())
+		{
+			m_vecStaticShadow[i]->GetRenderComponent()->render_depthmap();
+
+			if (ShadowType::STATIC == m_vecStaticShadow[i]->GetRenderComponent()->GetShadowType())
+			{
+				m_vecStaticShadow[i]->GetRenderComponent()->SetShadowType(ShadowType::NONE);
+			}
+		}
+
+		const vector<CGameObject*>& vecChilds = m_vecStaticShadow[i]->GetChilds();
+
+		for (size_t j = 0; j < vecChilds.size(); ++j)
+		{
+			if (vecChilds[j]->GetRenderComponent())
+			{
+				vecChilds[j]->GetRenderComponent()->render_depthmap();
+
+				if (ShadowType::STATIC == m_vecStaticShadow[i]->GetRenderComponent()->GetShadowType())
+				{
+					vecChilds[j]->GetRenderComponent()->SetShadowType(ShadowType::NONE);
+				}
+			}
+		}
+	}
+}
+
+void CCamera::render_dynamic_depthmap()
 {
 	// 광원 카메라의 View, Proj 세팅
 	g_transform.matView = m_matView;
@@ -857,15 +914,14 @@ void CCamera::render_depthmap()
 
 	for (size_t i = 0; i < m_vecDynamicShadow.size(); ++i)
 	{
-		if(m_vecDynamicShadow[i]->GetRenderComponent())
+		if (m_vecDynamicShadow[i]->GetRenderComponent())
 			m_vecDynamicShadow[i]->GetRenderComponent()->render_depthmap();
-	
 
 		const vector<CGameObject*>& vecChilds = m_vecDynamicShadow[i]->GetChilds();
 
 		for (size_t j = 0; j < vecChilds.size(); ++j)
 		{
-			if(vecChilds[j]->GetRenderComponent())
+			if (vecChilds[j]->GetRenderComponent())
 				vecChilds[j]->GetRenderComponent()->render_depthmap();
 		}
 	}
@@ -874,6 +930,7 @@ void CCamera::render_depthmap()
 void CCamera::SortShadowObject()
 {
 	m_vecDynamicShadow.clear();
+	m_vecStaticShadow.clear();
 
 	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurLevel();
 
@@ -886,9 +943,16 @@ void CCamera::SortShadowObject()
 		{
 			CRenderComponent* pRenderCom = vecObj[j]->GetRenderComponent();
 
-			if (pRenderCom && pRenderCom->IsDynamicShadow())
+			if (nullptr != pRenderCom)
 			{
-				m_vecDynamicShadow.push_back(vecObj[j]);
+				if (ShadowType::DYNAMIC == pRenderCom->GetShadowType())
+				{
+					m_vecDynamicShadow.push_back(vecObj[j]);
+				}
+				else if (ShadowType::STATIC == pRenderCom->GetShadowType())
+				{
+					m_vecStaticShadow.push_back(vecObj[j]);
+				}
 			}
 		}
 	}
@@ -1081,6 +1145,11 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 				}
 			}
 				break;
+			case SHADER_DOMAIN::DOMAIN_FOG:
+			{
+				m_vecFog.push_back(pObj);
+			}
+				break;
 			}
 		}
 	}
@@ -1088,14 +1157,22 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 void CCamera::SortShadowObject(const vector<CGameObject*>& obj)
 {
 	m_vecDynamicShadow.clear();
+	m_vecStaticShadow.clear();
 
 	for (size_t j = 0; j < obj.size(); ++j)
 	{
 		CRenderComponent* pRenderCom = obj[j]->GetRenderComponent();
 
-		if (pRenderCom && pRenderCom->IsDynamicShadow())
+		if (nullptr != pRenderCom)
 		{
-			m_vecDynamicShadow.push_back(obj[j]);
+			if (ShadowType::DYNAMIC == pRenderCom->GetShadowType())
+			{
+				m_vecDynamicShadow.push_back(obj[j]);
+			}
+			else if (ShadowType::STATIC == pRenderCom->GetShadowType())
+			{
+				m_vecStaticShadow.push_back(obj[j]);
+			}
 		}
 	}
 }

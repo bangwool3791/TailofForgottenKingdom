@@ -181,6 +181,9 @@ StructuredBuffer<float> g_trailTime   : register(t62);
 StructuredBuffer<float> g_SwordTrailTime   : register(t63);
 StructuredBuffer<matrix> g_BoneSocketMat   : register(t64);
 StructuredBuffer<float3> g_SwordPosBuffer   : register(t65);
+
+Texture2D g_CopyColorTex : register(t66);
+Texture2D g_CopyPositionTex : register(t67);
 // 샘플러 레지스터
 SamplerState g_sam_0 : register(s0); // anisotropic sampler
 SamplerState g_sam_1 : register(s1); // point sampler

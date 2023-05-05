@@ -26,9 +26,9 @@ private:
 	std::unordered_map<wstring, tAnim3DFrm>			m_mapAnimation;
 	tAnim3DFrm										m_tCurFrame;
 	//뼈 데이터 vector 포인터
-	const vector<tMTBone>*							m_pVecBones;
+	const vector<tMTBone>* m_pVecBones;
 	//애니메이션 정보 vector 포인터
-	const vector<tMTAnimClip>*						m_pVecClip;
+	const vector<tMTAnimClip>* m_pVecClip;
 
 	//초기화 필요
 	vector<float>						m_vecClipUpdateTime;
@@ -37,15 +37,16 @@ private:
 	vector<Matrix>						m_vecFinalBoneMat;
 	//UI
 	int									m_iFrameCount; // 30
-	double								m_dCurTime; // 현재 시간 누적 값
 	int									m_iCurClip; // 클립 인덱스
-
 	int									m_iFrameIdx; //클립의 현재 프레임
 	int									m_iNextFrameIdx;//클립의 다음 프레임
+	double								m_dCurTime; // 현재 시간 누적 값
+
+	double								m_dInterval;
 	float								m_fRatio;//프레임 사이 비율
 
-	CStructuredBuffer*					m_pBoneFinalMatBuffer;//특정 프레임의 최종 행렬
-	CStructuredBuffer*					m_pBoneSocketMat;
+	CStructuredBuffer* m_pBoneFinalMatBuffer;//특정 프레임의 최종 행렬
+	CStructuredBuffer* m_pBoneSocketMat;
 	bool								m_bFinalMatUpdate; //최종 행렬 연산 수행 여부
 
 public:
@@ -72,12 +73,17 @@ public:
 	int GetCurFrameIdx() { return m_iFrameIdx; }
 	const Matrix& GetMatrix() { return m_matAnimation; }
 	const wstring& GetCurFrameKey() { return m_strCurKey; }
-	tAnim3DFrm GetCurFrame() { m_tCurFrame; }
+	tAnim3DFrm GetCurFrame() { return m_tCurFrame; }
 	Ptr<CMeshData> GetMeshData() { return m_pMeshData; }
 
+	double GetInterval()
+	{
+		m_dInterval = (1 / (double)m_iFrameCount) * (1 / (double)m_fTimeScale);
+		return m_dInterval;
+	}
 	void Init();
 	void ClearData();
-	UINT IsEnd() {return 0 < m_iEnd;}
+	UINT IsEnd() { return 0 < m_iEnd; }
 
 	void Add_Frame(const wstring& _key, tAnim3DFrm _tData);
 	const std::unordered_map<wstring, tAnim3DFrm>& GetFrames() { return m_mapAnimation; }

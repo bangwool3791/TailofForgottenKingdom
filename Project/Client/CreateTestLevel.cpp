@@ -107,7 +107,7 @@ void CreateTestLelvel()
 	pSkyBox->Transform()->SetRelativeScale(300.f, 300.f, 300.f);
 	pSkyBox->SkyBox()->SetSkyBoxTex(CResMgr::GetInst()->FindRes<CTexture>(L"texture\\skybox\\SkyWater.dds"));
 	pSkyBox->SkyBox()->SetType(SKYBOX_TYPE::CUBE);
-	pSkyBox->SkyBox()->SetDynamicShadow(false);
+	pSkyBox->SkyBox()->SetShadowType(ShadowType::NONE);
 	pLevel->AddGameObject(pSkyBox, 1);
 	
 	CCollisionMgr::GetInst()->CollisionLayerCheck(0, 0);

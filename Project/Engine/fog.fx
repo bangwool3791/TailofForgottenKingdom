@@ -1,71 +1,92 @@
-#ifndef _FOG
-#define _FOG
+#ifndef _FOG_ALPHABLEND
+#define _FOG_ALPHABLEND
 
 #include "register.fx"
+#include "struct.fx"
+#include "func.fx"
 
-// ===========================
-// Std3DShader
-// g_float_0 : fog start
-// g_float_1 : fog end
-// ===========================
+/*
+* g_float_1 : fogStart
+* g_float_2 : fogRange
+*/
 
-#define fogStart g_float_0
-#define fogEnd   g_float_1
-
-struct VertexInputType
+struct VS_IN
 {
-    float4 position : POSITION;
-    float2 tex : TEXCOORD0;
+	float3 vPos : POSITION;
+	float2 vUV : TEXCOORD;
+
 };
 
-struct PixelInputType
+struct VTX_IN_INST
 {
-    float4 position : SV_POSITION;
-    float2 tex : TEXCOORD0;
-    float fogFactor : FOG;
+	float3 vPos : POSITION;
+	float2 vUV : TEXCOORD;
+
+	// Per Instance Data
+	row_major matrix matWorld : WORLD;
+	row_major matrix matWV : WV;
+	row_major matrix matWVP : WVP;
+	uint             iRowIndex : ROWINDEX;
 };
 
-
-PixelInputType FogVertexShader(VertexInputType input)
+struct VS_OUT
 {
-    PixelInputType output;
-    float4 cameraPosition;
+	float4 vPosition : SV_Position;
+	float4 vWorldPos : POSITION;
+	float2 vUV : TEXCOORD;
+};
 
+VS_OUT VS_Fog(VS_IN _in)
+{
+	VS_OUT output = (VS_OUT)0.f;
 
-    // 적절한 행렬 계산을 위해 위치 벡터를 4 단위로 변경합니다.
-    input.position.w = 1.0f;
+	//output.vPosition = mul(float4(_in.vPos, 1.f), g_matWVP);
+	//output.vWorldPos = mul(float4(_in.vPos, 1.f), g_matWV);
+	output.vUV = _in.vUV;
 
-    // 월드, 뷰 및 투영 행렬에 대한 정점의 위치를 ??계산합니다.
-    output.position = mul(output.position, g_matWVP);
-
-    // 픽셀 쉐이더의 텍스처 좌표를 저장한다.
-    output.tex = input.tex;
-
-    // 카메라 위치를 계산합니다.
-    cameraPosition = mul(input.position, g_matWV);
-
-    // 선형 안개를 계산합니다.      
-    output.fogFactor = saturate((fogEnd - cameraPosition.z) / (fogEnd - fogStart));
-
-    return output;
+	return output;
 }
 
-float4 FogPixelShader(PixelInputType input) : SV_TARGET
+VS_OUT VS_Fog_Inst(VTX_IN_INST _in)
 {
-    float4 textureColor;
-    float4 fogColor;
-    float4 finalColor;
+	VS_OUT output = (VS_OUT)0.f;
 
-    // 이 위치에서 텍스처 픽셀을 샘플링합니다.
-    textureColor = g_tex_0.Sample(g_sam_0, input.tex);
+	output.vPosition = float4(_in.vPos.xy * 2.f, 0.f, 1.f);
+	//output.vPosition = mul(float4(_in.vPos, 1.f), _in.matWVP);
+	//output.vWorldPos = mul(float4(_in.vPos, 1.f), g_matWorld);
+	output.vUV = _in.vUV;
 
-    // 안개의 색을 회색으로 설정합니다.
-    fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
+	return output;
+}
 
-    // 안개 효과 방정식을 사용하여 최종 색상을 계산합니다.
-    finalColor = input.fogFactor * textureColor + (1.0 - input.fogFactor) * fogColor;
 
-    return finalColor;
+float4 PS_Fog(VS_OUT _in) : SV_Target
+{
+	float4 output = (float4)0.f;
+
+	float4 vObjColor = g_RTCopyTex.Sample(g_sam_0, _in.vUV);
+	float3 vViewPos = g_tex_1.Sample(g_sam_0, _in.vUV).xyz;
+
+	//위치 정보가 없는 픽셀 discard
+	//float3 vCamPos = g_vec4_1.xyz;
+	float distToEye = length(vViewPos);
+
+	if (g_int_0)
+	{
+		float fogLerp = saturate((distToEye - g_float_0) / g_float_1);
+		vObjColor = lerp(vObjColor, g_vec4_0, fogLerp);
+	}
+	else {
+		vObjColor = g_vec4_0;
+	}
+
+	if (vObjColor.a < g_float_2)
+		discard;
+
+	//float2 fAdd = float2(g_Noise.Sample(g_sam_0, _in.vUV + g_fAccTime * 0.2f).x
+	//	, g_Noise.Sample(g_sam_0, _in.vUV + float2(0.1f, 0.f) + g_fAccTime * 0.2f).x);
+	//vObjColor.a = fAdd.x;
+	return vObjColor;
 }
 
 #endif

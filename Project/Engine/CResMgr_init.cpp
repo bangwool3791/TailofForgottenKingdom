@@ -1012,16 +1012,6 @@ void CResMgr::CreateDefaultGraphicsShader()
 
 	AddRes<CGraphicsShader>(L"ParticleRenderShader", pShader);
 
-	// PostProcess Shader
-	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\postprocess.fx", "VS_PostProcess");
-	pShader->CreatePixelShader(L"shader\\postprocess.fx", "PS_PostProcess");
-
-	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_POST_PROCESS);
-
-	AddRes<CGraphicsShader>(L"PostProcessShader", pShader);
-
 	pShader = new CGraphicsShader;
 	pShader->CreateVertexShader(L"shader\\std3d.fx", "VS_Std3D");
 	pShader->CreatePixelShader(L"shader\\std3d.fx", "PS_Std3D");
@@ -1040,6 +1030,7 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED_OPAQUE);
 
 	pShader->AddScalarParam(FLOAT_0, "Specular Coefficient");
+
 	pShader->AddTexureParam(TEX_0, "ObjectColor");
 	pShader->AddTexureParam(TEX_1, "NormalMap");
 	pShader->AddTexureParam(TEX_2, "Spec");
@@ -1252,16 +1243,35 @@ void CResMgr::CreateDefaultGraphicsShader()
 	AddRes<CGraphicsShader>(L"TrailShader", pShader);
 
 	pShader = new CGraphicsShader;
-	pShader->CreateVertexShader(L"shader\\postpocess3d.fx", "VS_3DPostProcess");
-	pShader->CreateGeometryShader(L"shader\\postpocess3d.fx", "GS_3DPostProcess");
-	pShader->CreatePixelShader(L"shader\\postpocess3d.fx", "PS_3DPostProcess");
+	pShader->CreateVertexShader(L"shader\\swordtrail.fx", "VS_3DPostProcess");
+	pShader->CreateGeometryShader(L"shader\\swordtrail.fx", "GS_3DPostProcess");
+	pShader->CreatePixelShader(L"shader\\swordtrail.fx", "PS_3DPostProcess");
 	pShader->SetDSType(DS_TYPE::LESS);
 	pShader->SetRSType(RS_TYPE::CULL_NONE);
 	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_POST_PROCESS);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
 	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	pShader->AddTexureParam(TEX_0, "Sword Trail Tex");
+	pShader->AddTexureParam(TEX_1, "Sword Trail Alpha Tex");
 	AddRes<CGraphicsShader>(L"SwordTrailShader", pShader);
 
+	pShader = new CGraphicsShader;
+	pShader->CreateVertexShader(L"shader\\fog.fx", "VS_Fog");
+	pShader->CreatePixelShader(L"shader\\fog.fx", "PS_Fog");
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetRSType(RS_TYPE::CULL_NONE);
+	pShader->SetBSType(BS_TYPE::ALPHABLEND);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
+	pShader->AddScalarParam(INT_0, "Use Fog");
+	pShader->AddScalarParam(FLOAT_0, "Fog Start");
+	pShader->AddScalarParam(FLOAT_1, "Fog Distance");
+	pShader->AddScalarParam(FLOAT_2, "Discard Alpha");
+	pShader->AddScalarParam(VEC4_0, "Fog Color");
+	pShader->AddScalarParam(VEC4_1, "Camera Pos");
+	pShader->AddTexureParam(TEX_1, "View Tex");
+	pShader->SetTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	AddRes<CGraphicsShader>(L"FogShader", pShader);
 	//pShader = new CGraphicsShader;
 	//pShader->CreateVertexShader(L"shader\\bonsocket.fx", "VS_Std3D_BoneSocket");
 	//pShader->CreatePixelShader(L"shader\\bonsocket.fx", "PS_Std3D_BoneSocket");
@@ -1307,10 +1317,6 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"ParticleRenderShader"));
 	AddRes(L"ParticleRenderMtrl", pMaterial);
-
-	pMaterial = new CMaterial(true);
-	pMaterial->SetShader(FindRes<CGraphicsShader>(L"PostProcessShader"));
-	AddRes<CMaterial>(L"PostProcessMtrl", pMaterial);
 
 	pMaterial = new CMaterial(true);
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"DebugDrawShader"));
@@ -1407,6 +1413,9 @@ void CResMgr::CreateDefaultMaterial()
 	pMaterial->SetShader(FindRes<CGraphicsShader>(L"SwordTrailShader"));
 	AddRes<CMaterial>(L"SwordTrailMtrl", pMaterial);
 
+	pMaterial = new CMaterial(true);
+	pMaterial->SetShader(FindRes<CGraphicsShader>(L"FogShader"));
+	AddRes<CMaterial>(L"FogMtrl", pMaterial);
 	//pMaterial = new CMaterial(true);
 	//pMaterial->SetShader(FindRes<CGraphicsShader>(L"BoneSocketShader"));
 	//AddRes<CMaterial>(L"BoneSocketMtrl", pMaterial);

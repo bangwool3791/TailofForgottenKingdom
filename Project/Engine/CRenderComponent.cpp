@@ -170,7 +170,7 @@ void CRenderComponent::SaveToFile(FILE* _File)
 	}
 
 
-	fwrite(&m_bDynamicShadow, 1, 1, _File);
+	fwrite(&m_eShadowType, 4, 1, _File);
 	fwrite(&m_bUseFrustumCulling, 1, 1, _File);
 }
 
@@ -190,6 +190,6 @@ void CRenderComponent::LoadFromFile(FILE* _File)
 		SetSharedMaterial(pMtrl, i);
 	}
 
-	fread(&m_bDynamicShadow, 1, 1, _File);
+	fread(&m_eShadowType, 4, 1, _File);
 	fread(&m_bUseFrustumCulling, 1, 1, _File);
 }

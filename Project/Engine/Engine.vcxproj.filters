@@ -1081,9 +1081,6 @@
     <FxCompile Include="skybox.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
-    <FxCompile Include="fog.fx">
-      <Filter>HLSL\Render\3D</Filter>
-    </FxCompile>
     <FxCompile Include="tess.fx">
       <Filter>HLSL\Render\3D</Filter>
     </FxCompile>
@@ -1150,11 +1147,17 @@
     <FxCompile Include="trail.fx">
       <Filter>HLSL\Render\3D\RenderTarget</Filter>
     </FxCompile>
-    <FxCompile Include="postpocess3d.fx">
+    <FxCompile Include="swordtrail.fx">
       <Filter>HLSL\Render\3D\RenderTarget</Filter>
     </FxCompile>
     <FxCompile Include="bonsocket.fx">
       <Filter>HLSL\Render\3D</Filter>
+    </FxCompile>
+    <FxCompile Include="fog.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="postprocess.fx">
+      <Filter>HLSL\Render\3D\RenderTarget</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

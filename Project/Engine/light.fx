@@ -15,7 +15,8 @@
 // g_tex_1 : Normal Target Tex
 // g_tex_2 : Data Target Tex
 
-#define DepthMap                 g_tex_3
+#define DynamicDepthMap                  g_tex_3
+#define StaticDepthMap                 g_tex_4
 #define LightVP                  g_mat_0
 
 struct VS_IN
@@ -53,6 +54,10 @@ struct PS_OUT
 /*
 * RenderMgr_init.cpp
 * Position Tex, Normal Tex, Spec Tex
+*/
+
+/*
+* 투영 변환 -1 - 1, -1 - 1 -> 0 - 1900, 0 - 800
 */
 PS_OUT PS_DirLightShader(VS_OUT _in)
 {
@@ -92,8 +97,11 @@ PS_OUT PS_DirLightShader(VS_OUT _in)
     [unroll]
     for (int i = 0; i < 9; ++i)
     {
-        percentLit += DepthMap.SampleCmpLevelZero(g_sam_3,
-            vDepthMapUV.xy + offsets[i], vLightProj.z).r;
+        percentLit += StaticDepthMap.SampleCmpLevelZero(g_sam_3,
+            vDepthMapUV.xy + offsets[i], vLightProj.z - 0.0001f).r;
+
+        percentLit += DynamicDepthMap.SampleCmpLevelZero(g_sam_3,
+            vDepthMapUV.xy + offsets[i], vLightProj.z - 0.0001f).r;
     }
     //그림자에 가려진 정도
     percentLit /= 9.f;

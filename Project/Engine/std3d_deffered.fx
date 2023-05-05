@@ -5,6 +5,10 @@
 #include "struct.fx"
 #include "func.fx"
 
+/*
+* g_float_1 : fogStart
+* g_float_2 : fogRange
+*/
 struct VS_IN
 {
 	float3 vPos : POSITION;
@@ -114,6 +118,7 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in) : SV_Target
 
 		//vObjColor = g_tex_0.Sample(g_sam_0, _in.vUV);
 	}
+	clip(vObjColor.a - 0.1f);
 
 	float3 vNormal = _in.vViewNormal;
 
@@ -138,6 +143,17 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in) : SV_Target
 		};
 
 		vNormal = normalize(mul(vNormal, matTBN));
+	}
+
+	float3 toEye = _in.vViewPos;
+	float distToEye = length(toEye);
+
+	toEye /= distToEye;
+
+	if (g_int_0)
+	{
+		float fogLerp = saturate((distToEye - g_float_1) / g_float_2);
+		vObjColor = lerp(vObjColor, g_vec4_0, fogLerp);
 	}
 
 	output.vColor = vObjColor; //* g_vDiff;

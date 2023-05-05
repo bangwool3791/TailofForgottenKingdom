@@ -7,7 +7,9 @@ class CTrailComponent :
 	public CComponent
 {
 private:
-	Vec3 m_vOffsetPos;
+	bool m_bSwordTrail;
+	Vec3 m_vTopOffset;
+	Vec3 m_vBottomOffset;
 
 	Vec3 m_vUpperSwordPos;
 	Vec3 m_vUpperSwordRot;
@@ -22,8 +24,8 @@ private:
 	std::vector<Vec3>	m_vecSwordPos;
 
 	UINT				m_iBoneIdx = 0;
-	const UINT			m_iSwordTrailCount = 100;
-	UINT				m_iSwordTrailIdx = -1;
+	const UINT			m_iSwordTrailCount = 172;
+	int					m_iSwordTrailIdx = -1;
 public:
 	CStructuredBuffer* m_pTrailTime;
 	CStructuredBuffer* m_pSwordTrailTime;
@@ -57,8 +59,11 @@ public:
 
 	void PushSwordPos(Vec3 vPos);
 	
-	void SetOffsetPos(Vec3 _vPos) { m_vOffsetPos = _vPos; }
-	Vec3 GetOffsetPos() { return m_vOffsetPos; }
+	void SetTopOffsetPos(Vec3 _vPos) { m_vTopOffset = _vPos; }
+	Vec3 GetTopOffsetPos() { return m_vTopOffset; }
+
+	void SetBottomOffsetPos(Vec3 _vPos) { m_vBottomOffset = _vPos; }
+	Vec3 GetBottomOffsetPos() { return m_vBottomOffset; }
 
 	void SetUpperSwordPos(Vec3 _vPos) { m_vUpperSwordPos = _vPos; }
 	Vec3 GetUpperSwordPos() { return m_vUpperSwordPos; }
@@ -70,14 +75,8 @@ public:
 	void SetBottomSwordRot(Vec3 _vPos) { m_vBottomSwordRot = _vPos; }
 	Vec3 GetBottomSwordRot() { return m_vBottomSwordRot; }
 
-	void ClearSwordPos() 
-	{
-		std::queue<Vec3> garbage;
-		m_queSwordPos.swap(garbage);  
-		m_vecSwordPos.clear(); 
-		m_vecSwordPos.resize(100);
-		m_iSwordTrailIdx = 0;
-	}
+	void SetSwordTrail(bool _bTrail) { m_bSwordTrail = _bTrail; }
+	void ClearSwordPos();
 public:
 	CLONE(CTrailComponent);
 	CTrailComponent();

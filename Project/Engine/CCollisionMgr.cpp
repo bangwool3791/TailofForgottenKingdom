@@ -128,66 +128,121 @@ bool CCollisionMgr::IsCollision(CCollider3D* _pLeft, CCollider3D* _pRight)
 	// 3 --- 2	
 
 //#ifdef true
-	static const Vec3 arrLocalPos[4]
+
+	static const Vec3 arrLocalPos[8]
 		=
 	{
-		Vec3(-0.5f, 0.5f, 0.f),
-		Vec3(0.5f, 0.5f, 0.f),
-		Vec3(0.5f, -0.5f, 0.f),
-		Vec3(-0.5f, -0.5f, 0.f)
+		Vec3(-0.5f, 0.5f, -0.5f),
+		Vec3(0.5f, 0.5f, -0.5f),
+		Vec3(0.5f, 0.5f, 0.5f),
+		Vec3(-0.5f, 0.5f, 0.5f),
+		Vec3(-0.5f, -0.5f, -0.5f),
+		Vec3(0.5f, -0.5f, -0.5f),
+		Vec3(0.5f, -0.5f, 0.5f),
+		Vec3(-0.5f, -0.5f, 0.5f),
 	};
 
-
-	// 분리축 구하기
-	Vec3 vAxis[4] = {};
-
-	const Matrix& matLeft = _pLeft->GetWorldMat();
-	const Matrix& matRight = _pRight->GetWorldMat();
-
-	// 분리축 벡터 == 투영벡터
-	vAxis[0] = XMVector3TransformCoord(arrLocalPos[1], matLeft) - XMVector3TransformCoord(arrLocalPos[0], matLeft);
-	vAxis[1] = XMVector3TransformCoord(arrLocalPos[3], matLeft) - XMVector3TransformCoord(arrLocalPos[0], matLeft);
-	vAxis[2] = XMVector3TransformCoord(arrLocalPos[1], matRight) - XMVector3TransformCoord(arrLocalPos[0], matRight);
-	vAxis[3] = XMVector3TransformCoord(arrLocalPos[3], matRight) - XMVector3TransformCoord(arrLocalPos[0], matRight);
-	/*
-	* 마우스 드래그의 경우 월드 행렬 스케일이 없지만, 초기 위치가 플레이어 위치와 동일하여
-	* 충돌 판정이라고 코드가 판단 하므로 예외 처리 조건 추가
-	*/
-	Vec3 vecRight = matLeft.Right();
-	Vec3 vecUp = matLeft.Front();
-	
-	if (!vecRight.Length() && !vecUp.Length())
-		return false;
-
-	vecRight = matRight.Right();
-	vecUp = matRight.Front();
-
-	if (!vecRight.Length() && !vecUp.Length())
-		return false;
-
-	Vec3 vC = _pLeft->GetFinalPos() - _pRight->GetFinalPos() ;
-	Vec3 vCenterDir = Vec3{ vC.x, vC.y, vC.z };
-	
-	float fSum{ 0.f };
-
-	for (int i{ 0 }; i < 6; ++i)
+	if (_pLeft->GetCollider3DType() == COLLIDER3D_TYPE::COLLIDER3D_CUBE &&_pRight->GetCollider3DType() == COLLIDER3D_TYPE::COLLIDER3D_CUBE)
 	{
-		Vec3 vA = vAxis[i];
-		vA.Normalize();
+		// 분리축 구하기
+		static Vec3 vAxis[24] = {};
 
-		float fProjDist{ 0.f };
+		const Matrix& matLeft = _pLeft->GetWorldMat();
+		const Matrix& matRight = _pRight->GetWorldMat();
 
-		for (int j{ 0 }; j < 6; ++j)
-		{
-			fProjDist += fabsf(vAxis[j].Dot(vA)) /2.f;
-		}
+		// 분리축 벡터 == 투영벡터
+		//left cube
+		vAxis[0] = XMVector3TransformCoord(arrLocalPos[0], matLeft) - XMVector3TransformCoord(arrLocalPos[3], matLeft);
+		vAxis[1] = XMVector3TransformCoord(arrLocalPos[1], matLeft) - XMVector3TransformCoord(arrLocalPos[3], matLeft);
+		vAxis[2] = XMVector3TransformCoord(arrLocalPos[7], matLeft) - XMVector3TransformCoord(arrLocalPos[3], matLeft);
 
-		if (fProjDist < fabsf(vCenterDir.Dot(vA)))
-		{
+		vAxis[3] = XMVector3TransformCoord(arrLocalPos[0], matLeft) - XMVector3TransformCoord(arrLocalPos[1], matLeft);
+		vAxis[4] = XMVector3TransformCoord(arrLocalPos[2], matLeft) - XMVector3TransformCoord(arrLocalPos[1], matLeft);
+		vAxis[5] = XMVector3TransformCoord(arrLocalPos[5], matLeft) - XMVector3TransformCoord(arrLocalPos[1], matLeft);
+
+		vAxis[6] = XMVector3TransformCoord(arrLocalPos[2], matLeft) - XMVector3TransformCoord(arrLocalPos[6], matLeft);
+		vAxis[7] = XMVector3TransformCoord(arrLocalPos[5], matLeft) - XMVector3TransformCoord(arrLocalPos[6], matLeft);
+		vAxis[8] = XMVector3TransformCoord(arrLocalPos[7], matLeft) - XMVector3TransformCoord(arrLocalPos[6], matLeft);
+
+		vAxis[9] = XMVector3TransformCoord(arrLocalPos[0], matLeft) - XMVector3TransformCoord(arrLocalPos[4], matLeft);
+		vAxis[10] = XMVector3TransformCoord(arrLocalPos[5], matLeft) - XMVector3TransformCoord(arrLocalPos[4], matLeft);
+		vAxis[11] = XMVector3TransformCoord(arrLocalPos[7], matLeft) - XMVector3TransformCoord(arrLocalPos[4], matLeft);
+
+		//right cube
+		vAxis[12] = XMVector3TransformCoord(arrLocalPos[0], matRight) - XMVector3TransformCoord(arrLocalPos[3], matRight);
+		vAxis[13] = XMVector3TransformCoord(arrLocalPos[1], matRight) - XMVector3TransformCoord(arrLocalPos[3], matRight);
+		vAxis[14] = XMVector3TransformCoord(arrLocalPos[7], matRight) - XMVector3TransformCoord(arrLocalPos[3], matRight);
+
+		vAxis[15] = XMVector3TransformCoord(arrLocalPos[0], matRight) - XMVector3TransformCoord(arrLocalPos[1], matRight);
+		vAxis[16] = XMVector3TransformCoord(arrLocalPos[2], matRight) - XMVector3TransformCoord(arrLocalPos[1], matRight);
+		vAxis[17] = XMVector3TransformCoord(arrLocalPos[5], matRight) - XMVector3TransformCoord(arrLocalPos[1], matRight);
+
+		vAxis[18] = XMVector3TransformCoord(arrLocalPos[2], matRight) - XMVector3TransformCoord(arrLocalPos[6], matRight);
+		vAxis[19] = XMVector3TransformCoord(arrLocalPos[5], matRight) - XMVector3TransformCoord(arrLocalPos[6], matRight);
+		vAxis[20] = XMVector3TransformCoord(arrLocalPos[7], matRight) - XMVector3TransformCoord(arrLocalPos[6], matRight);
+
+		vAxis[21] = XMVector3TransformCoord(arrLocalPos[0], matRight) - XMVector3TransformCoord(arrLocalPos[4], matRight);
+		vAxis[22] = XMVector3TransformCoord(arrLocalPos[5], matRight) - XMVector3TransformCoord(arrLocalPos[4], matRight);
+		vAxis[23] = XMVector3TransformCoord(arrLocalPos[7], matRight) - XMVector3TransformCoord(arrLocalPos[4], matRight);
+		/*
+		* 마우스 드래그의 경우 월드 행렬 스케일이 없지만, 초기 위치가 플레이어 위치와 동일하여
+		* 충돌 판정이라고 코드가 판단 하므로 예외 처리 조건 추가
+		*/
+		Vec3 vecRight = matLeft.Right();
+		Vec3 vecUp = matLeft.Front();
+
+		if (!vecRight.Length() && !vecUp.Length())
 			return false;
+
+		vecRight = matRight.Right();
+		vecUp = matRight.Front();
+
+		if (!vecRight.Length() && !vecUp.Length())
+			return false;
+
+		Vec3 vC = _pLeft->GetFinalPos() - _pRight->GetFinalPos();
+		Vec3 vCenterDir = Vec3{ vC.x, vC.y, vC.z };
+
+		float fSum{ 0.f };
+
+		for (int i{ 0 }; i < 24; ++i)
+		{
+			Vec3 vA = vAxis[i];
+			vA.Normalize();
+
+			float fProjDist{ 0.f };
+
+			for (int j{ 0 }; j < 24; ++j)
+			{
+				fProjDist += fabsf(vAxis[j].Dot(vA)) / 2.f;
+			}
+
+			if (fProjDist < fabsf(vCenterDir.Dot(vA)))
+			{
+				return false;
+			}
 		}
+		return true;
 	}
-	return true;
+	else if (_pLeft->GetCollider3DType() == COLLIDER3D_TYPE::COLLIDER3D_SPHERE && _pRight->GetCollider3DType() == COLLIDER3D_TYPE::COLLIDER3D_SPHERE)
+	{
+		Vec3 vLeftPos = _pLeft->Transform()->GetRelativePos();
+		Vec3 vRightPos = _pRight->Transform()->GetRelativePos();
+
+		Vec3 vLeftScale = _pLeft->GetScale();
+		Vec3 vRightScale = _pRight->GetScale();
+
+		float fScaleDistance = vLeftScale.Distance(vLeftScale, vRightScale);
+		float fDistance = vLeftPos.Distance(vLeftPos, vRightPos);
+
+		if (fDistance <= fScaleDistance)
+		{
+			return true;
+		}
+
+		return false;
+	}
+	return false;
 }
 
 void CCollisionMgr::CollisionLayerCheck(int _iLeft, int _iRight)

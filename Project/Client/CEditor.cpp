@@ -92,6 +92,7 @@ void CEditor::init()
 		pLandScape->LandScape()->SetFaceCount(g_FaceCount, g_FaceCount);
 		pLandScape->LandScape()->SetFrustumCulling(false);
 		pLandScape->LandScape()->SetCameraObj((CGameObject*)m_pCameraObject);
+		pLandScape->LandScape()->SetShadowType(ShadowType::STATIC);
 		pLandScape->finaltick();
 		//pLandScape->SetType(OBJ_TYPE::EDIT);
 		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"EditLandScape", pLandScape);
@@ -104,7 +105,7 @@ void CEditor::init()
 		pObject->AddComponent(new CTransform);
 		pObject->AddComponent(new CDecal);
 		pObject->AddComponent(new CBrushScript);
-		pObject->GetRenderComponent()->SetDynamicShadow(false);
+		pObject->GetRenderComponent()->SetShadowType(ShadowType::NONE);
 		pObject->Transform()->SetRelativePos(Vec3(0.f, -200.f, 400.f));
 		float fScale = g_BrushScale * g_LandScale * g_FaceCount;
 		pObject->Transform()->SetRelativeScale(Vec3{ fScale, fScale, fScale });
@@ -117,6 +118,31 @@ void CEditor::init()
 		pLandScapeUI->begin();
 		ContentUI* pContentUI = (ContentUI*)CImGuiMgr::GetInst()->FindUI("ContentUI");
 		pContentUI->begin();
+	}
+
+	{
+		pObject = new CGameObjectEx;
+		pObject->SetName(L"FogObject");
+
+		pObject->AddComponent(new CTransform);
+		pObject->AddComponent(new CMeshRender);
+		pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"RectMesh"));
+		pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"FogMtrl"), 0);
+		int iUseFog = 1;
+		float fFogStart = 1000.f;
+		float fFogDistance = 1000.f;
+		Vec4 vFogColor(0.5f, 0.5f, 0.5f, 0.5);
+		pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_1, CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex"));
+		pObject->MeshRender()->GetCurMaterial(0)->SetScalarParam(INT_0, &iUseFog);
+		pObject->MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_0, &fFogStart);
+		pObject->MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_1, &fFogDistance);
+		pObject->MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_0, &vFogColor);
+
+		pObject->GetRenderComponent()->SetShadowType(ShadowType::NONE);
+		pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+		pObject->Transform()->SetRelativeScale(Vec3(500.f, 500.f, 0.f));
+
+		m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"FogObject", pObject);
 	}
 
 	{
@@ -482,9 +508,10 @@ void CEditor::CreatePlayer()
 			pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 			pObject->Transform()->SetRelativeScale(Vec3(1.f, 1.f, 1.f));
 
+			pObject->MeshRender()->SetShadowType(ShadowType::NONE);
 			pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"PointMesh"));
 			pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"SwordTrailMtrl"), 0);
-			pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\particle\\SwordTrail.png"));
+			pObject->MeshRender()->GetCurMaterial(0)->SetTexParam(TEX_0, CResMgr::GetInst()->FindRes<CTexture>(L"texture\\particle\\T_Gradient_Opa03.png"));
 			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"SwordTrail", pObject);
 		}
 
@@ -497,6 +524,7 @@ void CEditor::CreatePlayer()
 			pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 			pObject->Transform()->SetRelativeScale(Vec3(50.f, 50.f, 50.f));
 
+			pObject->MeshRender()->SetShadowType(ShadowType::NONE);
 			pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
 			pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
 			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"SwordTrailUppder", pObject);
@@ -511,6 +539,7 @@ void CEditor::CreatePlayer()
 			pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 			pObject->Transform()->SetRelativeScale(Vec3(50.f, 50.f, 50.f));
 
+			pObject->MeshRender()->SetShadowType(ShadowType::NONE);
 			pObject->MeshRender()->SetMesh(CResMgr::GetInst()->FindRes<CMesh>(L"CubeMesh"));
 			pObject->MeshRender()->SetSharedMaterial(CResMgr::GetInst()->FindRes<CMaterial>(L"ColorMtrl"), 0);
 			m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"SwordTrailBottom", pObject);
@@ -527,7 +556,25 @@ void CEditor::CreatePlayer()
 			delete pObj;
 			pObject->SetName(L"Player1");
 			pObject->begin();
+			pObject->MeshRender()->SetShadowType(ShadowType::DYNAMIC);
+
 			m_pCameraObject->GetScript<CCameraScript>(L"CCameraScript")->SetPlayer(pObject);
+			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObject);
+		}
+
+		{
+			CSaveLoadMgr::GetInst()->LoadPrefab();
+			Ptr<CPrefab> pPrefab = CResMgr::GetInst()->FindRes<CPrefab>(L"Test0Prefab");
+
+			CGameObject* pObj = pPrefab->Instantiate();
+			pObject = new CGameObjectEx(*pObj);
+
+			delete pObj;
+			pObject->Transform()->SetRelativeRotationY(XM_PI);
+			pObject->SetName(L"Test0Prefab");
+			pObject->begin();
+			pObject->MeshRender()->SetShadowType(ShadowType::STATIC);
+
 			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObject);
 		}
 	}

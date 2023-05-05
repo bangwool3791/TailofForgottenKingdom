@@ -23,7 +23,7 @@ private:
     void Set_Animation_Key(const wstring& _strKey);
     void Set_Animation_Time(float);
     void Move();
-    bool IsAnimationEnd();
+    bool ClearAnimation();
     void Test();
 private:
     void SaveToFile(FILE* _File);

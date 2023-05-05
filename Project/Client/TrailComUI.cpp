@@ -23,14 +23,24 @@ void TrailComUI::render_update()
 
 	if (GetTarget() && GetTarget()->TrailComponent())
 	{
-		ImGui::Text("OffsetPos"); ImGui::SameLine(); 
+		ImGui::Text("TopOffsetPos"); ImGui::SameLine(); 
 		
-		static Vec3 vOffset{};
-		vOffset = GetTarget()->TrailComponent()->GetOffsetPos();
+		static Vec3 vTopOffset{};
+		vTopOffset = GetTarget()->TrailComponent()->GetTopOffsetPos();
 
-		if (ImGui::InputFloat3("##OffsetPos", vOffset))
+		if (ImGui::InputFloat3("##OffsetPos1", vTopOffset))
 		{
-			GetTarget()->TrailComponent()->SetOffsetPos(vOffset);
+			GetTarget()->TrailComponent()->SetTopOffsetPos(vTopOffset);
+		}
+
+		ImGui::Text("BottomOffsetPos"); ImGui::SameLine();
+
+		static Vec3 vBottomOffset{};
+		vBottomOffset = GetTarget()->TrailComponent()->GetBottomOffsetPos();
+
+		if (ImGui::InputFloat3("##OffsetPos2", vBottomOffset))
+		{
+			GetTarget()->TrailComponent()->SetBottomOffsetPos(vBottomOffset);
 		}
 	}
 }

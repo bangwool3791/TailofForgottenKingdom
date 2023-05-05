@@ -402,5 +402,8 @@ bool CGameObject::DeleteScript(const string& _strName)
 
 void CGameObject::DeleteChildsAll()
 {
+	for (UINT i = 0; i < m_vecChild.size(); ++i)
+		Safe_Delete(m_vecChild[i]);
+
 	m_vecChild.clear();
 }

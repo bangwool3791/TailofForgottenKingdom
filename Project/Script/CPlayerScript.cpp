@@ -59,9 +59,9 @@ void CPlayerScript::tick()
 	if(!m_bAttack && !m_bJump)
 		Move();
 
-	//IsAnimationEnd에 걸린 경우 m_bAttack true 이므로 false 초기화
+	//ClearAnimation에 걸린 경우 m_bAttack true 이므로 false 초기화
 	//!m_bAttack Move에서 애니메이션 방복하고, 이전 프레임에 공격이 끝났었음
-	if ((!m_bJump) || (IsAnimationEnd() && !m_bJump))
+	if ((!m_bJump) || (ClearAnimation() && !m_bJump))
 	{
 		m_bAttack = false;
 
@@ -179,7 +179,7 @@ void CPlayerScript::Set_Animation_Time(float _fTime)
 	for (UINT i = 0; i < m_vecAnimation.size(); ++i)
 		m_vecAnimation[i]->SetTimeScale(_fTime);
 }
-bool CPlayerScript::IsAnimationEnd()
+bool CPlayerScript::ClearAnimation()
 {
 	if (GetOwner()->Animator3D()->IsEnd())
 	{
@@ -310,7 +310,7 @@ void CPlayerScript::Move()
 			Set_Animation_Key(L"walk-right");
 		}
 
-	if (!m_bJump && IsAnimationEnd())
+	if (!m_bJump && ClearAnimation())
 	{
 		iMoveCount = 0;
 	}

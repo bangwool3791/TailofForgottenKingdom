@@ -16,13 +16,13 @@ CTrailComponent::CTrailComponent()
 
 	m_vecTrailTime.resize(10);
 	m_vecSwordTrailTime.resize(10);
-	m_vecSwordPos.resize(100);
+	m_vecSwordPos.resize(172);
 
 	m_pTrailTime->Create(sizeof(float), m_vecTrailTime.size(), SB_TYPE::UAV_INC, m_vecTrailTime.data(), true);
 	m_pSwordTrailTime->Create(sizeof(float), m_vecSwordTrailTime.size(), SB_TYPE::UAV_INC, m_vecSwordTrailTime.data(), true);
 	m_pSwordPos->Create(sizeof(Vec3), m_vecSwordPos.size(), SB_TYPE::SRV_ONLY, m_vecSwordPos.data(), true);
 
-	m_vOffsetPos.z = 500.f;
+	m_vTopOffset.z = 500.f;
 }
 
 CTrailComponent::CTrailComponent(const CTrailComponent& rhs)
@@ -30,6 +30,8 @@ CTrailComponent::CTrailComponent(const CTrailComponent& rhs)
 	,m_vecTrailTime(rhs.m_vecTrailTime)
 	,m_vecSwordTrailTime(rhs.m_vecSwordTrailTime)
 	,m_vecSwordPos(rhs.m_vecSwordPos)
+	, m_vTopOffset(rhs.m_vTopOffset)
+	, m_iSwordTrailIdx(rhs.m_iSwordTrailIdx)
 {
 	m_pTrailTime = new CStructuredBuffer;
 	m_pSwordTrailTime = new CStructuredBuffer;
@@ -54,7 +56,6 @@ void CTrailComponent::begin()
 
 void CTrailComponent::tick()
 {
-
 }
 
 void CTrailComponent::finaltick()
@@ -79,8 +80,8 @@ void CTrailComponent::UpdateData()
 			m_queSwordPos.push(vPos);
 		}
 
-		int iSize = m_queSwordPos.size();
-		MeshRender()->GetCurMaterial(0)->SetScalarParam(INT_0, &iSize);
+		float iSize = m_queSwordPos.size();
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_0, &iSize);
 
 		m_pSwordPos->SetData(m_vecSwordPos.data(), m_vecSwordPos.size());
 		m_pSwordPos->UpdateData(65, PIPELINE_STAGE::GS);
@@ -102,9 +103,9 @@ void CTrailComponent::UpdateData()
 		Matrix matAnimation = m_vecBoneSocket[m_iBoneIdx];
 		Matrix matWorld = Transform()->GetWorldMat();
 
-		matOffset.m[3][0] += m_vOffsetPos.x;
-		matOffset.m[3][1] += m_vOffsetPos.y;
-		matOffset.m[3][2] += m_vOffsetPos.z;
+		matOffset.m[3][0] = m_vTopOffset.x;
+		matOffset.m[3][1] = m_vTopOffset.y;
+		matOffset.m[3][2] = m_vTopOffset.z;
 
 		vWorldPos.x = matWorld.m[3][0];
 		vWorldPos.y = matWorld.m[3][1];
@@ -124,11 +125,11 @@ void CTrailComponent::UpdateData()
 		m_vUpperSwordPos = vTrans;
 		m_vUpperSwordPos += vWorldPos;
 
-		matOffset.m[3][0] = 0.f;
-		matOffset.m[3][1] = 0.f;
-		matOffset.m[3][2] = 0.f;
+		matOffset.m[3][0] = m_vBottomOffset.x;
+		matOffset.m[3][1] = m_vBottomOffset.y;
+		matOffset.m[3][2] = m_vBottomOffset.z;
 
-		mat = matAnimation * matWorld;
+		mat = matOffset * matAnimation * matWorld;
 		XMMatrixDecompose(&vScale, &vRot, &vTrans, mat);
 		m_vBottomSwordRot = vRot;
 		m_vBottomSwordPos = vTrans;
@@ -191,9 +192,24 @@ void CTrailComponent::PushSwordPos(Vec3 vPos)
 		m_queSwordPos.push(vPos);
 		++m_iSwordTrailIdx;
 	}
-
+	//cout << "큐 사이즈 " << m_queSwordPos.size() << endl;
 	//m_pSwordPos->Create(sizeof(float) * 3, m_vecSwordPos.size(), SB_TYPE::UAV_INC, m_vecSwordPos.data(), true);
 	//m_pSwordPos->SetData(m_vecSwordPos.data(), m_vecSwordPos.size());
+}
+
+void CTrailComponent::ClearSwordPos()
+{
+	m_iSwordTrailIdx = 0;
+
+	m_bSwordTrail = false;
+
+	if (m_queSwordPos.empty())
+		return;
+
+	std::queue<Vec3> garbage;
+	m_queSwordPos.swap(garbage);
+	m_vecSwordPos.clear();
+	m_vecSwordPos.resize(172);
 }
 
 void CTrailComponent::SaveToFile(FILE* _File)

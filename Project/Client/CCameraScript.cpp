@@ -2,6 +2,7 @@
 #include "CCameraScript.h"
 #include "CEditor.h"
 #include "CGameObjectEx.h"
+#include "CPlayerTestScript.h"
 
 #include <Engine\CTransform.h>
 
@@ -48,6 +49,8 @@ void CCameraScript::Move()
 		//Vec3 vUp = m_pPlayer->Transform()->GetRelativeDir(DIR::UP);
 		Vec3 vTarget = m_pPlayer->Transform()->GetRelativePos();
 		Vec3 vRot = m_pPlayer->Transform()->GetRelativeRotation();
+		static CAM_DIR eDir = m_pPlayer->GetScript<CPlayerTestScript>()->GetDir();
+		CAM_DIR _eDir = m_pPlayer->GetScript<CPlayerTestScript>()->GetDir();
 
 		//Distance
 		{
@@ -71,10 +74,10 @@ void CCameraScript::Move()
 				}
 				else
 				{
-					if(100.f < vPos.Distance(vPos, vTarget))
-						m_fDistance -= DT * vPos.Distance(vPos, vTarget);
-					else
-						m_fDistance -= DT * 100.f;
+					//if(100.f < vPos.Distance(vPos, vTarget))
+						m_fDistance -= DT * vPos.Distance(vPos, vTarget) * 0.3f;
+					//else
+					//	m_fDistance -= DT * 100.f;
 
 					if (vPos.Distance(vPos, vTarget) < 983.f)
 					{
@@ -159,16 +162,56 @@ void CCameraScript::Move()
 		static bool bInit = true;
 		if (bDis || bInit || bRot || m_eProc != CamProc::END)
 		{
-			vTarget.x -= m_fDistance * sinf(m_vRot.y - XM_PI);
-			vTarget.y += 600.f;
-			vTarget.z -= m_fDistance * cosf(m_vRot.y - XM_PI);
+			if (eDir == CAM_DIR::FRONT)
+			{
+				vTarget.x += m_fDistance * sinf(m_vRot.y);
+				vTarget.y += 600.f;
+				vTarget.z += m_fDistance * cosf(m_vRot.y);
+				Transform()->SetRelativePos(vTarget);
+			}
+			else if (eDir == CAM_DIR::BACK)
+			{
+				vTarget.x -= m_fDistance * sinf(m_vRot.y);
+				vTarget.y += 600.f;
+				vTarget.z -= m_fDistance * cosf(m_vRot.y);
+				Transform()->SetRelativePos(vTarget);
+			}
 			Transform()->SetRelativePos(vTarget);
 			bInit = false;
 		}
 
-		Transform()->SetRelativeRotationX(XM_PI / 6.f);
-		Transform()->SetRelativeRotationY(m_vRot.y - XM_PI);
-		Transform()->SetRelativeRotationZ(m_vRot.z);
+		if (eDir != _eDir)
+		{
+			eDir = _eDir;
+
+			if (eDir == CAM_DIR::FRONT)
+			{
+				vTarget.x += 700.f * sinf(m_vRot.y);
+				vTarget.y += 600.f;
+				vTarget.z += 700.f * cosf(m_vRot.y);
+				Transform()->SetRelativePos(vTarget);
+			}
+			else if (eDir == CAM_DIR::BACK)
+			{
+				vTarget.x -= 700.f * sinf(m_vRot.y);
+				vTarget.y += 600.f;
+				vTarget.z -= 700.f * cosf(m_vRot.y);
+				Transform()->SetRelativePos(vTarget);
+			}
+		}
+
+		if (eDir == CAM_DIR::FRONT)
+		{
+			Transform()->SetRelativeRotationX(XM_PI / 6.f);
+			Transform()->SetRelativeRotationY(m_vRot.y + XM_PI);
+			Transform()->SetRelativeRotationZ(m_vRot.z);
+		}
+		else if (eDir == CAM_DIR::BACK)
+		{
+			Transform()->SetRelativeRotationX(XM_PI / 6.f);
+			Transform()->SetRelativeRotationY(m_vRot.y);
+			Transform()->SetRelativeRotationZ(m_vRot.z);
+		}
 		//Transform()->SetRelativeRotation(m_vRot.x + XM_PI / 6.f, m_vRot.y, m_vRot.z);
 
 		if (KEY_PRESSED(KEY::SPACE))

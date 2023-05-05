@@ -51,7 +51,7 @@ enum class SHADER_DOMAIN
 	DOMAIN_DEFERRED_OPAQUE,		// 지연 렌더링
 	DOMAIN_DEFERRED_MASK,		// 지연 렌더링
 	DOMAIN_DEFERRED_DECAL,		// 지연 렌더링
-
+	DOMAIN_FOG,
 	DOMAIN_OPAQUE,		 // 불투명 단계
 	DOMAIN_MASK,		 // 출력, 비출력
 	DOMAIN_DECAL,		// 데칼 처리
@@ -391,13 +391,15 @@ enum class MRT_TYPE
 	HDR,
 	BLUR,
 	BLOOM,
-	SHADOW,
+	SHADOW_STATIC,
+	SHADOW_DYNAMIC,
 	FRONT,
 	BACK,
 	LEFT,
 	RIGHT,
 	UP,
 	DOWN,
+	FOG,
 	END,
 };
 
@@ -419,6 +421,12 @@ enum PhysType
 	LASER
 };
 
+enum class ShadowType
+{
+	DYNAMIC,
+	STATIC,
+	NONE,
+};
 extern const char* COMPONENT_TYPE_CHAR[(UINT)COMPONENT_TYPE::END];
 extern const wchar_t* COMPONENT_TYPE_WCHAR[(UINT)COMPONENT_TYPE::END];
 

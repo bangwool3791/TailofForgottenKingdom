@@ -23,10 +23,11 @@ public:
 	CRenderComponent(const CRenderComponent& rhs);
 	virtual ~CRenderComponent();
 private:
+	bool					m_bDynamicShadow;
+	bool                    m_bUseFrustumCulling;
 	Ptr<CMesh>				m_pMesh;
 	vector<tMtrlSet>        m_vecMtrls;     // ÀçÁú    
-	bool                    m_bUseFrustumCulling;
-	bool                    m_bDynamicShadow;
+	ShadowType              m_eShadowType;
 public:
 	void SetMesh(Ptr<CMesh> _pMesh);
 	Ptr<CMesh> GetMesh() { return m_pMesh; }
@@ -51,8 +52,8 @@ protected:
 public:
 	void SetInstancingType(INSTANCING_TYPE _eType) { m_eInsType = _eType; }
 	INSTANCING_TYPE GetInstancingType() { return m_eInsType; }
-	void SetDynamicShadow(bool _bSet) { m_bDynamicShadow = _bSet; }
-	bool IsDynamicShadow() { return m_bDynamicShadow; }
+	void SetShadowType(ShadowType eType) { m_eShadowType = eType; }
+	ShadowType GetShadowType() { return m_eShadowType; }
 public:
 	virtual void SaveToFile(FILE* _File) override;
 	virtual void LoadFromFile(FILE* _File) override;

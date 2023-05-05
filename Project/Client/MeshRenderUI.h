@@ -11,6 +11,7 @@ class MeshRenderUI :
 private:
     Ptr<CMesh>          m_Mesh;
     Ptr<CMaterial>      m_Mtrl;
+    ShadowType          m_eShadowType;
 
 
 public:

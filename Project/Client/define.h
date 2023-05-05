@@ -9,3 +9,11 @@ enum class EDIT_MODE
 	OBJECT,
 	END,
 };
+
+enum class CAM_DIR
+{
+    FRONT,
+    BACK,
+    LEFT,
+    RIGHT,
+};

@@ -34,6 +34,8 @@ private:
 	vector<tDebugShapeInfo>		m_DebugDrawInfo;	// 현재 레벨에 있는 모든 카메라
 
 	Ptr<CTexture>				m_RTCopyTex;
+	Ptr<CTexture>				m_CopyColorTex;
+	Ptr<CTexture>				m_CopyPositionTex;
 public:
 	void RegisterCamera(auto _pCam) { m_vecCam.push_back(_pCam); }
 	void RegisterLight2D(auto _pLight) { m_vecLight2D.push_back(_pLight); }
@@ -45,6 +47,8 @@ public:
 	void RegisterEditCam(auto _pCam) { m_EditorCam = _pCam; }
 	// 렌더타겟을 카피텍스쳐로 복사
 	void CopyRenderTarget();
+	void CopyColorTarget();
+	void CopyPositionTarget();
 	void SetEnvCamera(CCamera* pCam) { m_EnvCam = pCam; }
 	CCamera* GetMainCam();
 	CMRT* GetMRT(MRT_TYPE _type) { return m_arrMRT[(UINT)_type]; }
@@ -74,6 +78,10 @@ public:
 	void render_editor(const vector<CGameObject*>& obj);
 	void render_dynamic_shadowdepth();
 	void render_dynamic_shadowdepth(const vector<CGameObject*>& obj);
+
+	void render_static_shadowdepth();
+	void render_static_shadowdepth(const vector<CGameObject*>& obj);
+
 	void CreateMRT();
 	void CreateMRT(const wstring& wstr, MRT_TYPE eType);
 	void ClearMRT();

@@ -118,6 +118,9 @@ void PhysXMgr::update()
 
             assert(0xffff != shot->idx);
             // Check if the particle is now invalid
+            if (nullptr == m_vecTransform[shot->idx])
+                continue;
+
             Vec3 vPos = m_vecTransform[shot->idx]->GetRelativePos();
 
             if (m_pMesh->IsNavJumpValid(vPos) &&

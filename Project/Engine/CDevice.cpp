@@ -313,11 +313,11 @@ int CDevice::CreateRasterizerState()
 
 	hr = DEVICE->CreateRasterizerState(&desc, m_arrRS[(UINT)RS_TYPE::WIRE_FRAME].GetAddressOf());
 
-	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
 	desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	desc.DepthBias = 1000000;
-	desc.DepthBiasClamp = 100000.f;
-	desc.SlopeScaledDepthBias = 1.f;
+	desc.DepthBias = 0xffffffff - 1;
+	desc.DepthBiasClamp = 0x0fffffff;
+	desc.SlopeScaledDepthBias = 0x0fffffff;
 
 	hr = DEVICE->CreateRasterizerState(&desc, m_arrRS[(UINT)RS_TYPE::SHADOW].GetAddressOf());
 

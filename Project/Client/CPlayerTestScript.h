@@ -9,8 +9,12 @@ class CPlayerTestScript :
     public CScript
 {
 private:
+    bool                    m_bDash[4];
+    bool                    m_bRoll[2];
+    bool                    m_bRollAttack;
     bool                    m_bAirDash;
     bool                    m_bAttack;
+    bool                    m_bSwordTrail = false;
     bool                    m_bJump;
     UINT                    m_iLButtonCount = 0;
     float                   m_fAccTime;
@@ -18,6 +22,7 @@ private:
     float                   m_fJumpHeight;
     float                   m_fAttackDelay = 1.f;
     float                   m_fSworTrailSpeed = 1.f;
+    CAM_DIR                 m_eDir = CAM_DIR::FRONT;
     Vec3                    m_vPos;
     Ptr<CPrefab>            m_Prefab;
     Ptr<CMesh>              m_pTriangleMesh;
@@ -33,12 +38,28 @@ private:
     vector<CGameObjectEx*>   m_vecObjTrail;
     vector<CGameObjectEx*>   m_vecSwordTrail;
     
+    void Attack();
+    void Dir();
+    void Jump();
+    void Etc();
     void Set_Animation_Key(const wstring& _strKey);
     void Set_Animation_Time(float);
     void Move();
-    bool IsAnimationEnd();
+    void TrailProcedure();
+    bool ClearAnimation();
     void PlayerTrail();
-    void SwordTrail();
+
+    bool IsDash();
+    void ClearDash();
+
+    UINT GetDashDir();
+
+    bool IsRoll();
+    void ClearRoll();
+
+    UINT GetRollDir();
+public:
+    CAM_DIR GetDir() { return m_eDir; }
 private:
     void SaveToFile(FILE* _File);
     void LoadFromFile(FILE* _File);

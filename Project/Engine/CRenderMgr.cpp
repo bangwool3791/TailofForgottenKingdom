@@ -106,6 +106,7 @@ void CRenderMgr::render(const vector<CGameObject*>& obj)
 void CRenderMgr::render_game()
 {
 	render_dynamic_shadowdepth();
+	render_static_shadowdepth();
 
 	for (auto elem{ m_vecCam.begin() }; elem != m_vecCam.end(); ++elem)
 	{
@@ -119,6 +120,7 @@ void CRenderMgr::render_editor()
 {
 	assert(m_EditorCam);
 	render_dynamic_shadowdepth();
+	render_static_shadowdepth();
 
 	m_EditorCam->EditorRender();
 }
@@ -127,6 +129,7 @@ void CRenderMgr::render_editor(const vector<CGameObject*>& obj)
 {
 	assert(m_EditorCam);
 	render_dynamic_shadowdepth(obj);
+	render_static_shadowdepth(obj);
 
 	m_EditorCam->EditorRender();
 }
@@ -134,24 +137,53 @@ void CRenderMgr::render_editor(const vector<CGameObject*>& obj)
 
 void CRenderMgr::render_dynamic_shadowdepth()
 {
-	m_arrMRT[(UINT)MRT_TYPE::SHADOW]->OMSet();
+	m_arrMRT[(UINT)MRT_TYPE::SHADOW_DYNAMIC]->OMSet();
 
 	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
 	{
 		if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
-			m_vecLight3D[i]->render_depthmap();
+			m_vecLight3D[i]->render_dynamic_depthmap();
 	}
 }
 
 void CRenderMgr::render_dynamic_shadowdepth(const vector<CGameObject*>& obj)
 {
-	m_arrMRT[(UINT)MRT_TYPE::SHADOW]->OMSet();
+		m_arrMRT[(UINT)MRT_TYPE::SHADOW_DYNAMIC]->OMSet();
+
+		for (size_t i = 0; i < m_vecLight3D.size(); ++i)
+		{
+			if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
+				m_vecLight3D[i]->render_dynamic_depthmap(obj);
+		}
+}
+
+void CRenderMgr::render_static_shadowdepth()
+{
+	m_arrMRT[(UINT)MRT_TYPE::SHADOW_STATIC]->OMSet();
 
 	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
 	{
 		if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
-			m_vecLight3D[i]->render_depthmap(obj);
+			m_vecLight3D[i]->render_static_depthmap();
 	}
+}
+
+void CRenderMgr::render_static_shadowdepth(const vector<CGameObject*>& obj)
+{
+	static bool bCheck = false;
+
+	if (!bCheck)
+	{
+		m_arrMRT[(UINT)MRT_TYPE::SHADOW_STATIC]->OMSet();
+
+		for (size_t i = 0; i < m_vecLight3D.size(); ++i)
+		{
+			if (LIGHT_TYPE::DIRECTIONAL == m_vecLight3D[i]->GetLightType())
+				m_vecLight3D[i]->render_static_depthmap(obj);
+		}
+		bCheck = true;
+	}
+
 }
 
 void CRenderMgr::render_env(const vector<CGameObject*>& obj, const wstring& texName, wstring path)
@@ -276,6 +308,32 @@ void CRenderMgr::CopyRenderTarget()
 	CONTEXT->CopyResource(m_RTCopyTex->GetTex2D().Get(), RTTex->GetTex2D().Get());
 
 	m_RTCopyTex->UpdateData(60, PIPELINE_STAGE::PS);
+}
+
+void CRenderMgr::CopyColorTarget()
+{
+	static Ptr<CTexture> RTTex = CResMgr::GetInst()->FindRes<CTexture>(L"ColorTargetTex");
+
+	ID3D11ShaderResourceView* SRV = nullptr;
+
+	CONTEXT->PSSetShaderResources(66, 1, &SRV);
+
+	CONTEXT->CopyResource(m_CopyColorTex->GetTex2D().Get(), RTTex->GetTex2D().Get());
+
+	m_CopyColorTex->UpdateData(66, PIPELINE_STAGE::PS);
+}
+
+void CRenderMgr::CopyPositionTarget()
+{
+	static Ptr<CTexture> RTTex = CResMgr::GetInst()->FindRes<CTexture>(L"PositionTargetTex");
+
+	ID3D11ShaderResourceView* SRV = nullptr;
+
+	CONTEXT->PSSetShaderResources(67, 1, &SRV);
+
+	CONTEXT->CopyResource(m_CopyPositionTex->GetTex2D().Get(), RTTex->GetTex2D().Get());
+
+	m_CopyPositionTex->UpdateData(67, PIPELINE_STAGE::PS);
 }
 
 CCamera* CRenderMgr::GetMainCam()

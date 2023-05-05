@@ -417,6 +417,17 @@ int IntersectsLay(float3 _vertices[3], float3 _vStart, float3 _vDir, out float3 
     return 1;
 }
 
+float3 cubicSpline(float t, float3 p0, float3 p1, float3 p2, float3 p3)
+{
+    float3 a = p3 - 3.0 * p2 + 3.0 * p1 - p0;
+    float3 b = 3.0 * p2 - 6.0 * p1 + 3.0 * p0;
+    float3 c = 3.0 * p1 - 3.0 * p0;
+    float3 d = p0;
+
+    float3 interpolatedPoint = a * t * t * t + b * t * t + c * t + d;
+
+    return interpolatedPoint;
+}
 #endif
 
 

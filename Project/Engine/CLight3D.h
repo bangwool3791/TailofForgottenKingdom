@@ -18,7 +18,7 @@ private:
 
     int             m_iLightIdx;    // 광원 버퍼에서의 인덱스
 
-    CGameObject*    m_pLightCam;    // 광원 시점용 카메라
+    CGameObject* m_pLightCam;    // 광원 시점용 카메라
 public:
     const tLightInfo& GetLightInfo() { return m_Info; }
 
@@ -39,8 +39,11 @@ public:
 public:
     virtual void finaltick() override;
     void render();
-    void render_depthmap();
-    void render_depthmap(const vector<CGameObject*>& obj);
+    void render_static_depthmap();
+    void render_static_depthmap(const vector<CGameObject*>& obj);
+
+    void render_dynamic_depthmap();
+    void render_dynamic_depthmap(const vector<CGameObject*>& obj);
 public:
     virtual void SaveToFile(FILE* _File) override;
     virtual void LoadFromFile(FILE* _File) override;

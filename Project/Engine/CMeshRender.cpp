@@ -80,6 +80,7 @@ void CMeshRender::render()
 	{
 		TrailComponent()->UpdateData();
 	}
+
 	Transform()->UpdateData();
 	// 사용할 재질 업데이트
 	UINT iSubsetCount = GetMesh()->GetSubsetCount();

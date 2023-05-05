@@ -58,8 +58,9 @@ private:
     vector<CGameObject*>                     m_vecDecal;
     vector<CGameObject* >                    m_vecTransparent;
     vector<CGameObject*>                     m_vecDynamicShadow;     // 동적 그림자 물체
+    vector<CGameObject*>                     m_vecStaticShadow;     // 동적 그림자 물체
     vector<CGameObject* >                    m_vecUi;
-
+    vector<CGameObject* >                    m_vecFog;
     CStructuredBuffer* m_pObjectRenderBuffer;
 
 private:
@@ -72,6 +73,7 @@ private:
     //void render_mask();
     void render_forward();
     void render_decal();
+    void render_fog();
     void render_transparent();
     void render_postprocess();
     void render_ui();
@@ -86,7 +88,8 @@ public:
     void            SortObject(const vector<CGameObject*>& vec);
     void            SortShadowObject();
     void            SortShadowObject(const vector<CGameObject*>& vec);
-    void            render_depthmap();
+    void            render_static_depthmap();
+    void            render_dynamic_depthmap();
 public:
     void CalcViewMat();
     void CalcProjMat();

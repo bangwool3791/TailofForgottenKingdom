@@ -112,6 +112,41 @@ void MeshRenderUI::render_update()
 				GetTarget()->MeshRender()->Activate();
 		}
 
+		m_eShadowType = GetTarget()->MeshRender()->GetShadowType();
+
+		const char* items[] = { "dynamic", "static", "none" };
+		static int item_current_idx = 0; // Here we store our selection data as an index.
+		const char* combo_preview_value = items[item_current_idx];  // Pass in the preview value visible before opening the combo (it could be anything)
+		
+		item_current_idx = (int)GetTarget()->MeshRender()->GetShadowType();
+
+		if (ImGui::BeginCombo("Shadow Render Type", combo_preview_value, 0))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (item_current_idx == n);
+				if (ImGui::Selectable(items[n], is_selected))
+					item_current_idx = n;
+
+				if (0 == item_current_idx)
+				{
+					GetTarget()->MeshRender()->SetShadowType(ShadowType::DYNAMIC);
+				}
+				else if (1 == item_current_idx)
+				{
+					GetTarget()->MeshRender()->SetShadowType(ShadowType::STATIC);
+				}
+				else if (2 == item_current_idx)
+				{
+					GetTarget()->MeshRender()->SetShadowType(ShadowType::NONE);
+				}
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
 	}
 }
 

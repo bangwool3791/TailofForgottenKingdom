@@ -521,7 +521,8 @@ call EngineCopy.bat</Command>
       </ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="particleupdatewood.fx" />
-    <FxCompile Include="postpocess3d.fx" />
+    <FxCompile Include="postprocess.fx" />
+    <FxCompile Include="swordtrail.fx" />
     <FxCompile Include="raycast.fx" />
     <FxCompile Include="reflection.fx" />
     <FxCompile Include="reflection2.fx" />

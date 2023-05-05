@@ -65,6 +65,7 @@ CAnimator3D::~CAnimator3D()
 
 void CAnimator3D::begin()
 {
+	m_dInterval = (1 / (double)m_iFrameCount) * m_fTimeScale;
 }
 
 void CAnimator3D::finaltick()
@@ -85,7 +86,6 @@ void CAnimator3D::finaltick()
 		m_dCurTime = m_pVecClip->at(m_iCurClip).dStartTime + m_vecClipUpdateTime[m_iCurClip];
 		m_dCurTime *= m_fTimeScale;
 		dFrameIdx = m_dCurTime * (double)m_iFrameCount + (double)m_tCurFrame.iStart;
-
 		m_iFrameIdx = (int)(dFrameIdx);
 	}
 

@@ -53,18 +53,30 @@ void CLight3D::finaltick()
 	m_pLightCam->finaltick_module();
 }
 
-void CLight3D::render_depthmap()
+void CLight3D::render_dynamic_depthmap()
 {
 	m_pLightCam->Camera()->SortShadowObject();
-	m_pLightCam->Camera()->render_depthmap();
+	m_pLightCam->Camera()->render_dynamic_depthmap();
 }
 
-void CLight3D::render_depthmap(const vector<CGameObject*>& obj)
+void CLight3D::render_dynamic_depthmap(const vector<CGameObject*>& obj)
 {
 	m_pLightCam->Camera()->SortShadowObject(obj);
-	m_pLightCam->Camera()->render_depthmap();
+	m_pLightCam->Camera()->render_dynamic_depthmap();
 }
 
+
+void CLight3D::render_static_depthmap()
+{
+	m_pLightCam->Camera()->SortShadowObject();
+	m_pLightCam->Camera()->render_static_depthmap();
+}
+
+void CLight3D::render_static_depthmap(const vector<CGameObject*>& obj)
+{
+	m_pLightCam->Camera()->SortShadowObject(obj);
+	m_pLightCam->Camera()->render_static_depthmap();
+}
 /*
 * 
 */
@@ -114,7 +126,8 @@ void CLight3D::render()
 	{
 		Matrix matLightVP = m_pLightCam->Camera()->GetViewMat() * m_pLightCam->Camera()->GetProjMat();
 		m_pLightMtrl->SetScalarParam(SCALAR_PARAM::MAT_0, &matLightVP);
-		m_pLightMtrl->SetTexParam(TEX_PARAM::TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"DepthMapTex"));
+		m_pLightMtrl->SetTexParam(TEX_PARAM::TEX_3, CResMgr::GetInst()->FindRes<CTexture>(L"DynamicDepthMapTex"));
+		m_pLightMtrl->SetTexParam(TEX_PARAM::TEX_4, CResMgr::GetInst()->FindRes<CTexture>(L"StaticDepthMapTex"));
 	}
 
 	// ·»´õ¸µ

@@ -17,7 +17,7 @@ bool ParamUI::Param_Int(const string& _ParamName, int* _pInOut)
 
 	ImGui::Text(_ParamName.c_str());
 	ImGui::SameLine();
-	ImGui::InputInt(szName, _pInOut);
+	//ImGui::InputInt(szName, _pInOut);
 
 	if (ImGui::InputInt(szName, _pInOut, 1, 1, ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue))
 	{
