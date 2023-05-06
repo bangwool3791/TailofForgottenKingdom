@@ -295,6 +295,7 @@ void CCamera::render()
 	render_forward();
 
 	render_transparent();
+	render_particle();
 	render_postprocess();
 	render_fog();
 }
@@ -338,6 +339,7 @@ void CCamera::EditorRender()
 
 	render_forward();
 	render_transparent();
+	render_particle();
 	render_postprocess();
 	render_fog();
 }
@@ -654,6 +656,17 @@ void CCamera::render_fog()
 	//}
 }
 
+void CCamera::render_particle()
+{
+	//CRenderMgr::GetInst()->CopyRenderTarget();
+	//CRenderMgr::GetInst()->CopyPositionTarget();
+	//
+	for (auto iter{ m_vecParticle.begin() }; iter != m_vecParticle.end(); ++iter)
+	{
+		(*iter)->GetRenderComponent()->render(0);
+	}
+}
+
 void CCamera::render_transparent()
 {
 	// Deferred object render
@@ -834,6 +847,7 @@ void CCamera::SortObject()
 	m_vecTransparent.clear();
 	m_vecUi.clear();
 	m_vecFog.clear();
+	m_vecParticle.clear();
 
 	auto pLevel = CLevelMgr::GetInst()->GetCurLevel();
 
@@ -865,6 +879,7 @@ void CCamera::SortObject(const vector<CGameObject*>& vecGameObject)
 	m_vecTransparent.clear();
 	m_vecUi.clear();
 	m_vecFog.clear();
+	m_vecParticle.clear();
 
 	Process_Sort(vecGameObject);
 }
@@ -1105,7 +1120,7 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 				Ptr<CMaterial> pMtrl = RenderCompoent->GetCurMaterial(iMtrl);
 
 				uInstID uID = {};
-			
+
 				uID.llID = RenderCompoent->GetInstID(iMtrl);
 
 				if (0 == uID.llID)
@@ -1121,7 +1136,7 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 					iter->second.push_back(tInstObj{ pObj, iMtrl });
 				}
 			}
-				break;
+			break;
 			case SHADER_DOMAIN::DOMAIN_POST_PROCESS:
 			{
 				std::unordered_map<ULONG64, vector<tInstObj>>* pMap = &m_mapPostProcessObj;
@@ -1144,13 +1159,20 @@ void CCamera::Mtrl_Sort(CRenderComponent* RenderCompoent, CGameObject* pObj)
 					iter->second.push_back(tInstObj{ pObj, iMtrl });
 				}
 			}
-				break;
+			break;
 			case SHADER_DOMAIN::DOMAIN_FOG:
 			{
 				m_vecFog.push_back(pObj);
 			}
-				break;
+			break;
+
+			case SHADER_DOMAIN::DOMAIN_PARTICLE:
+			{
+				m_vecParticle.push_back(pObj);
 			}
+			break;
+			}
+			
 		}
 	}
 }

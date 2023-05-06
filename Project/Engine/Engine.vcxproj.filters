@@ -328,6 +328,9 @@
     <Filter Include="Engine\06. Component\14. Trail">
       <UniqueIdentifier>{43f02ec9-f10e-42cd-aec4-a8938ccc1dfb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\Render\3D\Particle">
+      <UniqueIdentifier>{5d7830d8-7bf3-4c30-ab4e-091f13417f49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -1158,6 +1161,9 @@
     </FxCompile>
     <FxCompile Include="postprocess.fx">
       <Filter>HLSL\Render\3D\RenderTarget</Filter>
+    </FxCompile>
+    <FxCompile Include="particlerender.fx">
+      <Filter>HLSL\Render\3D\Particle</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

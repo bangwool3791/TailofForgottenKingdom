@@ -49,7 +49,7 @@ void CPlayerTestScript::begin()
 	m_pUpperSwordObj = CEditor::GetInst()->FindByName(L"SwordTrailUppder");
 	m_pBottomSwordObj = CEditor::GetInst()->FindByName(L"SwordTrailBottom");
 	m_pSworTrailObj = CEditor::GetInst()->FindByName(L"SwordTrail");
-
+	m_pBloodParticle = CEditor::GetInst()->FindByName(L"BoolParticle");
 	m_vecAnimation.push_back(GetOwner()->Animator3D());
 
 	const vector<CGameObject*> vecChilds = GetOwner()->GetChilds();
@@ -109,6 +109,8 @@ void CPlayerTestScript::finaltick()
 	CGameObjectEx* pObject = CEditor::GetInst()->FindByName(L"FogObject");
 	vPos = Transform()->GetRelativePos();
 	pObject->MeshRender()->GetCurMaterial(0)->SetScalarParam(VEC4_1, &vPos);
+
+	m_pBloodParticle->Transform()->SetRelativePos(Transform()->GetRelativePos());
 }
 
 void CPlayerTestScript::BeginOverlap(CCollider* _pOther)
@@ -628,6 +630,7 @@ void CPlayerTestScript::TrailProcedure()
 	static UINT iFrameCount = 0;
 	static UINT iUpdate = 0;
 	static float fDeltaTime = 0.f;
+	static bool bBloodParticle = false;
 
 	if (m_bSwordTrail)
 	{
@@ -642,11 +645,11 @@ void CPlayerTestScript::TrailProcedure()
 			m_pSworTrailObj->TrailComponent()->PushSwordPos(vUpperPos);
 			m_pSworTrailObj->TrailComponent()->PushSwordPos(vBottomPos);
 			iUpdate = 0;
-
+			bBloodParticle = true;
 		}
 		else if (iFrameCount == Animator3D()->GetCurFrameIdx() && iUpdate < 4)
 		{
-			if (0.00005 < fDeltaTime)
+			if (0.002 < fDeltaTime)
 			{
 				Vec3 vUpperPos = TrailComponent()->GetUpperSwordPos();
 				Vec3 vBottomPos = TrailComponent()->GetBottomSwordPos();
@@ -664,8 +667,16 @@ void CPlayerTestScript::TrailProcedure()
 
 			m_bSwordTrail = false;
 			m_pSworTrailObj->TrailComponent()->ClearSwordPos();
+			bBloodParticle = false;
+			m_pBloodParticle->ParticleSystem()->Deactivate();
 		}
 		
+		if (bBloodParticle)
+		{
+			Vec3 vUpperPos = TrailComponent()->GetUpperSwordPos();
+			m_pBloodParticle->ParticleSystem()->Activate();
+			m_pBloodParticle->Transform()->SetRelativePos(Transform()->GetRelativePos());
+		}
 	}
 
 

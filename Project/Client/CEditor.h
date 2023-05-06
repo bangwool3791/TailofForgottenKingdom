@@ -47,6 +47,7 @@ private:
 	void CreateLight();
 	void CreateNaviMesh();
 	void CreatePlayer();
+	void CreateParticle();
 	void DebugDraw(tDebugShapeInfo& _info);
 	void Initialize_Outliner();
 public:

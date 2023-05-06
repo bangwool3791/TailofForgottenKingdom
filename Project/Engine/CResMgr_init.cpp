@@ -265,7 +265,7 @@ void CResMgr::CreateDefaultMesh()
 	v.vPos = Vec3(0.f, 0.f, 0.f);
 	v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
 	v.vUV = Vec2(0.f, 0.f);
-
+	
 	UINT idx = 0;
 
 	pMesh = new CMesh(true);
@@ -1004,11 +1004,11 @@ void CResMgr::CreateDefaultGraphicsShader()
 	pShader->CreateVertexShader(L"shader\\particlerender.fx", "VS_ParticleRender");
 	pShader->CreateGeometryShader(L"shader\\particlerender.fx", "GS_ParticleRender");
 	pShader->CreatePixelShader(L"shader\\particlerender.fx", "PS_ParticleRender");
-	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	pShader->SetTopology(D3D10_PRIMITIVE_TOPOLOGY_POINTLIST);
 	pShader->SetRSType(RS_TYPE::CULL_NONE);
 	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetDSType(DS_TYPE::NO_WRITE);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_TRANSPARENT);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_PARTICLE);
 
 	AddRes<CGraphicsShader>(L"ParticleRenderShader", pShader);
 
@@ -1307,6 +1307,11 @@ void CResMgr::CreateDefaultComputeShader()
 	pShader = new CCopyBoneShader;
 	pShader->CreateComputeShader(L"shader\\copybone.fx", "CS_CopyBoneMatrix");
 	AddRes<CComputeShader>(L"CopyBoneShader", pShader);
+
+	// Particle Update Shader
+	pShader = new CParticleUpdateShader;
+	pShader->CreateComputeShader(L"shader\\particleupdate.fx", "CS_ParticleUpdate");
+	AddRes<CComputeShader>(L"ParticleUpdateShader", pShader);
 }
 
 void CResMgr::CreateDefaultMaterial()

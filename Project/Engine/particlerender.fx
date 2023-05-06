@@ -10,7 +10,7 @@
 // BS_TYPE : ALPHABLEND
 // DS_TYPE : NO_WRITE
 // DOMAIN : Transparent
-StructuredBuffer<tParticle> ParticleBuffer : register(t17);
+StructuredBuffer<tParticle> ParticleBuffer : register(t16);
 #define ParticleIndex g_int_0
 #define IsWorldSpawn  g_int_1
 
@@ -24,7 +24,28 @@ StructuredBuffer<tParticle> ParticleBuffer : register(t17);
 struct VS_IN
 {
     float3 vPos : POSITION;
+    float2 vUV : TEXCOORD;
     uint iInstance  : SV_InstanceID;
+};
+
+struct VTX_IN_INST
+{
+    float3 vPos : POSITION;
+    float3 vUV : TEXCOORD;
+    uint iInstance  : SV_InstanceID;
+
+    float3 vTangent : TANGENT;
+    float3 vNormal : NORMAL;
+    float3 vBinormal : BINORMAL;
+
+    float4 vWeights : BLENDWEIGHT;
+    float4 vIndices : BLENDINDICES;
+
+    // Per Instance Data
+    row_major matrix matWorld : WORLD;
+    row_major matrix matWV : WV;
+    row_major matrix matWVP : WVP;
+    uint             iRowIndex : ROWINDEX;
 };
 
 struct VS_OUT
@@ -42,6 +63,16 @@ struct GS_OUT
 };
 
 VS_OUT VS_ParticleRender(VS_IN _in)
+{
+    VS_OUT output = (VS_OUT)0.f;
+
+    output.vLocalPos = _in.vPos;
+    output.iInstance = _in.iInstance;
+
+    return output;
+}
+
+VS_OUT VS_ParticleRender_Inst(VTX_IN_INST _in)
 {
     VS_OUT output = (VS_OUT)0.f;
 
@@ -110,13 +141,14 @@ void GS_ParticleRender(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStr
 float4 PS_ParticleRender(GS_OUT _in) : SV_Target
 {
     float4 vColor = (float4) 0.f;
-
     vColor = g_tex_0.Sample(g_sam_0, _in.vUV);
+    
+    if (vColor.a == 0)
+        discard;
+
     float fRatio = ParticleBuffer[_in.iInstance].fCurTime / ParticleBuffer[_in.iInstance].fMaxTime;
-    vColor *= lerp(StartColor, EndColor, fRatio);
+    vColor.rgb *= lerp(StartColor, EndColor, fRatio).rgb;
     return vColor;
 
 }
-
-
 #endif

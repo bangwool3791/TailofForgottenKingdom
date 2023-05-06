@@ -80,7 +80,7 @@ void CEditor::init()
 	CreateDebugDrawObject();
 	CreateCamera();
 	CreateLight();
-
+	CreateParticle();
 	{
 		// LandScape Ãß°¡
 		pLandScape = new CGameObjectEx;
@@ -561,22 +561,6 @@ void CEditor::CreatePlayer()
 			m_pCameraObject->GetScript<CCameraScript>(L"CCameraScript")->SetPlayer(pObject);
 			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObject);
 		}
-
-		{
-			CSaveLoadMgr::GetInst()->LoadPrefab();
-			Ptr<CPrefab> pPrefab = CResMgr::GetInst()->FindRes<CPrefab>(L"Test0Prefab");
-
-			CGameObject* pObj = pPrefab->Instantiate();
-			pObject = new CGameObjectEx(*pObj);
-
-			delete pObj;
-			pObject->Transform()->SetRelativeRotationY(XM_PI);
-			pObject->SetName(L"Test0Prefab");
-			pObject->begin();
-			pObject->MeshRender()->SetShadowType(ShadowType::STATIC);
-
-			CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObject);
-		}
 	}
 }
 
@@ -608,6 +592,22 @@ void CEditor::CreateNaviMesh()
 		pSample->initToolStates(pSample);
 		pSample->loadAll("navimesh\\Arene_Stage_Navi.bin");
 		delete pSample;
+	}
+
+	{
+		CSaveLoadMgr::GetInst()->LoadPrefab();
+		Ptr<CPrefab> pPrefab = CResMgr::GetInst()->FindRes<CPrefab>(L"Test0Prefab");
+
+		CGameObject* pObj = pPrefab->Instantiate();
+		pObject = new CGameObjectEx(*pObj);
+
+		delete pObj;
+		pObject->Transform()->SetRelativeRotationY(XM_PI);
+		pObject->SetName(L"Test0Prefab");
+		pObject->begin();
+		pObject->MeshRender()->SetShadowType(ShadowType::STATIC);
+
+		CEditor::GetInst()->Add_Editobject(EDIT_MODE::MAPTOOL, pObject);
 	}
 }
 
@@ -841,6 +841,17 @@ void CEditor::CreateLight()
 	}
 }
 
+void CEditor::CreateParticle()
+{
+	CGameObjectEx* pParticle = new CGameObjectEx;
+	pParticle->AddComponent(new CTransform);
+	pParticle->AddComponent(new CParticleSystem);
+	pParticle->SetName(L"BoolParticle");
+
+	pParticle->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+	pParticle->ParticleSystem()->SetWorldSpawn(true);
+	m_EditorObj[(UINT)EDIT_MODE::MAPTOOL].emplace(L"BoolParticle", pParticle);
+}
 /*
 * 	//test obj
 	{

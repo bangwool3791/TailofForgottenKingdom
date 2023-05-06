@@ -516,6 +516,7 @@ call EngineCopy.bat</Command>
     <FxCompile Include="light.fx" />
     <FxCompile Include="matrix.fx" />
     <FxCompile Include="merge.fx" />
+    <FxCompile Include="particlerender.fx" />
     <FxCompile Include="particleupdate.fx">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ObjectFileOutput>

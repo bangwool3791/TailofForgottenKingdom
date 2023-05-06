@@ -26,7 +26,20 @@ void CCameraScript::begin()
 
 void CCameraScript::tick()
 {
-	Move();
+	static bool bCamPerspective = false;
+
+	if (!bCamPerspective)
+		Move();
+	else
+		EditMode();
+
+	if (KEY_TAP(KEY::NUM_0))
+	{
+		if (bCamPerspective)
+			bCamPerspective = false;
+		else
+			bCamPerspective = true;
+	}
 }
 
 void CCameraScript::finaltick() 
@@ -230,4 +243,37 @@ void  CCameraScript::SetPlayer(CGameObjectEx* pPlayer)
 	m_pPlayer = pPlayer;
 
 	m_vRot = m_pPlayer->Transform()->GetRelativeRotation();
+}
+
+void  CCameraScript::EditMode()
+{
+	Vec3 vPos = Transform()->GetRelativePos();
+
+	float fSpeed = m_fSpeed;
+
+	Vec3 vFront = Transform()->GetRelativeDir(DIR::FRONT);
+	Vec3 vRight = Transform()->GetRelativeDir(DIR::RIGHT);
+
+	if (KEY_PRESSED(KEY::W))
+		vPos += DT * vFront * fSpeed;
+	if (KEY_PRESSED(KEY::S))
+		vPos += DT * -vFront * fSpeed;
+	if (KEY_PRESSED(KEY::A))
+		vPos += DT * -vRight * fSpeed;
+	if (KEY_PRESSED(KEY::D))
+		vPos += DT * vRight * fSpeed;
+
+	Vec2 vMouseDir = CKeyMgr::GetInst()->GetMouseDir();
+
+
+	if (KEY_PRESSED(KEY::RBTN))
+	{
+		Vec3 vRot = Transform()->GetRelativeRotation();
+
+		vRot.y += vMouseDir.x * DT * XM_PI;
+		vRot.x -= vMouseDir.y * DT * XM_PI;
+		Transform()->SetRelativeRotation(vRot);
+	}
+
+	Transform()->SetRelativePos(vPos);
 }

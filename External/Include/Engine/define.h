@@ -58,6 +58,7 @@ enum class SHADER_DOMAIN
 
 	DOMAIN_TRANSPARENT,  // 반투명
 	DOMAIN_POST_PROCESS, // 후처리	    
+	DOMAIN_PARTICLE,
 	DOMAIN_UI,			 // UI	  
 	// Engine 차원에서 처리 
 	DOMAIN_LIGHT,				// 광원 처리

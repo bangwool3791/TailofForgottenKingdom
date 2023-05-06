@@ -70,7 +70,7 @@ void CTrailComponent::UpdateData()
 	m_pSwordTrailTime->UpdateData(63, PIPELINE_STAGE::PS);
 	
 	//GPU 전달 데이터 최적화 필요
-	if (-1 != m_iSwordTrailIdx)
+	if (0 < m_iSwordTrailIdx)
 	{
 		for (UINT i = 0; i < m_queSwordPos.size(); ++i)
 		{
@@ -80,8 +80,8 @@ void CTrailComponent::UpdateData()
 			m_queSwordPos.push(vPos);
 		}
 
-		float iSize = m_queSwordPos.size();
-		MeshRender()->GetCurMaterial(0)->SetScalarParam(FLOAT_0, &iSize);
+		int iSize = m_queSwordPos.size();
+		MeshRender()->GetCurMaterial(0)->SetScalarParam(INT_0, &iSize);
 
 		m_pSwordPos->SetData(m_vecSwordPos.data(), m_vecSwordPos.size());
 		m_pSwordPos->UpdateData(65, PIPELINE_STAGE::GS);

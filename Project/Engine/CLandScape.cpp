@@ -161,6 +161,7 @@ void CLandScape::render()
 	// Clear
 	CMaterial::Clear();
 	m_pWeightMapBuffer->Clear();
+
 }
 
 void CLandScape::render(UINT _iSubset)

@@ -78,7 +78,7 @@ void GS_3DPostProcess(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStre
 	float3 VTX[14];
 	float3 vZero = float3(0.f, 0.f, 0.f);
 
-	float iSequence = g_float_0 - 6;
+	float iSequence = g_int_0 - 6;
 	iSequence *= 0.5f;
 
 	//if (iSequence < 0)
@@ -88,7 +88,7 @@ void GS_3DPostProcess(point VS_OUT _in[1], inout TriangleStream<GS_OUT> _OutStre
 	//	_OutStream.Append(output[8]);
 	//}
 
-	for (int i = 0; i < iSequence; ++i)
+	for (int i = iSequence -1; i > 0; --i)
 	{
 		VTX[0] = g_SwordPosBuffer[i * 2];
 		VTX[1] = cubicSpline(0.25, g_SwordPosBuffer[i * 2], g_SwordPosBuffer[i * 2 + 2], g_SwordPosBuffer[i * 2 + 4], g_SwordPosBuffer[i * 2 + 6]);
@@ -258,11 +258,14 @@ float4 PS_3DPostProcess(GS_OUT _in) : SV_Target
 	float4 vTexColor = g_tex_0.Sample(g_sam_0, _in.vUV);
 	float4 vTexAlpha = g_tex_1.Sample(g_sam_0, _in.vUV);
 
-//vTexColor.r = vTexColor.r * vTexAlpha.r;
-//vTexColor.g = vTexColor.g * vTexAlpha.g;
-//vTexColor.b = vTexColor.b * vTexAlpha.b;
+	if (g_btex_1)
+	{
+		vTexColor.r = vTexColor.r * vTexAlpha.r;
+		vTexColor.g = vTexColor.g * vTexAlpha.g;
+		vTexColor.b = vTexColor.b * vTexAlpha.b;
+	}
 //
-//vTexColor.a = _in.vUV.x * 0.01f;
+	vTexColor.a = _in.vUV.x * 0.8f;
 ////if (vTexColor.r < 0.6f)
 ////	discard;
 ////if (vTexColor.g < 0.6f)

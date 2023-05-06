@@ -61,6 +61,7 @@ private:
     vector<CGameObject*>                     m_vecStaticShadow;     // 동적 그림자 물체
     vector<CGameObject* >                    m_vecUi;
     vector<CGameObject* >                    m_vecFog;
+    vector<CGameObject* >                    m_vecParticle;
     CStructuredBuffer* m_pObjectRenderBuffer;
 
 private:
@@ -76,6 +77,7 @@ private:
     void render_fog();
     void render_transparent();
     void render_postprocess();
+    void render_particle();
     void render_ui();
     //void update_render(Ptr<CMesh> p);
 public:

@@ -35,6 +35,7 @@ private:
     CGameObjectEx*          m_pUpperSwordObj;
     CGameObjectEx*          m_pBottomSwordObj;
     CGameObjectEx*          m_pSworTrailObj;
+    CGameObjectEx*          m_pBloodParticle;
     vector<CGameObjectEx*>   m_vecObjTrail;
     vector<CGameObjectEx*>   m_vecSwordTrail;
     

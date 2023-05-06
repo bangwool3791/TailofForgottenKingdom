@@ -26,7 +26,6 @@ protected:
 	Vec2						m_vMinMaxLifeTime;
 
 	float						m_fSpawnRange;
-	float						m_Frequency;
 	float						m_fMinLifeTime;
 	float						m_fMaxLifeTime;
 	int							m_WorldSpawn;

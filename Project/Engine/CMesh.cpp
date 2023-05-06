@@ -133,7 +133,6 @@ int CMesh::Create(
     return hr;
 }
 
-
 void CMesh::UpdateData(UINT _iSubset)
 {
     UINT iStride = sizeof(Vtx);
@@ -510,8 +509,10 @@ void CMesh::render_instancing(UINT _iSubset)
 
 void CMesh::render_particle(UINT _iCount)
 {
-    UpdateData(0);
-    CONTEXT->DrawIndexedInstanced(m_vecIdxInfo[0].iIdxCount, _iCount, 0, 0, 0);
+    UpdateData_Inst(0);
+   // CONTEXT->DrawIndexedInstanced(m_vecIdxInfo[0].iIdxCount, sizeof(tInstancingData) * _iCount, 0, 0, 0);
+    CONTEXT->DrawIndexedInstanced(m_vecIdxInfo[0].iIdxCount
+        , _iCount, 0, 0, 0);
 }
 
 void CMesh::Read()
